@@ -1,7 +1,10 @@
 import hashlib
+import urllib
 from datetime import datetime
-from typing import Any, Iterable, Iterator, Tuple
+from typing import Any, Union
+from xml.dom.minidom import Document, Element
 
+import edrm.EDRMUtilities as eutes
 from edrm import FieldFactory
 from edrm.EntryField import EntryField
 from edrm.EntryInterface import EntryInterface
@@ -14,7 +17,8 @@ class MappingEntry(EntryInterface):
     This class can, and should be subclassed when the generic means of calculating names and item dates aren't
     suitable.  Additionally, all incoming dtae/times are assumed to be instances datetime.datetime.
     """
-    def __init__(self, mapping: dict[str, Any], mimetype: str, parent_id: str):
+
+    def __init__(self, mapping: dict[str, Any], mimetype: str, parent_id: str = None):
         super().__init__()
 
         self.__data: dict[str, Any] = mapping
@@ -47,7 +51,7 @@ class MappingEntry(EntryInterface):
         self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mimetype)
         self['SHA-1'] = FieldFactory.generate_field('SHA-1',
                                                     EntryField.TYPE_TEXT,
-                                                    FieldFactory.hash_data(self.__data, hashlib.sha1()))
+                                                    eutes.hash_data(self.__data, hashlib.sha1()))
         self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, self.name)
         self['Item Date'] = FieldFactory.generate_field('Item Date', EntryField.TYPE_DATETIME, self.itemdate)
 
@@ -77,10 +81,10 @@ class MappingEntry(EntryInterface):
         else:
             name_field = name_fields[0]
 
-        return self.__data[name_field]
+        return str(self.__data[name_field])
 
     @property
-    def time_field(self) -> str:
+    def time_field(self) -> Union[str, None]:
         """
         Provide a name of a field to be used as the row items <code>Item Date</code>.  The item date is a specific
         required property used to locate data and events on a timeline.
@@ -138,3 +142,37 @@ class MappingEntry(EntryInterface):
     @property
     def parent(self) -> str:
         return self.__parent_id
+
+    def add_as_parent_path(self, existing_path: str):
+        return self.name + '/' + existing_path
+
+    def calculate_md5(self) -> str:
+        return eutes.hash_data(self.data, hashlib.md5())
+
+    def add_location_uri(self,
+                         document: Document,
+                         container: Element,
+                         entry_map: dict[str, EntryInterface],
+                         for_nli: bool):
+        if for_nli:
+            location_uri_element = document.createElement('LocationURI')
+            location_uri = eutes.generate_relative_path(self, entry_map)
+            location_uri = urllib.parse.quote_plus(location_uri, safe='/')
+            location_uri_element.appendChild(document.createTextNode(location_uri))
+            container.appendChild(location_uri_element)
+
+    def add_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool):
+        if for_nli:
+            return
+
+        files_list = document.createElement('Files')
+        container.appendChild(files_list)
+
+        file_element = document.createElement('File')
+        file_element.setAttribute('FileType', 'Text')
+        files_list.appendChild(file_element)
+
+        inline_content = document.createElement('InlineContent')
+        file_element.appendChild(inline_content)
+
+        inline_content.appendChild(document.createTextNode(str(self.data)))

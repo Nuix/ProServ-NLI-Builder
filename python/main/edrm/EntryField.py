@@ -1,6 +1,9 @@
+from datetime import datetime
 from typing import Any
 
-from edrm import FieldFactory
+from xml.dom.minidom import Element, Document, Node
+
+import edrm.EDRMUtilities as eutes
 
 
 class EntryField:
@@ -41,3 +44,30 @@ class EntryField:
     @value.setter
     def value(self, value: Any) -> None:
         self.__value = value
+
+    def serialize_definition(self, document: Document, field_list: Element) -> None:
+        for sibling in field_list.childNodes:
+            if sibling.nodeType == Node.ELEMENT_NODE and sibling.getAttribute("Name") == self.name:
+                return
+
+        field_element: Element = document.createElement("Field")
+        field_element.setAttribute("Name", self.name)
+        field_element.setAttribute("DataType", self.data_type)
+        field_element.setAttribute("Key", self.key)
+
+        field_list.appendChild(field_element)
+
+    def serialize_value(self, document: Document, value_list: Element) -> None:
+        value_element: Element = document.createElement(self.key)
+
+        if self.value is None:
+            value_text = ''
+        elif isinstance(self.value, datetime):
+            value_text = eutes.convert_datetime_to_string(self.value)
+        elif isinstance(self.value, float):
+            value_text = str(round(self.value, 4))
+        else:
+            value_text = str(self.value)
+
+        value_element.appendChild(document.createTextNode(value_text))
+        value_list.appendChild(value_element)
