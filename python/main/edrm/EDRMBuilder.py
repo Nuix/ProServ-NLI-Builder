@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Any
+from copy import deepcopy
 
 from xml.dom.minidom import getDOMImplementation, Element, Document
 
@@ -7,6 +8,7 @@ from edrm.DirectoryEntry import DirectoryEntry
 from edrm.EntryInterface import EntryInterface
 from edrm.FileEntry import FileEntry
 from edrm.MappingEntry import MappingEntry
+from edrm.EDRMUtilities import utility_configs
 
 
 class EDRMBuilder:
@@ -33,9 +35,13 @@ class EDRMBuilder:
     def as_nli(self, as_nli: bool) -> None:
         self.__as_nli = as_nli
 
-    def add_entry(self, entry: EntryInterface, parent_id: str = None) -> str:
+    def add_entry(self, entry: EntryInterface) -> str:
         entry_id = entry[entry.identifier_field].value
         self.__entries[entry_id] = entry
+        parent_id = entry.parent
+
+        if entry_id not in self.__families.keys():
+            self.__families[entry_id] = []
 
         if parent_id is not None:
             family = self.__families.get(parent_id, [])
@@ -52,6 +58,20 @@ class EDRMBuilder:
 
     def add_mapping(self, mapping: dict[str, Any], mimetype: str, parent_id: str = None) -> str:
         return self.add_entry(MappingEntry(mapping, mimetype, parent_id))
+
+    def __add_folder(self, doc_id: str, document: Document, container: Element, families):
+        doc_element = document.createElement('Document')
+        doc_element.setAttribute('DocId', doc_id)
+        container.appendChild(doc_element)
+
+        family = families.pop(doc_id)
+        if len(families) > 0:
+            folder_element = document.createElement('Folder')
+            folder_element.setAttribute('FolderName', doc_id)
+            container.appendChild(folder_element)
+
+            for child in self.__families[doc_id]:
+                self.__add_folder(child, document, folder_element, families)
 
     def build(self) -> Document:
         impl = getDOMImplementation()
@@ -77,11 +97,29 @@ class EDRMBuilder:
         for entry_id, entry in self.__entries.items():
             entry.serialize_entry(doc, doc_list, self.__entries, self.as_nli)
 
+        relationship_list = doc.createElement('Relationships')
+        batch_element.appendChild(relationship_list)
+        for parent_id, family in self.__families.items():
+            for child_id in family:
+                relationship = doc.createElement('Relationship')
+                relationship.setAttribute('Type', 'Container')
+                relationship.setAttribute('ParentDocId', parent_id)
+                relationship.setAttribute('ChildDocId', child_id)
+                relationship_list.appendChild(relationship)
+
+        folders_list = doc.createElement('Folders')
+        batch_element.appendChild(folders_list)
+
+        working_families = deepcopy(self.__families)
+        for entry_id in self.__families.keys():
+            if entry_id in working_families:
+                self.__add_folder(entry_id, doc, folders_list, working_families)
+
         return doc
 
     def save(self, doc: Document = None):
         if doc is None:
             doc = self.build()
 
-        with self.output_path.open(mode='w', encoding='UTF-8') as load_file:
-            doc.writexml(load_file, encoding='UTF-8', standalone=True, addindent='  ', newl='\n')
+        with self.output_path.open(mode='w', encoding=utility_configs['encoding']) as load_file:
+            doc.writexml(load_file, encoding=utility_configs['encoding'], standalone=True, addindent='  ', newl='\n')

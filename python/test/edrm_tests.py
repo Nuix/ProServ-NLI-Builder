@@ -122,8 +122,8 @@ class TestEDRM(unittest.TestCase):
         builder.as_nli = False
         builder.output_path = pathlib.Path(r'C:\projects\proserv\Koblenz\output\file_and_folder_and_map_test.xml')
         folder_id = builder.add_directory(folder)
-        file_id = builder.add_file(file, "application/powershell_script", folder_id)
-        map_id = builder.add_mapping(data, "application/x-database-table-row", file_id)
+        file_id = builder.add_file(file, "application/powershell_script", parent_id=folder_id)
+        map_id = builder.add_mapping(data, "application/x-database-table-row", parent_id=file_id)
         builder.save()
 
     def test_file_in_folder_with_mapping_nli(self):
@@ -135,6 +135,6 @@ class TestEDRM(unittest.TestCase):
         builder.as_nli = True
         builder.output_path = pathlib.Path(r'C:\projects\proserv\Koblenz\output\file_and_folder_and_map_nli_test.xml')
         folder_id = builder.add_directory(folder)
-        file_id = builder.add_file(file, "application/powershell_script", folder_id)
-        map_id = builder.add_mapping(data, "application/x-database-table-row", file_id)
+        file_id = builder.add_file(file, "application/powershell_script", parent_id=folder_id)
+        map_id = builder.add_mapping(data, "application/x-database-table-row", parent_id=file_id)
         builder.save()

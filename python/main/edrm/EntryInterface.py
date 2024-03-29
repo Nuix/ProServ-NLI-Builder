@@ -6,6 +6,7 @@ from typing import Iterable, Any, Tuple, Iterator
 from xml.dom.minidom import Element, Document
 
 from edrm.EntryField import EntryField
+from edrm.EDRMUtilities import utility_configs
 
 
 class EntryInterface(object):
@@ -124,7 +125,7 @@ class EntryInterface(object):
         location_list.appendChild(location)
 
         custodian_element = document.createElement('Custodian')
-        custodian_element.appendChild(document.createTextNode('Unknown'))
+        custodian_element.appendChild(document.createTextNode(utility_configs['custodian']))
         location.appendChild(custodian_element)
 
         description_element = document.createElement('Description')

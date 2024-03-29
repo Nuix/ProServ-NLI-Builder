@@ -3,7 +3,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Union, Any
 
-from edrm.EntryInterface import EntryInterface
+utility_configs = {
+    'date_time_format': '%Y-%m-%dT%H:%M:%S.%f+00:00',
+    'time_zone_format': '+00:00',
+    'hash_buffer_size': 65536,
+    'encoding': 'UTF-8',
+    'custodian': 'Unknown',
+    'default_itemdate_field': 'CreateTime',
+    'default_rowname_field': 'Name'
+}
 
 
 def convert_datetime_to_string(date_time: datetime) -> str:
@@ -13,8 +21,8 @@ def convert_datetime_to_string(date_time: datetime) -> str:
     :param date_time: The datetime to convert
     :return: A string with the formatted date-time
     """
-    str_rep = date_time.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
-    tz_rep = date_time.strftime('+00:00')
+    str_rep = date_time.strftime(utility_configs['date_time_format'])[:-3]
+    tz_rep = date_time.strftime(utility_configs['time_zone_format'])
     return str_rep + tz_rep
 
 
@@ -32,10 +40,9 @@ def _hash_file(file: Path, hashfunction: hashlib):
     """
     Intermediate function to update the hash with the contents of the file.
     """
-    BUFFER_SIZE = 65536
     with file.open('rb') as dump_file:
         while True:
-            data = dump_file.read(BUFFER_SIZE)
+            data = dump_file.read(utility_configs['hash_buffer_size'])
             if not data:
                 break
 
@@ -61,7 +68,7 @@ def _hash_data(data: Any, hashfunction: hashlib):
     """
     Intermediate function to update a hash function with the contents of some data.
     """
-    hashfunction.update(str(data).encode('utf-8'))
+    hashfunction.update(str(data).encode(utility_configs['encoding']))
 
 
 def hash_data(data: Any, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:
@@ -93,7 +100,7 @@ def hash_directory(directory: Path, hashfunction: hashlib, as_string: bool = Tru
         return hashfunction.digest()
 
 
-def generate_relative_path(entry: EntryInterface, entry_map: dict[str, EntryInterface]) -> str:
+def generate_relative_path(entry: object, entry_map: dict[str, object]) -> str:
     relative_path = entry.name
 
     tmp_current_entry = entry

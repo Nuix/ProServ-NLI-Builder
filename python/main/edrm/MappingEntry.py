@@ -5,6 +5,7 @@ from typing import Any, Union
 from xml.dom.minidom import Document, Element
 
 import edrm.EDRMUtilities as eutes
+from edrm.EDRMUtilities import utility_configs
 from edrm import FieldFactory
 from edrm.EntryField import EntryField
 from edrm.EntryInterface import EntryInterface
@@ -73,10 +74,11 @@ class MappingEntry(EntryInterface):
         """
         field_names = list(self.data.keys())
         first_field = field_names[0]
-
         name_fields = [f for f in field_names if 'name' in f.lower()]
 
-        if len(name_fields) == 0:
+        if utility_configs['default_rowname_field'] in field_names:
+            name_field = utility_configs['default_rowname_field']
+        elif len(name_fields) == 0:
             name_field = first_field
         else:
             name_field = name_fields[0]
@@ -102,14 +104,14 @@ class MappingEntry(EntryInterface):
         """
         field_names = list(self.data.keys())
 
-        if "CreateTime" in field_names:
-            return "CreateTime"
+        if utility_configs['default_itemdate_field'] in field_names:
+            return utility_configs['default_itemdate_field']
 
-        time_fields = [f for f in field_names if "time" in f.lower()]
+        time_fields = [f for f in field_names if 'time' in f.lower()]
         if len(time_fields) > 0:
             return time_fields[0]
 
-        date_fields = [f for f in field_names if "date" in f.lower()]
+        date_fields = [f for f in field_names if 'date' in f.lower()]
         if len(date_fields) > 0:
             return date_fields[0]
 
@@ -135,9 +137,9 @@ class MappingEntry(EntryInterface):
             if isinstance(date_time, datetime):
                 return date_time
             elif isinstance(date_time, str):
-                return datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S.%f")
+                return datetime.strptime(date_time, utility_configs['date_time_format'])
             else:
-                raise ValueError(f"Invalid item date format: {date_time}")
+                raise ValueError(f'Invalid item date format: {date_time}')
 
     @property
     def parent(self) -> str:
