@@ -4,6 +4,7 @@ from datetime import datetime
 
 from edrm.EDRMBuilder import EDRMBuilder
 from data_types.csv_file import CSVEntry, CSVRowEntry
+from nli.nli_generator import NLIGenerator
 
 
 class ProcessEntry(CSVRowEntry):
@@ -45,7 +46,7 @@ class ProcessCSVEntry(CSVEntry):
             builder.add_entry(ProcessEntry(self, index, parent_id))
 
 
-class CSVTests(unittest.TestCase):
+class NLITests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.envars: str = r'\\innovation.nuix.com\SharedFolder\Koblenz\data\envars.csv'
@@ -56,11 +57,9 @@ class CSVTests(unittest.TestCase):
 
     def test_base_csv(self):
         entry = CSVEntry(self.envars)
-        builder = EDRMBuilder()
-        builder.as_nli = False
-        builder.output_path = self.output_path / 'csv_test.xml'
-        entry.add_to_builder(builder)
-        builder.save()
+        generator = NLIGenerator()
+        generator.add_entry(entry)
+        generator.save(self.output_path / 'csv_test.nli')
 
     def test_nli_csv(self):
         entry = CSVEntry(self.envars)
