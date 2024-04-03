@@ -3,15 +3,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Union, Any
 
-utility_configs = {
-    'date_time_format': '%Y-%m-%dT%H:%M:%S.%f+00:00',
-    'time_zone_format': '+00:00',
-    'hash_buffer_size': 65536,
-    'encoding': 'UTF-8',
-    'custodian': 'Unknown',
-    'default_itemdate_field': 'CreateTime',
-    'default_rowname_field': 'Name'
-}
+import edrm
+
+
+#from edrm import configs
 
 
 def convert_datetime_to_string(date_time: datetime) -> str:
@@ -21,8 +16,8 @@ def convert_datetime_to_string(date_time: datetime) -> str:
     :param date_time: The datetime to convert
     :return: A string with the formatted date-time
     """
-    str_rep = date_time.strftime(utility_configs['date_time_format'])[:-3]
-    tz_rep = date_time.strftime(utility_configs['time_zone_format'])
+    str_rep = date_time.strftime(edrm.configs['date_time_format'])[:-3]
+    tz_rep = date_time.strftime(edrm.configs['time_zone_format'])
     return str_rep + tz_rep
 
 
@@ -42,7 +37,7 @@ def _hash_file(file: Path, hashfunction: hashlib):
     """
     with file.open('rb') as dump_file:
         while True:
-            data = dump_file.read(utility_configs['hash_buffer_size'])
+            data = dump_file.read(edrm.configs['hash_buffer_size'])
             if not data:
                 break
 
@@ -68,7 +63,7 @@ def _hash_data(data: Any, hashfunction: hashlib):
     """
     Intermediate function to update a hash function with the contents of some data.
     """
-    hashfunction.update(str(data).encode(utility_configs['encoding']))
+    hashfunction.update(str(data).encode(edrm.configs['encoding']))
 
 
 def hash_data(data: Any, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:

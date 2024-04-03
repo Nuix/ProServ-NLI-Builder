@@ -6,19 +6,19 @@ from typing import Iterable, Any, Tuple, Iterator
 from xml.dom.minidom import Element, Document
 
 from edrm.EntryField import EntryField
-from edrm.EDRMUtilities import utility_configs
+import edrm
 
 
 class EntryInterface(object):
     def __init__(self):
-        self.__fields: dict[str, EntryField] = {}
+        self.__row_fields: dict[str, EntryField] = {}
 
     @property
     def fields(self) -> Iterable[str]:
         """
         :return: Iterable over the names of the fields with data in this entry
         """
-        return self.__fields.keys()
+        return self.__row_fields.keys()
 
     @property
     def identifier_field(self) -> str:
@@ -125,7 +125,7 @@ class EntryInterface(object):
         location_list.appendChild(location)
 
         custodian_element = document.createElement('Custodian')
-        custodian_element.appendChild(document.createTextNode(utility_configs['custodian']))
+        custodian_element.appendChild(document.createTextNode(edrm.configs['custodian']))
         location.appendChild(custodian_element)
 
         description_element = document.createElement('Description')
@@ -153,7 +153,7 @@ class EntryInterface(object):
         """
         :return: An iterable over the fields in this entry
         """
-        return iter(self.__fields.items())
+        return iter(self.__row_fields.items())
 
     def __setitem__(self, field_name: str, value: EntryField):
         """
@@ -164,7 +164,7 @@ class EntryInterface(object):
         :param value: Value to assign to the field
         :return: None
         """
-        self.__fields[field_name] = value
+        self.__row_fields[field_name] = value
 
     def __getitem__(self, field_name: str) -> EntryField:
         """
@@ -174,4 +174,4 @@ class EntryInterface(object):
         :return: The value stored for the field, or None if the field hasn't been set.
         :raise KeyError: If there is no field with the provided name
         """
-        return self.__fields[field_name]
+        return self.__row_fields[field_name]

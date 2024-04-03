@@ -8,7 +8,7 @@ from edrm.DirectoryEntry import DirectoryEntry
 from edrm.EntryInterface import EntryInterface
 from edrm.FileEntry import FileEntry
 from edrm.MappingEntry import MappingEntry
-from edrm.EDRMUtilities import utility_configs
+import edrm
 
 
 class EDRMBuilder:
@@ -34,6 +34,15 @@ class EDRMBuilder:
     @as_nli.setter
     def as_nli(self, as_nli: bool) -> None:
         self.__as_nli = as_nli
+
+    @property
+    def entry_map(self) -> dict[str, EntryInterface]:
+        """
+        Retrieve a dicstionary mapping each EntryInterface to its id.  Note: the returned dictionary cannot be used to
+        modify the builder's collection of entries.
+        :return: dictionary of strings representing an entry's id to the corresponding EntryInterface object
+        """
+        return deepcopy(self.__entries)
 
     def add_entry(self, entry: EntryInterface) -> str:
         entry_id = entry[entry.identifier_field].value
@@ -64,8 +73,11 @@ class EDRMBuilder:
         doc_element.setAttribute('DocId', doc_id)
         container.appendChild(doc_element)
 
+        if doc_id not in families:
+            return
+
         family = families.pop(doc_id)
-        if len(families) > 0:
+        if len(family) > 0:
             folder_element = document.createElement('Folder')
             folder_element.setAttribute('FolderName', doc_id)
             container.appendChild(folder_element)
@@ -121,5 +133,5 @@ class EDRMBuilder:
         if doc is None:
             doc = self.build()
 
-        with self.output_path.open(mode='w', encoding=utility_configs['encoding']) as load_file:
-            doc.writexml(load_file, encoding=utility_configs['encoding'], standalone=True, addindent='  ', newl='\n')
+        with self.output_path.open(mode='w', encoding=edrm.configs['encoding']) as load_file:
+            doc.writexml(load_file, encoding=edrm.configs['encoding'], standalone=True, addindent='  ', newl='\n')

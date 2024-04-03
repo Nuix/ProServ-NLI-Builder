@@ -5,7 +5,7 @@ from typing import Any, Union
 from xml.dom.minidom import Document, Element
 
 import edrm.EDRMUtilities as eutes
-from edrm.EDRMUtilities import utility_configs
+import edrm
 from edrm import FieldFactory
 from edrm.EntryField import EntryField
 from edrm.EntryInterface import EntryInterface
@@ -29,7 +29,7 @@ class MappingEntry(EntryInterface):
         self.__fill_generic_fields(mimetype)
 
     def __fill_initial_fields(self):
-        for key, value in self.__data.items():
+        for key, value in self.data.items():
             if isinstance(value, bool):
                 data_type = EntryField.TYPE_BOOLEAN
                 _value = value
@@ -52,7 +52,7 @@ class MappingEntry(EntryInterface):
         self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mimetype)
         self['SHA-1'] = FieldFactory.generate_field('SHA-1',
                                                     EntryField.TYPE_TEXT,
-                                                    eutes.hash_data(self.__data, hashlib.sha1()))
+                                                    eutes.hash_data(self.data, hashlib.sha1()))
         self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, self.name)
         self['Item Date'] = FieldFactory.generate_field('Item Date', EntryField.TYPE_DATETIME, self.itemdate)
 
@@ -76,14 +76,14 @@ class MappingEntry(EntryInterface):
         first_field = field_names[0]
         name_fields = [f for f in field_names if 'name' in f.lower()]
 
-        if utility_configs['default_rowname_field'] in field_names:
-            name_field = utility_configs['default_rowname_field']
+        if edrm.configs['default_rowname_field'] in field_names:
+            name_field = edrm.configs['default_rowname_field']
         elif len(name_fields) == 0:
             name_field = first_field
         else:
             name_field = name_fields[0]
 
-        return str(self.__data[name_field])
+        return str(self.data[name_field])
 
     @property
     def time_field(self) -> Union[str, None]:
@@ -104,8 +104,8 @@ class MappingEntry(EntryInterface):
         """
         field_names = list(self.data.keys())
 
-        if utility_configs['default_itemdate_field'] in field_names:
-            return utility_configs['default_itemdate_field']
+        if edrm.configs['default_itemdate_field'] in field_names:
+            return edrm.configs['default_itemdate_field']
 
         time_fields = [f for f in field_names if 'time' in f.lower()]
         if len(time_fields) > 0:
@@ -137,7 +137,7 @@ class MappingEntry(EntryInterface):
             if isinstance(date_time, datetime):
                 return date_time
             elif isinstance(date_time, str):
-                return datetime.strptime(date_time, utility_configs['date_time_format'])
+                return datetime.strptime(date_time, edrm.configs['date_time_format'])
             else:
                 raise ValueError(f'Invalid item date format: {date_time}')
 
