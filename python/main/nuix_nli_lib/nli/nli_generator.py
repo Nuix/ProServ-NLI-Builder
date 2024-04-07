@@ -24,10 +24,10 @@ class NLIGenerator(object):
     nli.add_file('doc2.txt', 'text/plain', l1)
     l2 = nli.add_directory('Evidence_level_2', l1)
     nli.add_file('doc3.txt', 'text/plain', l2)
-    nli.save(pathlib.Path(r'C:\work\evidence\sample.nli'))
+    nli.save(pathlib.Path(r'C:/work/evidence/sample.nli'))
     </code>
 
-    This would produce an NLI file names 'sample.nli' in the C:\work\evidence folder which would produce a structure
+    This would produce an NLI file names 'sample.nli' in the C:/work/evidence folder which would produce a structure
     in the case that looks like below:
 
     <pre>
@@ -166,9 +166,9 @@ class NLIGenerator(object):
             self.generate_metadata_file(metadata_path)
 
             # make the .metadata/image_contents.sha1_hash file
-            metadata_hash = nuix_nli_lib.edrm.EDRMUtilities.hash_file(self.__edrm_builder.output_path,
-                                                                      hashlib.sha1(),
-                                                                      as_string=False)
+            metadata_hash = edrm.EDRMUtilities.hash_file(self.__edrm_builder.output_path,
+                                                         hashlib.sha1(),
+                                                         as_string=False)
             metadata_hash_path = metadata_path / 'image_contents.sha1_hash'
             with metadata_hash_path.open(mode='wb') as metadata_hash_file:
                 metadata_hash_file.write(metadata_hash)

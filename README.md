@@ -53,6 +53,57 @@ The aboce code would produce an NLI that will ingest into a Nuix case to produce
 > and will not run on the Engine.  The tool is meant to run stand-alone or to run in a pre-Nuix environment to ge data
 > ready to be ingested into Nuix
 
+### Using the Python Release
+
+The Python Release for this package includes a Python v3.12 Runtime Environment for Windows x64 operating Systems and a
+batch file which can be used to launch an interactive Python environment, allowing you to use the tool without an 
+existing Python application or environment.
+
+1. Download the latest Release for Python
+2. Unzip the release
+3. Locate and run the `nli_builder.bat` file by double-clicking on it
+
+```Python
+C:\Nuix-NLI-Builder>.\python\python.exe -i .\python\init_nuix_nli_env.py
+
+
+
+     #########      ###**###
+   #*#*######**###***######***#
+ #**##**#****###*####*******####
+ **##**#**#########*##*#**#**##*#
+#**#*#***##*###**#*##**###*#*##*##    ##**#####*****###    ##****        *****#  ##*### ##**#        ##*##
+#*#**#**#   #######*##  ##*#**####   #****************##  #*****#       ##***** #*****# #*****#    ##****#*
+ #*#*#*#**#  #**##*#*  ##*##**#*#    #*******#####******# #*****#       #*****# #******  #*****#  #******#
+ #####*###### ##***  #*###*#*##*     #******#      ******##*****#       #*****# #******   ##****##*****#
+   #*##**#***#  ## ###*##*##**#      #*****#       *****#*#*****#       #*****# #******     #********##
+    #**##**##**   ***##**##**#       #*****#       ##*****#*****#       #*****# #******      ##*****#
+   ***######**     #####*#*#**#      #*****#       ##*****#*****#       #*****# #******     #********#
+ #**##**##**# ##**#  #*##*###*##     #*****#       ##*****##****##      #*****# #******   ##***********#
+#*###*##**#  #**##*#   ####**##*#    #*****#       ##***** #*****### ##*#*****# #******  #******# *#****#
+#*##*#####  #####*#*##  #**##*##*#   #*****#       ##*****  ##**********#*****# #****** ##****#    #*****##
+#*#**##*# #####*#*#*##*  #**#**#*#    #*****       #*****#   ###********#****## #****## ****##       ****##
+**##*###**#*###* #**###**###**####     ###           ###        ##*###    ####    ###    ###          ##*
+ ##*###*####*###**##**#*****#####
+  #**####*####**#*#*##*#*###**##
+    ##*#***#*##    ##*****#*##
+
+
+Nuix Logical Image Builder: the nuix_nli_lib packages and its children are available.  Start with:
+ --------------------------
+ |  nli = NLIGenerator()  |
+ --------------------------
+>>>
+```
+
+From the interactive command line, you can then start typing the commands needed to create the NLIGenerator, add
+entries to it, and save the final NLI file.  Press CTRL-Z when done to exit the interpreter.
+
+The folder containing the `nli_builder.bat` is added the Python search path, so additional modules, such as customize
+extensions to the existing entry types, can be added directly in the same folder.  Additionally, most of the relevant
+tools in the nuix_nli_lib package and its sub packages are already imported into the environment, as is the 
+pathlib.Path module, so most classes and functions can be used without additional imports.
+
 ### Customizing Entries
 
 The tool comes with three basic Entry types:

@@ -1,0 +1,1 @@
+.\python\python.exe -i .\python\init_nuix_nli_env.py
