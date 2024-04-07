@@ -5,9 +5,23 @@ This is a library for building Nuix Logical Image (NLI) files for ingesting data
 ## Background
 
 An NLI is a container wrapped around an EDRM v 1.2 XML load file.  This tool provides a Python (and eventually a Java)
-framework to prepare data for ingestion.
+framework to prepare data for ingestion.  The NLI container is a convenient tool for converting various structured and
+unstructured data from a variety of sources into a format that is easily digested by Nuix.  This tool smooths that
+processes by laying down a framework that does the work of creating the EDRM XML file, structures the NLI directory
+structure, and generates the NLI container.  What is left for the user is to add files to the container, and, when 
+necessary, add extensions to the formats provided by the tool.
 
-# Use
+# Contents
+
+* [Using the Python Tool](#python)
+  * [Basics: Building an NLI](#building-a-nuix-logical-image)
+  * [Basics: Using the Release](#using-the-python-release)
+  * [Customizing: Fields on Entries](#customizing-entries)
+  * [Customizing: New Types of Entries](#customizing-entries)
+  * [CSV Files](#customizing-csv-file-formats)
+
+
+# Using the NLI Builder
 
 ## Python
 
@@ -99,7 +113,7 @@ Nuix Logical Image Builder: the nuix_nli_lib packages and its children are avail
 From the interactive command line, you can then start typing the commands needed to create the NLIGenerator, add
 entries to it, and save the final NLI file.  Press CTRL-Z when done to exit the interpreter.
 
-The folder containing the `nli_builder.bat` is added the Python search path, so additional modules, such as customize
+The folder containing the `nli_builder.bat` is added the Python search path, so additional modules, such as customized
 extensions to the existing entry types, can be added directly in the same folder.  Additionally, most of the relevant
 tools in the nuix_nli_lib package and its sub packages are already imported into the environment, as is the 
 pathlib.Path module, so most classes and functions can be used without additional imports.
@@ -125,7 +139,7 @@ get nested appropriately
 
 nuix_nli_lib.edrm.MappingEntry
 : An item in the case with a series of custom fields.  A MappingEntry is a vector for Key:Value pairs and its main 
-purpose is to deliver those pairs into the Case as Properties an an item.  However, a MappingEntry will produce its 
+purpose is to deliver those pairs into the Case as Properties on an item.  However, a MappingEntry will produce its 
 dictionary of data as a text file present as a Native in the NLI.  A MappingEntry will not act as a container or parent 
 of other entries.  A mapping can be added to the NLI file using the `nuix_nli_lib.edrm.NLIGenerator#add_mapping(...)` 
 method or by directly instantiating the MappingEntry class.  Either way, you will need to supply a dictionary for the 
@@ -186,7 +200,7 @@ geo_loc.value = '38.894559, -77.035926'
 d1['Geo Location'] = geo_loc
 ```
 
-NTo add the same field to multiple documents, you would need to make multiple copies, not just reassign the value:
+To add the same field to multiple documents, you would need to make multiple copies, not just reassign the value:
 
 ```Python
 from nuix_nli_lib.edrm import FileEntry, generate_field, EntryField
@@ -282,6 +296,12 @@ class TagRowEntry(CSVRowEntry):
     def itemdate(self) -> datetime:
         return datetime.strptime(self[self.time_field].value, '%m/%d/%y')
 ```
+
+> 📝 **Note**: Notice the class overrides the `get_name` function rather then the `name` property to produce a valid
+> name for the item.  The name will be used for multiple purposes, one of which is a potential Native file to be
+> ingested.  File names need special rules, and the `name` property applies those rules.  The `get_name` is the
+> correct method to use in this case, as it would allow the name to be corrected by the property, without having to
+> re-write the required transformations.
 
 To use this custom CSVRowEntry, you pass the class to the `row_generator` parameter when creating the CSVEntry, 
 overriding the default use of the CSVRowEntry class:
