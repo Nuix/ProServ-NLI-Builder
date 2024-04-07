@@ -4,14 +4,46 @@ from datetime import datetime
 from pathlib import Path
 from xml.dom.minidom import Document, Element
 
-import edrm.EDRMUtilities as eutes
-from edrm import FieldFactory
-from edrm.EntryField import EntryField
-from edrm.EntryInterface import EntryInterface
+from nuix_nli_lib.edrm import FieldFactory, EntryField, EntryInterface, EDRMUtilities as eutes
 
 
 class FileEntry(EntryInterface):
+    """
+    Represents a generic File or Document in the EDRM load file.  This is the 'default' type of EntryInterface to use
+    when providing actual source evidence.
+
+    A FileEntry will usually represent a physical file on disk, and as such will have a File element identifying its
+    source data, and a LocationURI element locating the evidence in the final Case.  Generally, a FileEntry will not
+    be a container, and by default has no children items.
+
+    If the desired output structure would be:
+    <code>
+    Main
+    |- Doc1.doc
+    |- Doc2.doc
+    |- Sub
+      |- Doc3.doc
+    </code>
+
+    Doc1, Doc2, and Doc3 would be created as FileEntrys:
+    <code>
+    main = DirectoryEntry('Main')
+    main_id = main[main.identifier_field].value
+    doc1 = FileEntry('Doc1.doc', main_id)
+    doc2 = FileEntry('Doc2.doc', main_id)
+    sub = DirectoryEntry('Sub', main_id)
+    sub_id = sub[sub.identifier_field].value
+    doc3 = FileEntry('Doc3.doc', sub_id)
+    </code>
+    """
+
     def __init__(self, file_path: str, mime_type: str, parent_id: str = None):
+        """
+        :param file_path: Path, usually the full absolute path, to the file being added to the load file.
+        :param mime_type: The mime-type to assign to the file.
+        :param parent_id: Optional: The id of the parent to this entry.  If not provided this entry will be a top-level
+                          document with no containing folder.
+        """
         super().__init__()
 
         self.__file_path = Path(file_path).absolute().resolve()
@@ -57,7 +89,11 @@ class FileEntry(EntryInterface):
                                                     eutes.hash_file(self.file_path, hashlib.sha1()))
 
     @property
-    def file_path(self):
+    def file_path(self) -> Path:
+        """
+        :return: Path the file being added to the load file.
+
+        """
         return self.__file_path
 
     @property
@@ -87,7 +123,13 @@ class FileEntry(EntryInterface):
                          document: Document,
                          container: Element,
                          entry_map: dict[str, EntryInterface],
-                         for_nli: bool):
+                         for_nli: bool) -> None:
+        """
+        See edrm.EntryInterface.add_location_uri for details about this method.
+
+        As the FileEntry will have an associated File object locating the document within the source file system, it
+        will also provide a LocationURL placing that object in the Case.
+        """
         location_uri_element = document.createElement('LocationURI')
         if for_nli:
             location_uri = eutes.generate_relative_path(self, entry_map)
@@ -99,6 +141,13 @@ class FileEntry(EntryInterface):
         container.appendChild(location_uri_element)
 
     def add_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool):
+        """
+        See edrm.EntryInterface.add_file for details about this method.
+
+        As the FileEntry represents a physical file on disk, this type of Entry will provide a File element to locate
+        it.  If the target of the EDRM load file is an NLI (for_nli=True), this method will use a relative path built
+        from the parent entries for the file location.  Otherwise, it provides the full `file_path` property.
+        """
         files_list = document.createElement('Files')
         container.appendChild(files_list)
 
@@ -110,8 +159,9 @@ class FileEntry(EntryInterface):
         file_element.appendChild(external_file)
 
         if for_nli:
-            relative_path = eutes.generate_relative_path(self, entry_map)
-            external_file.setAttribute('FilePath', relative_path)
+            relative_path = Path(eutes.generate_relative_path(self, entry_map))
+            file_path = relative_path.parent if relative_path.parent != Path('') else ''
+            external_file.setAttribute('FilePath', file_path)
         else:
             external_file.setAttribute('FilePath', str(self.file_path))
 

@@ -1,15 +1,18 @@
-"""
-Basic interface for items that will go into an EDRM XML file
-"""
 from datetime import datetime
 from typing import Iterable, Any, Tuple, Iterator
 from xml.dom.minidom import Element, Document
 
-from edrm.EntryField import EntryField
-import edrm
+from nuix_nli_lib.edrm import EntryField
+from nuix_nli_lib import edrm
 
 
 class EntryInterface(object):
+    """
+    Basic interface for items that will go into an EDRM XML file.  This provides an interface for all types of entries
+    to add to the file as well as some default implementations.  This is not a concrete type, however, and much of the
+    methods herein will throw NotImplementedErrors until they are overridden by concrete subclasses.
+    """
+
     def __init__(self):
         self.__row_fields: dict[str, EntryField] = {}
 
@@ -99,6 +102,14 @@ class EntryInterface(object):
         return existing_path
 
     def add_doc(self, document: Document, container: Element) -> Element:
+        """
+        An Enry is represented as a Document element in the EDRM Load File.  This method generates the top level of the
+        document element representing this Entry and adds it to container.
+
+        :param document: The DOM Document to add the document to
+        :param container: The DOM Element to add the document to
+        :return: The newly created DOM Document element
+        """
         doc_element = document.createElement('Document')
         doc_element.setAttribute('DocID', self[self.identifier_field].value)
         doc_element.setAttribute('DocType', 'File')
@@ -107,17 +118,72 @@ class EntryInterface(object):
 
         return doc_element
 
-    def add_file(self, document: Document, container: Element, entry_map: dict[str, object], for_nli: bool):
+    def add_file(self, document: Document, container: Element, entry_map: dict[str, object], for_nli: bool) -> None:
+        """
+        File Elements are responsible for locating an Entry's natives on the source file system (and in the case of an
+        NLI file or other container, locating it within that container), while the LocationURI  is responsible for
+        locating it in the final Case the data gets loaded into.  An Entry can have one or more File elements associated
+        with it.
+
+        This method is responsible for adding the XML nodes that represent the files for the document.  This method is
+        also responsible for adding the collection node for the files:
+        <code>
+          <Files>
+            <File> ... </File>
+          </File>
+        </code>
+        The Files and File elements are optional, so it is valid for this method to do nothing.
+        :param document: The DOM object representing the EDRM Load File
+        :param container: The DOM Element to which the Files collection element is added.
+        :param entry_map: The dictionary of Entry IDs to their corresponding EnryImplementation instance
+        :param for_nli: True if this EDRM load file is targetting an NLI
+        :return: None
+        """
         raise NotImplementedError
 
     def add_location_uri(self, document: Document, container: Element, entry_map: dict[str, object], for_nli: bool):
+        """
+        The Location URI is used to locate the document file or files inside the Case once it is built.  This method
+        is responsible for adding the URI to the document.  It is responsible for making the
+        <LocationURI>...</LocationURI> element and building the address which will populate it.  Not all Documents
+        will have a corresponding file, and so may not need a Location URI, so it is valid for this method to do nothing.
+        :param document: The DOM object representing the EDRM Load File
+        :param container: The DOM Element to which the LocationURI collection element is added
+        :param entry_map: The dictionary of Entry IDs to their corresponding EnryImplementation instance
+        :param for_nli: True if this EDRM load file is targetting an NLI
+        :return: None
+        """
         raise NotImplementedError
 
     def add_location(self,
                      document: Document,
                      container: Element,
                      entry_map: dict[str, object],
-                     for_nli: bool):
+                     for_nli: bool) -> None:
+        """
+        A Document can have one or more Files associated with it.  The Location elements are responsible for defining
+        where those files are located in the resulting Case structure.  The Location element also is responsible for
+        assigning the Document (or portion thereof) to a Custodian.
+
+        Whereas a Document does not need to have Files, and so those files would not need to be located, the
+        Location element's role in identifying the Custodian is required, and so the minimal location is this:
+        <code>
+            <Locations>
+              <Location>
+                <Custodian>custodian name</Custodian>
+              </Location>
+            </Locations>
+        </code>
+
+        This method is responsible for adding the location collection (<Locations>), the location element (<Location>)
+        and the custodian (<Custodian>).  The default implementation also adds a description.  The default also calls
+        the `add_location_uri` method to add the <LocationURI> element, but that element is optional.
+        :param document: The DOM object representing the EDRM Load File
+        :param container: The DOM Element to which the Location collection element (<Locations>) is added
+        :param entry_map: The dictionary of Entry IDs to their corresponding EnryImplementation instance
+        :param for_nli:True if this EDRM load file is targetting an NLI
+        :return:
+        """
         location_list = document.createElement('Locations')
         container.appendChild(location_list)
 
@@ -129,7 +195,7 @@ class EntryInterface(object):
         location.appendChild(custodian_element)
 
         description_element = document.createElement('Description')
-        description_text: str = 'Location within the Container' if for_nli else 'Location on Disk'
+        description_text: str = 'Location within Nuix case file' if for_nli else 'Location on Disk'
         description_element.appendChild(document.createTextNode(description_text))
         location.appendChild(description_element)
 
@@ -139,7 +205,16 @@ class EntryInterface(object):
                         document: Document,
                         entry_container: Element,
                         entry_map: dict[str, object],
-                        for_nli: bool = False):
+                        for_nli: bool = False) -> None:
+        """
+        This method is responsible for orchestrating the writing the representation of this Entry instance to
+        XML.
+        :param document: The DOM object representing the EDRM Load File
+        :param entry_container: The DOM element to which this document will be added.
+        :param entry_map: The dictionary of Entry IDs to their corresponding EnryImplementation instance
+        :param for_nli: True if this EDRM load file is targetting an NLI
+        :return: None
+        """
         doc_element = self.add_doc(document, entry_container)
 
         value_list = document.createElement('FieldValues')

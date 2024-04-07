@@ -2,10 +2,7 @@ from pathlib import Path
 import unittest
 from typing import Any
 
-from edrm.DirectoryEntry import DirectoryEntry
-from edrm.EDRMBuilder import EDRMBuilder
-from edrm.FileEntry import FileEntry
-from edrm.MappingEntry import MappingEntry
+from nuix_nli_lib.edrm import DirectoryEntry, EDRMBuilder, FileEntry, MappingEntry
 
 
 class TestEDRM(unittest.TestCase):

@@ -1,30 +1,86 @@
 import hashlib
+import platform
 import tempfile
 from datetime import datetime
 from pathlib import Path
 import shutil
+from typing import Any
 from xml.dom.minidom import getDOMImplementation, Document, Element
 
-import edrm
-from edrm.DirectoryEntry import DirectoryEntry
-from edrm.EDRMBuilder import EDRMBuilder
-from edrm.EntryInterface import EntryInterface
-from edrm.FileEntry import FileEntry
-import edrm.EDRMUtilities as eutes
+from nuix_nli_lib import edrm
+from nuix_nli_lib.edrm import DirectoryEntry, EDRMBuilder, EntryInterface, FileEntry, MappingEntry, EDRMUtilities as eutes
 
 
 class NLIGenerator(object):
+    """
+    Factory for building Nuix Logical Images (NLI).  This class primarily acts as wrapper around an `edrm.EDRMBuilder`
+    then adds additional metadata and packages the entries into the NLI container.
+
+    The typical workflow is:
+    <code>
+    nli = NLIGenerator()
+    l1 = nli.add_directory('Evidence_level_1')
+    nli.add_file('doc1.txt', 'text/plain', l1)
+    nli.add_file('doc2.txt', 'text/plain', l1)
+    l2 = nli.add_directory('Evidence_level_2', l1)
+    nli.add_file('doc3.txt', 'text/plain', l2)
+    nli.save(pathlib.Path(r'C:\work\evidence\sample.nli'))
+    </code>
+
+    This would produce an NLI file names 'sample.nli' in the C:\work\evidence folder which would produce a structure
+    in the case that looks like below:
+
+    <pre>
+    Evidence 1
+    |- sample.nli
+       |- Evidence_level_1
+          |- doc1.txt
+          |- doc2.txt
+          |- Evidence_level_2
+             |- doc3.txt
+    </pre>
+    """
     def __init__(self):
         self.__edrm_builder = EDRMBuilder()
         self.__edrm_builder.as_nli = True
 
-    def add_entry(self, entry: EntryInterface):
+    def add_entry(self, entry: EntryInterface) -> str:
+        """
+        Wrapper around `edrm.EDRMBuilder.add_entry()` to add a generic entry to the NLI container.  This method will
+        check if the Entry has the `add_to_builder` method and uses that to add contents when present.  Otherwise it
+        delegates to the underlying EDRMBuilder.add_entry() method.
+        :param entry: The entry to add to the builder
+        :return: The unique identifier of the added entry
+        """
         if hasattr(entry, 'add_to_builder'):
-            entry.add_to_builder(self.__edrm_builder)
+            return entry.add_to_builder(self.__edrm_builder)
         else:
-            self.__edrm_builder.add_entry(entry)
+            return self.__edrm_builder.add_entry(entry)
+
+    def add_file(self, file_path: str, mimetype: str, parent_id: str = None) -> str:
+        """
+        Wrapper for the `edrm.EDRMBuilder.add_file()` method
+        """
+        return self.__edrm_builder.add_file(file_path, mimetype, parent_id)
+
+    def add_directory(self, directory_path: str, parent_id: str = None) -> str:
+        """
+        Wrapper for the `edrm.EDRMBuilder.add_directory()` method
+        """
+        return self.__edrm_builder.add_directory(directory_path, parent_id)
+
+    def add_mapping(self, mapping: dict[str, Any], mimetype: str, parent_id: str = None) -> str:
+        """
+        Wrapper for the `edrm.EDRMBuilder.add_mapping()` method
+        """
+        return self.__edrm_builder.add_mapping(mapping, mimetype, parent_id)
 
     def generate_metadata_file(self, metadata_path: Path):
+        """
+        Generate the content_metadata.xml file for the NLI container and stores it in the provided metadata_path.
+        :param metadata_path: The ._metadata path for the NLI container, used to store the metadata file.
+        :return: None
+        """
         metadata_file: Document = getDOMImplementation().createDocument(None, "image-metadata", None)
         property_list: Element = metadata_file.createElement('properties')
 
@@ -65,10 +121,18 @@ class NLIGenerator(object):
             metadata_file.writexml(metadata_xml, encoding=edrm.configs['encoding'], addindent='    ', newl='\n')
 
     def save(self, file_path: Path):
-        with tempfile.TemporaryDirectory(delete=False) as temp_loc:
+        """
+        Build and save the NLI container to the provided file_path.
+
+        This method will trigger the build process, which will build the underlying EDRM XML load file, copy contents
+        to the NLI container, package the container, and store it to the file_path provided.
+        :param file_path: Path to the location the NLI file should be saved, including the file name and extension
+        :return: None
+        """
+        with tempfile.TemporaryDirectory(delete=True) as temp_loc:
             temp_path = Path(temp_loc)
             build_path = temp_path / 'NLI_Gen'
-            metadata_path = build_path / '.metadata'
+            metadata_path = build_path / '._metadata'
             metadata_path.mkdir(parents=True, exist_ok=True)
 
             # Make the EDRM XML 1.2 file
@@ -89,14 +153,22 @@ class NLIGenerator(object):
                         destination_path.mkdir(exist_ok=True)
                     else:
                         shutil.copy2(entry.file_path, destination_path)
+                elif isinstance(entry, MappingEntry):
+                    mapping_path = build_path / "natives" / entry.name
+                    mapping_path.parent.mkdir(parents=True, exist_ok=True)
+                    if platform.system() == 'Windows':
+                        mapping_path = Path(f'\\\\?\\{mapping_path}')
+
+                    with mapping_path.open(mode='w', encoding=edrm.configs['encoding']) as map_file:
+                        map_file.write(entry.text)
 
             # make the .metadata/image_metadata.xml file
             self.generate_metadata_file(metadata_path)
 
             # make the .metadata/image_contents.sha1_hash file
-            metadata_hash = edrm.EDRMUtilities.hash_file(self.__edrm_builder.output_path,
-                                                         hashlib.sha1(),
-                                                         as_string=False)
+            metadata_hash = nuix_nli_lib.edrm.EDRMUtilities.hash_file(self.__edrm_builder.output_path,
+                                                                      hashlib.sha1(),
+                                                                      as_string=False)
             metadata_hash_path = metadata_path / 'image_contents.sha1_hash'
             with metadata_hash_path.open(mode='wb') as metadata_hash_file:
                 metadata_hash_file.write(metadata_hash)
