@@ -5,6 +5,7 @@ from nuix_nli_lib.edrm.EntryField import EntryField
 next_key_index: int = 0
 """ Counter for the known set of fields, such as to provide unique names for each field node """
 
+
 def next_key():
     """
     Keys, in this respect, are used as the names of XML Nodes identifying the field values for each entry in an
@@ -25,6 +26,7 @@ field_name_key_map: dict[str, str] = {}
 Maps the names of a EDRM Field to their Key, such that a Field that has already been created can be looked up to find
 the Key needed for representing the Field's value.
 """
+
 
 def generate_field(field_name: str, field_type: str, default_value: Any) -> EntryField:
     """
