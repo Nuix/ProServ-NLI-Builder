@@ -349,7 +349,7 @@ INC1|2020-02-28 11:44:42|UserA|2020-03-09 05:35:03| | |2020-04-13 09:16:21| |Use
 INC2|2020-01-12 18:57:25|UserG|2020-03-27 04:05:08| | |2020-03-25 00:06:29| |UserB| |2020-06-05 07:38:10|phone|Hardware|2 Medium|This is a description|4 - Low|Normal|
 INC3|2020-01-08 06:31:25|UserB|2020-02-24 16:16:52| | | | |UserB| | |phone|Software|3 Low|This is a description|4 - Low|On Hold|Overdue
 
-See the `incidence.csv` file in the Python package's resource folder for the full file.
+See the [incidence.csv](python/resources/incident.csv) file in the Python package's resource folder for the full file.
 
 Given this CSV, we want the following:
 * The `number` represents the unique identifier for the item
