@@ -118,6 +118,20 @@ extensions to the existing entry types, can be added directly in the same folder
 tools in the nuix_nli_lib package and its sub packages are already imported into the environment, as is the 
 pathlib.Path module, so most classes and functions can be used without additional imports.
 
+In addition to the interactive Python interpreter, the Source Code present in the release can also be used as a library
+in your own Python applications or scripts.  To do so, place the `nuix_nli_lib` package in your Python search path
+and add the following imports to your application:
+
+```Python
+from nuix_nli_lib import edrm
+from nuix_nli_lib import data_types
+from nuix_nli_lib import nli
+
+from nuix_nli_lib.edrm import EntryInterface, FileEntry, DirectoryEntry, MappingEntry, EDRMBuilder, generate_field
+from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry
+from nuix_nli_lib.nli import NLIGenerator
+```
+
 ### Customizing Entries
 
 The tool comes with three basic Entry types:
