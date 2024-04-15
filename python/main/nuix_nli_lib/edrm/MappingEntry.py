@@ -1,11 +1,15 @@
+import copy
 import hashlib
 import urllib
 from datetime import datetime
+from pathlib import Path
+import platform
 from typing import Any, Union
 from xml.dom.minidom import Document, Element
 
 from nuix_nli_lib.edrm import FieldFactory, EntryField, EntryInterface, EDRMUtilities as eutes
 from nuix_nli_lib import edrm
+
 
 class MappingEntry(EntryInterface):
     """
@@ -67,10 +71,12 @@ class MappingEntry(EntryInterface):
         Name, and Item Date.
         """
         self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mimetype)
+        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, self.name)
+        data_to_hash = copy.deepcopy(self.data)
+        data_to_hash['name'] = self.get_name()
         self['SHA-1'] = FieldFactory.generate_field('SHA-1',
                                                     EntryField.TYPE_TEXT,
-                                                    eutes.hash_data(self.data, hashlib.sha1()))
-        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, self.name)
+                                                    eutes.hash_data(data_to_hash, hashlib.sha1()))
         self['Item Date'] = FieldFactory.generate_field('Item Date', EntryField.TYPE_DATETIME, self.itemdate)
 
     @property
@@ -212,7 +218,7 @@ class MappingEntry(EntryInterface):
             location_uri_element.appendChild(document.createTextNode(location_uri))
             container.appendChild(location_uri_element)
 
-    def serialize_content_file(self, document: Document, container: Element) -> None:
+    def serialize_content_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface]) -> None:
         """
         When the target of the EDRM load file is to be used in an NLI file, the text contents of the MappingEntry will
         be stored as a native file in the container.  This method is responsible for writing the File XML element
@@ -226,8 +232,8 @@ class MappingEntry(EntryInterface):
         container.appendChild(external_file)
 
         external_file.setAttribute('FilePath', 'natives')
+        external_file.setAttribute('FileName', str(self[self.identifier_field].value))
 
-        external_file.setAttribute('FileName', self.name)
         md5 = self.calculate_md5()
         external_file.setAttribute('Hash', md5)
         external_file.setAttribute('HashType', 'MD5')
@@ -252,7 +258,7 @@ class MappingEntry(EntryInterface):
         files_list.appendChild(file_element)
 
         if for_nli:
-            self.serialize_content_file(document, file_element)
+            self.serialize_content_file(document, file_element, entry_map)
         else:
             inline_content = document.createElement('InlineContent')
             file_element.appendChild(inline_content)

@@ -129,7 +129,7 @@ class NLIGenerator(object):
         :param file_path: Path to the location the NLI file should be saved, including the file name and extension
         :return: None
         """
-        with tempfile.TemporaryDirectory(delete=True) as temp_loc:
+        with tempfile.TemporaryDirectory(delete=False) as temp_loc:
             temp_path = Path(temp_loc)
             build_path = temp_path / 'NLI_Gen'
             metadata_path = build_path / '._metadata'
@@ -154,7 +154,8 @@ class NLIGenerator(object):
                     else:
                         shutil.copy2(entry.file_path, destination_path)
                 elif isinstance(entry, MappingEntry):
-                    mapping_path = build_path / "natives" / entry.name
+                    # More likely than files to cause name collisions.  Use ID as the file name
+                    mapping_path = build_path / "natives" / entry[entry.identifier_field].value
                     mapping_path.parent.mkdir(parents=True, exist_ok=True)
                     if platform.system() == 'Windows':
                         mapping_path = Path(f'\\\\?\\{mapping_path}')
