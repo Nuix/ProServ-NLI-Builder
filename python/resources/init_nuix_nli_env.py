@@ -6,7 +6,7 @@ from nuix_nli_lib import nli
 from nuix_nli_lib import data_types
 
 from nuix_nli_lib.edrm import EntryInterface, FileEntry, DirectoryEntry, MappingEntry, EDRMBuilder, generate_field
-from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry
+from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry, JSONValueEntry, JSONArrayEntry, JSONObjectEntry, JSONFileEntry
 from nuix_nli_lib.nli import NLIGenerator
 
 print("                                                                                                           \n" +

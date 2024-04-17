@@ -1,8 +1,7 @@
 from pathlib import Path
 import unittest
-from datetime import datetime
 
-from nuix_nli_lib.data_types import JSONValueEntry, JSONArrayEntry, JSONObjectEntry, JSONFileEntry
+from nuix_nli_lib.data_types import JSONFileEntry
 from nuix_nli_lib.nli.nli_generator import NLIGenerator
 
 

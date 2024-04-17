@@ -14,15 +14,224 @@ necessary, add extensions to the formats provided by the tool.
 # Contents
 
 * [Using the Python Tool](#python)
+  * [End to End Example Walkthrough](#end-to-end-example)
   * [Basics: Building an NLI](#building-a-nuix-logical-image)
   * [Basics: Using the Release](#using-the-python-release)
   * [Customizing: Fields on Entries](#customizing-entries)
   * [Customizing: New Types of Entries](#customizing-entries)
   * [CSV Files](#customizing-csv-file-formats)
-  * [End to End Example Walkthrough](#end-to-end-example)
 
 
 # Using the NLI Builder
+
+## End to End Example
+
+In this example, we will start with a CSV file that logs some customer support activity, such as this:
+
+number|sys_created_on|sys_created_by|opened_at|resolved_at|reopened_time|activity_due|closed_at|closed_by|due_date|sla_due|contact_type|category|urgency|short_description|priority|state|escalation
+------|--------------|--------------|---------|-----------|-------------|------------|---------|---------|--------|-------|------------|--------|-------|-----------------|--------|-----|----------
+INC0|2020-01-01 02:22:21|UserA|2020-03-26 01:40:07|2020-06-06 13:34:48| | | |UserC|2020-05-17 22:15:02| |walk-in|Help|1 High|This is a description|2 - High|In Progress|Moderate
+INC1|2020-02-28 11:44:42|UserA|2020-03-09 05:35:03| | |2020-04-13 09:16:21| |UserA| | |phone|Software|1 High|This is a description|3 - Moderate|In Progress|New
+INC2|2020-01-12 18:57:25|UserG|2020-03-27 04:05:08| | |2020-03-25 00:06:29| |UserB| |2020-06-05 07:38:10|phone|Hardware|2 Medium|This is a description|4 - Low|Normal|
+INC3|2020-01-08 06:31:25|UserB|2020-02-24 16:16:52| | | | |UserB| | |phone|Software|3 Low|This is a description|4 - Low|On Hold|Overdue
+
+Our goal is to ingest the CSV into Nuix so it can be represented in a meaningful way:
+![Workstation with a Metadata Profile for better view](python/resources/Workbench-Metadata-Profile.png)
+
+See the [incidence.csv](python/resources/incident.csv) file in the Python package's resource folder for the full file.
+
+Given this CSV, we want the following:
+* The `number` represents the unique identifier for the item
+* The `sys_created_on` represents the Item Date
+* The `short_description` represents the text we want to associate with the item
+* To provide a meaningful name will combine the `number` and `category`
+
+To accomplish this, we will create a subclass of `CSVRowEntry` to provide that information:
+
+```Python
+from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry
+from datetime import datetime
+
+
+class IncidentEntry(CSVRowEntry):
+    def __init__(self, parent_csv: CSVEntry, row_index: int):
+        super().__init__(parent_csv, row_index)
+
+    @property
+    def identifier_field(self) -> str:
+        return 'number'
+
+    def get_name(self) -> str:
+        return f'({self['number'].value}) {self['category'].value}'
+
+    @property
+    def text(self) -> str:
+        return self['short_description'].value
+
+    @property
+    def time_field(self) -> str:
+        return 'sys_created_on'
+
+    @property
+    def itemdate(self) -> datetime:
+        return datetime.strptime(self[self.time_field].value, '%Y-%m-%d %H:%M:%S')
+```
+
+In this walkthrough, we will use the interactive Python interpreter to create our target NLI.  we launch it with the
+`nli_builder.bat`
+
+```Console
+C:\NLI-Builder\runtime>.\python\python.exe -i .\python\init_nuix_nli_env.py
+
+
+
+     #########      ###**###
+   #*#*######**###***######***#
+ #**##**#****###*####*******####
+ **##**#**#########*##*#**#**##*#
+#**#*#***##*###**#*##**###*#*##*##    ##**#####*****###    ##****        *****#  ##*### ##**#        ##*##
+#*#**#**#   #######*##  ##*#**####   #****************##  #*****#       ##***** #*****# #*****#    ##****#*
+ #*#*#*#**#  #**##*#*  ##*##**#*#    #*******#####******# #*****#       #*****# #******  #*****#  #******#
+ #####*###### ##***  #*###*#*##*     #******#      ******##*****#       #*****# #******   ##****##*****#
+   #*##**#***#  ## ###*##*##**#      #*****#       *****#*#*****#       #*****# #******     #********##
+    #**##**##**   ***##**##**#       #*****#       ##*****#*****#       #*****# #******      ##*****#
+   ***######**     #####*#*#**#      #*****#       ##*****#*****#       #*****# #******     #********#
+ #**##**##**# ##**#  #*##*###*##     #*****#       ##*****##****##      #*****# #******   ##***********#
+#*###*##**#  #**##*#   ####**##*#    #*****#       ##***** #*****### ##*#*****# #******  #******# *#****#
+#*##*#####  #####*#*##  #**##*##*#   #*****#       ##*****  ##**********#*****# #****** ##****#    #*****##
+#*#**##*# #####*#*#*##*  #**#**#*#    #*****       #*****#   ###********#****## #****## ****##       ****##
+**##*###**#*###* #**###**###**####     ###           ###        ##*###    ####    ###    ###          ##*
+ ##*###*####*###**##**#*****#####
+  #**####*####**#*#*##*#*###**##
+    ##*#***#*##    ##*****#*##
+
+
+Nuix Logical Image Builder: the nuix_nli_lib packages and its children are available.  Start with:
+ --------------------------
+ |  nli = NLIGenerator()  |
+ --------------------------
+>>>
+```
+
+First thing to do would be to create the class, as shown above:
+
+> 📝 **Note**: It would be best to save this class to a .py file and import it into the interpreter, but for this
+> demo we are creating the class directly in the interactive interpreter.
+
+
+```Python
+>>> class IncidentEntry(CSVRowEntry):
+...     def __init__(self, parent_csv, row_index):
+...         super().__init__(parent_csv, row_index)
+...
+...     @property
+...     def identifier_field(self):
+...         return 'number'
+...
+...     def get_name(self):
+...         return f'({self['number'].value}) {self['category'].value}'
+...
+...     @property
+...     def text(self):
+...         return self['short_description'].value
+...
+...     @property
+...     def time_field(self):
+...         return 'sys_created_on'
+...
+...     @property
+...     def itemdate(self):
+...         return datetime.strptime(self[self.time_field].value, '%Y-%m-%d %H:%M:%S')
+...
+>>>
+```
+
+Then we use this as the row_generator when building a CSVEntry:
+
+```Python
+>>> incident_entry = CSVEntry(Path(r'C:\NLI-Builder\resources\incident.csv'), row_generator=IncidentEntry)
+```
+
+Finally, build and save the NLI file:
+
+```Python
+>>> nli = NLIGenerator()
+>>> nli.add_entry(incident_entry)
+'0a6193c422ee480d2a0f44b8475c6bc48a2a74fa'
+>>> nli.save(Path(r'C:\projects\proserv\nli\incident.nli'))
+```
+
+To show all the steps, as entered into the interpreter:
+
+```Python
+C:\NLI-Builder\runtime>.\python\python.exe -i .\python\init_nuix_nli_env.py
+
+
+
+     #########      ###**###
+   #*#*######**###***######***#
+ #**##**#****###*####*******####
+ **##**#**#########*##*#**#**##*#
+#**#*#***##*###**#*##**###*#*##*##    ##**#####*****###    ##****        *****#  ##*### ##**#        ##*##
+#*#**#**#   #######*##  ##*#**####   #****************##  #*****#       ##***** #*****# #*****#    ##****#*
+ #*#*#*#**#  #**##*#*  ##*##**#*#    #*******#####******# #*****#       #*****# #******  #*****#  #******#
+ #####*###### ##***  #*###*#*##*     #******#      ******##*****#       #*****# #******   ##****##*****#
+   #*##**#***#  ## ###*##*##**#      #*****#       *****#*#*****#       #*****# #******     #********##
+    #**##**##**   ***##**##**#       #*****#       ##*****#*****#       #*****# #******      ##*****#
+   ***######**     #####*#*#**#      #*****#       ##*****#*****#       #*****# #******     #********#
+ #**##**##**# ##**#  #*##*###*##     #*****#       ##*****##****##      #*****# #******   ##***********#
+#*###*##**#  #**##*#   ####**##*#    #*****#       ##***** #*****### ##*#*****# #******  #******# *#****#
+#*##*#####  #####*#*##  #**##*##*#   #*****#       ##*****  ##**********#*****# #****** ##****#    #*****##
+#*#**##*# #####*#*#*##*  #**#**#*#    #*****       #*****#   ###********#****## #****## ****##       ****##
+**##*###**#*###* #**###**###**####     ###           ###        ##*###    ####    ###    ###          ##*
+ ##*###*####*###**##**#*****#####
+  #**####*####**#*#*##*#*###**##
+    ##*#***#*##    ##*****#*##
+
+
+Nuix Logical Image Builder: the nuix_nli_lib packages and its children are available.  Start with:
+ --------------------------
+ |  nli = NLIGenerator()  |
+ --------------------------
+>>> class IncidentEntry(CSVRowEntry):
+...     def __init__(self, parent_csv, row_index):
+...         super().__init__(parent_csv, row_index)
+...
+...     @property
+...     def identifier_field(self):
+...         return 'number'
+...
+...     def get_name(self):
+...         return f'({self['number'].value}) {self['category'].value}'
+...
+...     @property
+...     def text(self):
+...         return self['short_description'].value
+...
+...     @property
+...     def time_field(self):
+...         return 'sys_created_on'
+...
+...     @property
+...     def itemdate(self):
+...         return datetime.strptime(self[self.time_field].value, '%Y-%m-%d %H:%M:%S')
+...
+>>> incident_entry = CSVEntry(Path(r'C:\NLI-Builder\resources\incident.csv'), row_generator=IncidentEntry)
+>>> nli = NLIGenerator()
+>>> nli.add_entry(incident_entry)
+'0a6193c422ee480d2a0f44b8475c6bc48a2a74fa'
+>>> nli.save(Path(r'C:\projects\proserv\nli\incident.nli'))
+```
+
+The result is the incident.nli file saved in the specified path.  This can be imgested into Nuix to create a case
+such as this:
+
+![Workstation with the results of ingesting the incident.nli file](python/resources/Workbench-Ingested-Incident.png)
+
+After that, a Metadata Profile could be made to view the properties in a more natural format:
+
+![Workstation with a Metadata Profile for better view](python/resources/Workbench-Metadata-Profile.png)
+
 
 ## Python
 
@@ -125,13 +334,15 @@ and add the following imports to your application:
 
 ```Python
 from nuix_nli_lib import edrm
-from nuix_nli_lib import data_types
 from nuix_nli_lib import nli
+from nuix_nli_lib import data_types
 
 from nuix_nli_lib.edrm import EntryInterface, FileEntry, DirectoryEntry, MappingEntry, EDRMBuilder, generate_field
-from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry
+from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry, JSONValueEntry, JSONArrayEntry, JSONObjectEntry, JSONFileEntry
 from nuix_nli_lib.nli import NLIGenerator
 ```
+> 📝 **Note**: This effectively imports everything you might need to interact with.  For any particular use-case, you
+> can import less.  The minimum being just the NLIGenerator.
 
 ### Python Dependencies
 
@@ -170,7 +381,7 @@ In addition to these three basic Entry types, the tool provides some advanced su
 
 **CSV Files**
 
-CSV file support is provided through the `nuix_nli_lib.edrm.csv_files` module, which provides two classes.
+CSV file support is provided through the `nuix_nli_lib.data_types.csv_files` module, which provides two classes.
 
 CSVEntry
 : This subclass of the `nuix_nli_lib.edrm.FileEntry` will read a CSV file from disk.  It will represent the Native of
@@ -183,6 +394,36 @@ CSVRowEntry
 managed by the CSVEntry, so there is no need to create them manually.  However, as seen below, when you need to support
 custom formats for CSV files, such as to define a special naming convention, Item Date field, or data to store as the 
 Text component, it will be normal to subclass this CSVRowEntry class, rather than the CSVEntry class
+
+**JSON Files**
+
+JSON file support is provided through the `nuix_nli_lib.data_types.json_files` module, which provides four classes.
+
+JSONFileEntry
+: This subclass of the `nuix_nli_lib.edrm.FileEntry` will read the JSON file from disk and parse it to an in-memory
+structure.  When the `#add_to_builder` method is used to add the file to an NLI, it will also add child items for its
+content.  This class also extends the FileEntry to allow it to both serve as a Native, and act as a Container for other
+items (it will become parent to exactly one item, a JSONValueEntry, JSONArrayEntry, or JSONObjectEntry depending on the
+file's content).
+
+JSONValueEntry
+: This class represents a single, simple value in a JSON file.  It is possible that a JSON file contains just a single,
+simple value, such as a String, number, boolean, or Null.  When that happens, this class will be used to represent the
+data and added as a child to the JSONFileEntry.  For other data, when a simple value is reached this class will be used
+to parse and translate the value to store as a property on its containing item.  Items with this type will have a single
+property containing its value, and the Text will also store the value.  This class does not allow child items.
+
+JSONArrayEntry
+: This class represents a JSON array.  JSON arrays are complex types that can contain simple values (strings, numbers,
+and Null) as well as nested complex types (arrays and objects).  Simple values will be stored in the array as properties
+and complex values as child items with their index being used as the item's name.  The text for this item type will be 
+a comma separated list of the simple values (not nested complex values), and this type can have child items.
+
+JSONObjectEntry
+: This class represents a JSON object.  JSON objects are complex types with key-value pairs, the keys must be strings
+and the values can be either simple values or nested complex types.  Simple values will be stored as properties with
+their key being the property's name.  Complex values will be stored as child items with the key being used as the child
+item's name.
 
 #### Adding additional properties to Entries
 
@@ -337,208 +578,3 @@ csv_e = CSVEntry(r'C:\data\evidence\source.csv', TagRowEntry)
 nli.add_entry(csv_e)
 nli.save(Path(r'C:\data\evidence\output\sample.nli'))
 ```
-
-## End to End Example
-
-You are provided an support incident log that looks like this:
-
-number|sys_created_on|sys_created_by|opened_at|resolved_at|reopened_time|activity_due|closed_at|closed_by|due_date|sla_due|contact_type|category|urgency|short_description|priority|state|escalation
-------|--------------|--------------|---------|-----------|-------------|------------|---------|---------|--------|-------|------------|--------|-------|-----------------|--------|-----|----------
-INC0|2020-01-01 02:22:21|UserA|2020-03-26 01:40:07|2020-06-06 13:34:48| | | |UserC|2020-05-17 22:15:02| |walk-in|Help|1 High|This is a description|2 - High|In Progress|Moderate
-INC1|2020-02-28 11:44:42|UserA|2020-03-09 05:35:03| | |2020-04-13 09:16:21| |UserA| | |phone|Software|1 High|This is a description|3 - Moderate|In Progress|New
-INC2|2020-01-12 18:57:25|UserG|2020-03-27 04:05:08| | |2020-03-25 00:06:29| |UserB| |2020-06-05 07:38:10|phone|Hardware|2 Medium|This is a description|4 - Low|Normal|
-INC3|2020-01-08 06:31:25|UserB|2020-02-24 16:16:52| | | | |UserB| | |phone|Software|3 Low|This is a description|4 - Low|On Hold|Overdue
-
-See the [incidence.csv](python/resources/incident.csv) file in the Python package's resource folder for the full file.
-
-Given this CSV, we want the following:
-* The `number` represents the unique identifier for the item
-* The `sys_created_on` represents the Item Date
-* The `short_description` represents the text we want to associate with the item
-* To provide a meaningful name will combine the `number` and `category`
-
-To accomplish this, we create the subclass of `CSVRowEntry` to provide that information:
-
-```Python
-from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry
-from datetime import datetime
-
-
-class IncidentEntry(CSVRowEntry):
-    def __init__(self, parent_csv: CSVEntry, row_index: int):
-        super().__init__(parent_csv, row_index)
-
-    @property
-    def identifier_field(self) -> str:
-        return 'number'
-
-    def get_name(self) -> str:
-        return f'({self['number'].value}) {self['category'].value}'
-
-    @property
-    def text(self) -> str:
-        return self['short_description'].value
-
-    @property
-    def time_field(self) -> str:
-        return 'sys_created_on'
-
-    @property
-    def itemdate(self) -> datetime:
-        return datetime.strptime(self[self.time_field].value, '%Y-%m-%d %H:%M:%S')
-```
-
-In this walkthrough, we will use the interactive Python interpreter to create our target NLI.  we launch it with the
-`nli_builder.bat`
-
-```Console
-C:\NLI-Builder\runtime>.\python\python.exe -i .\python\init_nuix_nli_env.py
-
-
-
-     #########      ###**###
-   #*#*######**###***######***#
- #**##**#****###*####*******####
- **##**#**#########*##*#**#**##*#
-#**#*#***##*###**#*##**###*#*##*##    ##**#####*****###    ##****        *****#  ##*### ##**#        ##*##
-#*#**#**#   #######*##  ##*#**####   #****************##  #*****#       ##***** #*****# #*****#    ##****#*
- #*#*#*#**#  #**##*#*  ##*##**#*#    #*******#####******# #*****#       #*****# #******  #*****#  #******#
- #####*###### ##***  #*###*#*##*     #******#      ******##*****#       #*****# #******   ##****##*****#
-   #*##**#***#  ## ###*##*##**#      #*****#       *****#*#*****#       #*****# #******     #********##
-    #**##**##**   ***##**##**#       #*****#       ##*****#*****#       #*****# #******      ##*****#
-   ***######**     #####*#*#**#      #*****#       ##*****#*****#       #*****# #******     #********#
- #**##**##**# ##**#  #*##*###*##     #*****#       ##*****##****##      #*****# #******   ##***********#
-#*###*##**#  #**##*#   ####**##*#    #*****#       ##***** #*****### ##*#*****# #******  #******# *#****#
-#*##*#####  #####*#*##  #**##*##*#   #*****#       ##*****  ##**********#*****# #****** ##****#    #*****##
-#*#**##*# #####*#*#*##*  #**#**#*#    #*****       #*****#   ###********#****## #****## ****##       ****##
-**##*###**#*###* #**###**###**####     ###           ###        ##*###    ####    ###    ###          ##*
- ##*###*####*###**##**#*****#####
-  #**####*####**#*#*##*#*###**##
-    ##*#***#*##    ##*****#*##
-
-
-Nuix Logical Image Builder: the nuix_nli_lib packages and its children are available.  Start with:
- --------------------------
- |  nli = NLIGenerator()  |
- --------------------------
->>>
-```
-
-First thing to do would be to create the class, as shown above:
-
-> 📝 **Note**: It would be best to save this class to a .py file and import it into the interpreter, but for this
-> demo we are creating the class directly in the interactive interpreter.
-
-
-```Python
->>> class IncidentEntry(CSVRowEntry):
-...     def __init__(self, parent_csv, row_index):
-...         super().__init__(parent_csv, row_index)
-...
-...     @property
-...     def identifier_field(self):
-...         return 'number'
-...
-...     def get_name(self):
-...         return f'({self['number'].value}) {self['category'].value}'
-...
-...     @property
-...     def text(self):
-...         return self['short_description'].value
-...
-...     @property
-...     def time_field(self):
-...         return 'sys_created_on'
-...
-...     @property
-...     def itemdate(self):
-...         return datetime.strptime(self[self.time_field].value, '%Y-%m-%d %H:%M:%S')
-...
->>>
-```
-
-Then we use this as the row_generator when building CSVEntry:
-
-```Python
->>> incident_entry = CSVEntry(Path(r'C:\NLI-Builder\resources\incident.csv'), row_generator=IncidentEntry)
-```
-
-Finally, build and save the NLI file:
-
-```Python
->>> nli = NLIGenerator()
->>> nli.add_entry(incident_entry)
-'0a6193c422ee480d2a0f44b8475c6bc48a2a74fa'
->>> nli.save(Path(r'C:\projects\proserv\nli\incident.nli'))
-```
-
-To show all the steps, as entered into the interpreter:
-
-```Python
-C:\NLI-Builder\runtime>.\python\python.exe -i .\python\init_nuix_nli_env.py
-
-
-
-     #########      ###**###
-   #*#*######**###***######***#
- #**##**#****###*####*******####
- **##**#**#########*##*#**#**##*#
-#**#*#***##*###**#*##**###*#*##*##    ##**#####*****###    ##****        *****#  ##*### ##**#        ##*##
-#*#**#**#   #######*##  ##*#**####   #****************##  #*****#       ##***** #*****# #*****#    ##****#*
- #*#*#*#**#  #**##*#*  ##*##**#*#    #*******#####******# #*****#       #*****# #******  #*****#  #******#
- #####*###### ##***  #*###*#*##*     #******#      ******##*****#       #*****# #******   ##****##*****#
-   #*##**#***#  ## ###*##*##**#      #*****#       *****#*#*****#       #*****# #******     #********##
-    #**##**##**   ***##**##**#       #*****#       ##*****#*****#       #*****# #******      ##*****#
-   ***######**     #####*#*#**#      #*****#       ##*****#*****#       #*****# #******     #********#
- #**##**##**# ##**#  #*##*###*##     #*****#       ##*****##****##      #*****# #******   ##***********#
-#*###*##**#  #**##*#   ####**##*#    #*****#       ##***** #*****### ##*#*****# #******  #******# *#****#
-#*##*#####  #####*#*##  #**##*##*#   #*****#       ##*****  ##**********#*****# #****** ##****#    #*****##
-#*#**##*# #####*#*#*##*  #**#**#*#    #*****       #*****#   ###********#****## #****## ****##       ****##
-**##*###**#*###* #**###**###**####     ###           ###        ##*###    ####    ###    ###          ##*
- ##*###*####*###**##**#*****#####
-  #**####*####**#*#*##*#*###**##
-    ##*#***#*##    ##*****#*##
-
-
-Nuix Logical Image Builder: the nuix_nli_lib packages and its children are available.  Start with:
- --------------------------
- |  nli = NLIGenerator()  |
- --------------------------
->>> class IncidentEntry(CSVRowEntry):
-...     def __init__(self, parent_csv, row_index):
-...         super().__init__(parent_csv, row_index)
-...
-...     @property
-...     def identifier_field(self):
-...         return 'number'
-...
-...     def get_name(self):
-...         return f'({self['number'].value}) {self['category'].value}'
-...
-...     @property
-...     def text(self):
-...         return self['short_description'].value
-...
-...     @property
-...     def time_field(self):
-...         return 'sys_created_on'
-...
-...     @property
-...     def itemdate(self):
-...         return datetime.strptime(self[self.time_field].value, '%Y-%m-%d %H:%M:%S')
-...
->>> incident_entry = CSVEntry(Path(r'C:\NLI-Builder\resources\incident.csv'), row_generator=IncidentEntry)
->>> nli = NLIGenerator()
->>> nli.add_entry(incident_entry)
-'0a6193c422ee480d2a0f44b8475c6bc48a2a74fa'
->>> nli.save(Path(r'C:\projects\proserv\nli\incident.nli'))
-```
-
-The result is the incident.nli file saved in the specified path.  This can be imgested into Nuix to create a case
-such as this:
-
-![Workstation with the results of ingesting the incident.nli file](python/resources/Workbench-Ingested-Incident.png)
-
-After that, a Metadata Profile could be made to view the properties in a more natural format:
-
-![Workstation with a Metadata Profile for better view](python/resources/Workbench-Metadata-Profile.png)
