@@ -42,13 +42,27 @@ class CCEntry(CSVRowEntry):
         return datetime.strptime(self[self.time_field].value, '%m/%d/%y')
 
 
+class PsListSimple(CSVRowEntry):
+    @property
+    def itemdate(self):
+        return datetime.strptime(self['CreateTime'].value, '%Y-%m-%d %H:%M:%S.%f ')
+
+    def get_name(self):
+        return f'({self['PID'].value}) {self['ImageFileName'].value}'
+
+    @ property
+    def identifier_field(self):
+        return 'PID'
+
+
 class NLITests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.envars: str = r'\\innovation.nuix.com\SharedFolder\Koblenz\data\envars.csv'
-        self.pslist: str = r'\\innovation.nuix.com\SharedFolder\Koblenz\data\pslist.csv'
+        self.pslist: str = r'./resources/windows.pslist.PsList.csv'
         self.minps: str = r'C:\projects\proserv\Koblenz\NuixMemoryAnalysis\running\physmem.raw\windows.pslist.MinPsList.csv'
         self.memory: str = r'C:\projects\proserv\Koblenz\example.ps1'
+        self.folder: str = r'C:\projects\proserv\MemoryAnalysis\Results'
         self.output_path: Path = Path(r'C:\projects\proserv\Koblenz\output')
 
     def test_base_csv(self):
@@ -62,6 +76,14 @@ class NLITests(unittest.TestCase):
         generator = NLIGenerator()
         generator.add_entry(entry)
         generator.save(Path(r'C:\projects\proserv\nli') / 'cc_test.nli')
+
+    def test_pslist1_csv(self):
+        generator = NLIGenerator()
+        f = generator.add_file(self.memory, 'application/x-memory-dump')
+        d = generator.add_directory(self.folder)
+        entry = CSVEntry(self.pslist, row_generator=PsListSimple, parent_id=d)
+        generator.add_entry(entry)
+        generator.save(Path(r'C:\projects\proserv\nli') / 'pslist_simple.nli')
 
     # def test_nli_csv(self):
     #     entry = CSVEntry(self.envars)

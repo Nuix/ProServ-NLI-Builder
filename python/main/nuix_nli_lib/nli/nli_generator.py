@@ -154,14 +154,15 @@ class NLIGenerator(object):
                     else:
                         shutil.copy2(entry.file_path, destination_path)
                 elif isinstance(entry, MappingEntry):
-                    # More likely than files to cause name collisions.  Use ID as the file name
-                    mapping_path = build_path / "natives" / entry[entry.identifier_field].value
-                    mapping_path.parent.mkdir(parents=True, exist_ok=True)
-                    if platform.system() == 'Windows':
-                        mapping_path = Path(f'\\\\?\\{mapping_path}')
+                    if entry.text is not None:
+                        # More likely than files to cause name collisions.  Use ID as the file name
+                        mapping_path = build_path / "natives" / entry[entry.identifier_field].value
+                        mapping_path.parent.mkdir(parents=True, exist_ok=True)
+                        if platform.system() == 'Windows':
+                            mapping_path = Path(f'\\\\?\\{mapping_path}')
 
-                    with mapping_path.open(mode='w', encoding=edrm.configs['encoding']) as map_file:
-                        map_file.write(entry.text)
+                        with mapping_path.open(mode='w', encoding=edrm.configs['encoding']) as map_file:
+                            map_file.write(entry.text)
 
             # make the .metadata/image_metadata.xml file
             self.generate_metadata_file(metadata_path)

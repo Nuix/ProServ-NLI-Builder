@@ -56,8 +56,12 @@ class DirectoryEntry(FileEntry):
     def directory(self) -> Path:
         return self.__directory
 
+    def add_file(self, document, container, entry_map: dict[str, object], for_nli: bool) -> None:
+        # No Native for a directory
+        return
+
     def add_as_parent_path(self, existing_path: str):
-        return self.name + '/' + existing_path
+        return f'{self.name}/{existing_path}'
 
     def calculate_md5(self) -> str:
         return eutes.hash_directory(self.file_path, hashlib.md5())

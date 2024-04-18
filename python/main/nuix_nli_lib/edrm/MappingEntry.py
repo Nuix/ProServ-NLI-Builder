@@ -2,8 +2,6 @@ import copy
 import hashlib
 import urllib
 from datetime import datetime
-from pathlib import Path
-import platform
 from typing import Any, Union
 from xml.dom.minidom import Document, Element
 
@@ -247,7 +245,7 @@ class MappingEntry(EntryInterface):
          2. If the target for the EDRM file is an NLI file, this method will generate a native file
          3. Otherwise, this method will add the content as InlineContent rather than an external file
         """
-        if self.text is None:
+        if self.text is None or len(self.text) == 0:
             return
 
         files_list = document.createElement('Files')

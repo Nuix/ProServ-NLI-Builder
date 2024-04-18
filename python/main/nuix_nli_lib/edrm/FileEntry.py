@@ -76,7 +76,7 @@ class FileEntry(EntryInterface):
                                                          EntryField.TYPE_TEXT,
                                                          self.file_path.stat().st_creator if hasattr(
                                                              self.file_path.stat, 'st_creator') else '')
-        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, self.file_path.name)
+        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, str(self.file_path.name))
 
         self.fill_hash_fields()
 
@@ -161,7 +161,7 @@ class FileEntry(EntryInterface):
         if for_nli:
             relative_path = Path(eutes.generate_relative_path(self, entry_map))
             file_path = relative_path.parent if relative_path.parent != Path('') else ''
-            external_file.setAttribute('FilePath', file_path)
+            external_file.setAttribute('FilePath', str(file_path))
         else:
             external_file.setAttribute('FilePath', str(self.file_path))
 
