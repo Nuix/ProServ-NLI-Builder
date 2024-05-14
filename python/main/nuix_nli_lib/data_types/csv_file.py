@@ -48,10 +48,14 @@ class CSVEntry(FileEntry):
     for large files.  If memory is an issue, then consider subclassing this class and reading the content in line
     by line upon need.
     """
-    def __init__(self, file_path: str, parent_id: str = None, row_generator: Type[Any] = None):
+    def __init__(self, file_path: str,
+                 mimetype: str = "text/csv",
+                 parent_id: str = None,
+                 row_generator: Type[Any] = None):
         """
         :param file_path: Full path to the CSV file.  This will read the file into memory.  Errors will occur if the
                           file is not accessible or not in the expected CSV format
+        :param mimetype: Optional MIME type used to represent the file in the case.  Defaults to "text/csv".
         :param parent_id: Optional: Unique identifier for this file's container, if it has one.  None (the default) will
                           make this a top-level file.
         :param row_generator: Optional: A generator to use for creating row data.  If not provided, an unmodified
@@ -62,7 +66,7 @@ class CSVEntry(FileEntry):
                               The generated object produced should be an EntryInterface instance, and should likely be
                               a subclass of MappingEntry (and more likely a subclass of CSVRowEntry).
         """
-        super().__init__(file_path, "text/csv", parent_id)
+        super().__init__(file_path, mimetype, parent_id)
 
         self.__data: list[dict[str, Any]] = []
         self.__row_fields: list[str] = []

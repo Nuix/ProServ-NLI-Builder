@@ -67,15 +67,16 @@ class FileEntry(EntryInterface):
         self['File Created'] = FieldFactory.generate_field('File Created',
                                                            EntryField.TYPE_DATETIME,
                                                            eutes.convert_timestamp_to_string(
-                                                               self.file_path.stat().st_birthtime))
+                                                               getattr(self.file_path.stat(),
+                                                                       'st_birthtime',
+                                                                       self.file_path.stat().st_ctime)))
         self['File Modified'] = FieldFactory.generate_field('File Modified',
                                                             EntryField.TYPE_DATETIME,
                                                             eutes.convert_timestamp_to_string(
                                                                 self.file_path.stat().st_mtime))
         self['File Owner'] = FieldFactory.generate_field('File Owner',
                                                          EntryField.TYPE_TEXT,
-                                                         self.file_path.stat().st_creator if hasattr(
-                                                             self.file_path.stat, 'st_creator') else '')
+                                                         getattr(self.file_path.stat(), 'st_creator', 'Undefined'))
         self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, str(self.file_path.name))
 
         self.fill_hash_fields()
