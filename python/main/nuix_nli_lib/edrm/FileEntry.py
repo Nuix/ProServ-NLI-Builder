@@ -48,6 +48,7 @@ class FileEntry(EntryInterface):
 
         self.__file_path = Path(file_path).absolute().resolve()
         self.__parent_id = parent_id
+        self.__item_date = None
 
         self.fill_basic_fields(mime_type)
 

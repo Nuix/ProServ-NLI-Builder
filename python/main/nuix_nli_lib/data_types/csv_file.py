@@ -39,6 +39,7 @@ builder.save()
 </code>
 """
 
+
 class CSVEntry(FileEntry):
     """
     Represents a CSV file and manages storing and retrieving rows of data for the target EDRM XML file.
@@ -132,4 +133,3 @@ class CSVRowEntry(MappingEntry):
     @property
     def data(self) -> dict[str, Any]:
         return self.__parent_csv.data[self.__row_index]
-
