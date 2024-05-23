@@ -120,7 +120,7 @@ class EntryField:
         elif isinstance(self.value, float):
             value_text = str(round(self.value, 4))
         else:
-            value_text = str(self.value)
+            value_text = eutes.sanitize_xml_content(str(self.value))
 
         value_element.appendChild(document.createTextNode(value_text))
         value_list.appendChild(value_element)

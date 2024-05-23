@@ -129,21 +129,28 @@ class NLIGenerator(object):
         :param file_path: Path to the location the NLI file should be saved, including the file name and extension
         :return: None
         """
-        with tempfile.TemporaryDirectory(delete=False) as temp_loc:
+        with tempfile.TemporaryDirectory() as temp_loc:
             temp_path = Path(temp_loc)
             build_path = temp_path / 'NLI_Gen'
             metadata_path = build_path / '._metadata'
+            print(f"Using {build_path} for temp storage")
+            print(f"Using {metadata_path} for the metadata storage", flush=True)
             metadata_path.mkdir(parents=True, exist_ok=True)
+            print(f"{metadata_path} created")
 
             # Make the EDRM XML 1.2 file
             self.__edrm_builder.output_path = metadata_path / 'image_contents.xml'
+            print(f"Using {self.__edrm_builder.output_path} for the EDRM XML", flush=True)
             self.__edrm_builder.save()
+            print(f"{self.__edrm_builder.output_path} created", flush=True)
 
             # Copy files and folders to their temp location
             entry_map = self.__edrm_builder.entry_map
             for entry in self.__edrm_builder.entry_map.values():
+                print(f"Copying {entry.name} to {build_path}", flush=True)
                 if isinstance(entry, FileEntry):
                     relative_path = eutes.generate_relative_path(entry, entry_map)
+                    print(f"\tTemp Path {build_path / relative_path}", flush=True)
                     destination_path = build_path / relative_path
 
                     if destination_path.parent is not None:
@@ -161,6 +168,7 @@ class NLIGenerator(object):
                         if platform.system() == 'Windows':
                             mapping_path = Path(f'\\\\?\\{mapping_path}')
 
+                        print(f"\tTemp Path {mapping_path}", flush=True)
                         with mapping_path.open(mode='w', encoding=edrm.configs['encoding']) as map_file:
                             map_file.write(entry.text)
 

@@ -133,3 +133,7 @@ class CSVRowEntry(MappingEntry):
     @property
     def data(self) -> dict[str, Any]:
         return self.__parent_csv.data[self.__row_index]
+
+    @property
+    def parent_csv(self) -> CSVEntry:
+        return self.__parent_csv

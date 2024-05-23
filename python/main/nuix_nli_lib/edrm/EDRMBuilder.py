@@ -51,8 +51,8 @@ class EDRMBuilder:
 
      <code>
      builder = EDRMBuilder()                                                                       #1
-     file_id = builder.add_file(r'C:\evidence\example.ps1', 'application/powershell_script', None) #2
-     builder.output_path = pathlib.Path(r'C:\load_files`) / 'edrm_example.xml'                     #3
+     file_id = builder.add_file(r'C:/evidence/example.ps1', 'application/powershell_script', None) #2
+     builder.output_path = pathlib.Path(r'C:/load_files`) / 'edrm_example.xml'                     #3
      builder.as_nli = False                                                                        #4
      builder.save()                                                                                #5
      </code>
@@ -218,6 +218,7 @@ class EDRMBuilder:
         field_list = doc.createElement("Fields")
         root.appendChild(field_list)
         for entry_id, entry in self.__entries.items():
+            print(f"\tSerializing Fields for {entry_id}: {entry.name}", flush=True)
             entry.serialize_field_definitions(doc, field_list)
 
         batch_element = doc.createElement('Batch')
@@ -226,11 +227,13 @@ class EDRMBuilder:
         batch_element.appendChild(doc_list)
 
         for entry_id, entry in self.__entries.items():
+            print(f"\tSerializing File {entry_id}: {entry.name}", flush=True)
             entry.serialize_entry(doc, doc_list, self.__entries, self.as_nli)
 
         relationship_list = doc.createElement('Relationships')
         batch_element.appendChild(relationship_list)
         for parent_id, family in self.__families.items():
+            print(f"\tBuilding Relationships {parent_id} of {len(family)} items", flush=True)
             for child_id in family:
                 relationship = doc.createElement('Relationship')
                 relationship.setAttribute('Type', 'Container')
@@ -243,6 +246,7 @@ class EDRMBuilder:
 
         working_families = deepcopy(self.__families)
         for entry_id in self.__families.keys():
+            print(f"\tStructuring Family Folder for {entry_id}", flush=True)
             if entry_id in working_families:
                 self.__add_folder(entry_id, doc, folders_list, working_families)
 
@@ -264,7 +268,9 @@ class EDRMBuilder:
         :return: None
         """
         if doc is None:
+            print(f"Building EDRM file with {len(self.__entries)} entries", flush=True)
             doc = self.build()
 
         with self.output_path.open(mode='w', encoding=edrm.configs['encoding']) as load_file:
+            print(f"Saving EDRM XML to {str(self.output_path)}", flush=True)
             doc.writexml(load_file, encoding=edrm.configs['encoding'], standalone=True, addindent='  ', newl='\n')

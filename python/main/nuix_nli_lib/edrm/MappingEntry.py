@@ -124,7 +124,8 @@ class MappingEntry(EntryInterface):
         the name may be used as a file name stand-in, the name will be mutated to be safe to use in such a context.
         """
         name_value = self.get_name()
-        name_value = name_value[:-1] if name_value.endswith('.') else name_value
+        name_value = eutes.sanitize_filename(name_value)
+        name_value = eutes.sanitize_xml_content(name_value)
 
         return name_value
 
@@ -183,10 +184,10 @@ class MappingEntry(EntryInterface):
             if isinstance(date_time, datetime):
                 return date_time
             elif isinstance(date_time, str):
-                # try:
-                time_as_datetime = datetime.strptime(date_time, edrm.configs['date_time_format'])
-                # except ValueError:
-                #    time_as_datetime = edrm.configs['date_time_format']
+                try:
+                    time_as_datetime = datetime.strptime(date_time, edrm.configs['date_time_format'])
+                except ValueError:
+                    time_as_datetime = edrm.configs['date_time_format']
                 return time_as_datetime
             else:
                 raise ValueError(f'Invalid item date format: {date_time}')

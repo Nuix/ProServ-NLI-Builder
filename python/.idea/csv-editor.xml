@@ -10,6 +10,139 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.cmdline.CmdLine.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.dlllist.DllList.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.driverscan.DriverScan.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.envars.Envars.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.filescan.FileScan.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.getservicesids.GetServiceSIDs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.getsids.GetSIDs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.info.Info.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.joblinks.JobLinks.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.ldrmodules.LdrModules.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.modules.Modules.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.netstat.NetStat.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.privileges.Privs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.pslist.PsList.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.registry.certificates.Certificates.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.registry.hivelist.HiveList.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.registry.printkey.PrintKey.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.sessions.Sessions.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\projects\proserv\Koblenz\windows\Usefull\Base\Quick\windows.truecrypt.Passphrase.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\test\resources\windows.pslist.PsList.csv">
           <value>
             <Attribute>
