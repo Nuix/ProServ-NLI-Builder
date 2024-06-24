@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 import hashlib
@@ -105,7 +106,7 @@ def hash_directory(directory: Path, hashfunction: hashlib, as_string: bool = Tru
     :return: The hash as a hex-encoded string if `as_string is true or bytes if it is false
     """
     if directory.is_dir():
-        for root, dirs, files in directory.walk():
+        for root, dirs, files in os.walk(str(directory)):
             for f in files:
                 _hash_data(f, hashfunction)
                 _hash_file(Path(root, f), hashfunction)
@@ -157,7 +158,7 @@ def sanitize_xml_content(content: str) -> str:
     return XML_ILLEGAL_CHARS_COMPILED_RE.sub('_', content)
 
 
-FILE_INVALID_CHARS = ['<', '>', ':', '"', '/', '\\', '|', '?', '*', '\0']
+FILE_INVALID_CHARS = ['<', '>', ':', '"', '/', '\\', '\\\\', '|', '?', '*', '\0']
 FILE_INVALID_CHARS_REGEX = '[' + ''.join(FILE_INVALID_CHARS) + ']'
 FILE_INVALID_CHARS_COMPILED_RE = re.compile(FILE_INVALID_CHARS_REGEX)
 

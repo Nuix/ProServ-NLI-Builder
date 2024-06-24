@@ -181,16 +181,20 @@ class MappingEntry(EntryInterface):
         else:
             date_time = self.data.get(time_field)
 
+            if date_time is None:
+                return datetime.now()
+
             if isinstance(date_time, datetime):
                 return date_time
-            elif isinstance(date_time, str):
+
+            if isinstance(date_time, str):
                 try:
                     time_as_datetime = datetime.strptime(date_time, edrm.configs['date_time_format'])
                 except ValueError:
                     time_as_datetime = edrm.configs['date_time_format']
                 return time_as_datetime
-            else:
-                raise ValueError(f'Invalid item date format: {date_time}')
+
+            raise ValueError(f'Invalid item date format: {date_time}')
 
     @property
     def parent(self) -> str:
