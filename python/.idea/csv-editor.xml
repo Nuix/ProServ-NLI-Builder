@@ -17,6 +17,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\test\resources\sanctions_list.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\test\resources\windows.pslist.PsList.csv">
           <value>
             <Attribute>
