@@ -139,7 +139,7 @@ def generate_relative_path(entry: object, entry_map: dict[str, object]) -> str:
 ILLEGAL_UNI_CHARS = [(0x00, 0x08), (0x0B, 0x0C), (0x0E, 0x1F),
                      (0x7F, 0x84), (0x86, 0x9F),
                      (0xFDD0, 0xFDDF), (0xFFFE, 0xFFFF)]
-if sys.maxunicode >= 0x10000:  # not narrow build
+if sys.maxunicode >= 0x10000:
     ILLEGAL_UNI_CHARS.extend([(0x1FFFE, 0x1FFFF), (0x2FFFE, 0x2FFFF),
                               (0x3FFFE, 0x3FFFF), (0x4FFFE, 0x4FFFF),
                               (0x5FFFE, 0x5FFFF), (0x6FFFE, 0x6FFFF),
@@ -158,7 +158,11 @@ def sanitize_xml_content(content: str) -> str:
     return XML_ILLEGAL_CHARS_COMPILED_RE.sub('_', content)
 
 
-FILE_INVALID_CHARS = ['<', '>', ':', '"', '/', '\\', '\\\\', '|', '?', '*', '\0']
+FILE_INVALID_CHARS = [
+    '<', '>', ':', '"', '/', '|', '?', '*',  # Illegal symbols
+    '\\', '\\\\',                            # Backslashes (Windows illegal)
+    '\x00-\x1F', '\x7F'                      # Non-printable characters
+]
 FILE_INVALID_CHARS_REGEX = '[' + ''.join(FILE_INVALID_CHARS) + ']'
 FILE_INVALID_CHARS_COMPILED_RE = re.compile(FILE_INVALID_CHARS_REGEX)
 
