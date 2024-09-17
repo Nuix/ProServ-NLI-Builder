@@ -11,6 +11,7 @@ from nuix_nli_lib.nli.nli_generator import NLIGenerator
 class TextEntry(CSVRowEntry):
     FILE_MIME_TYPE = 'application/x-chat-conversation'
     ROW_MIME_TYPE = 'application/x-chat-message'
+    UID = '9ec3e307-2f3d-4d62-b62a-04aa78b5bd36'
 
     def __init__(self, parent_csv: CSVEntry, row_index: int):
         super().__init__(parent_csv, row_index)

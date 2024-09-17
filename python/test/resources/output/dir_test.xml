@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Root MajorVersion="1" MinorVersion="2" Description="EDRM XML Load File" Locale="US" DataInterchangeType="Update">
+  <Fields>
+    <Field Name="MIME Type" DataType="Text" Key="field_0"/>
+    <Field Name="Item Date" DataType="DateTime" Key="field_1"/>
+    <Field Name="Path Name" DataType="Text" Key="field_2"/>
+    <Field Name="File Accessed" DataType="DateTime" Key="field_3"/>
+    <Field Name="File Created" DataType="DateTime" Key="field_4"/>
+    <Field Name="File Modified" DataType="DateTime" Key="field_5"/>
+    <Field Name="File Owner" DataType="Text" Key="field_6"/>
+    <Field Name="Name" DataType="Text" Key="field_7"/>
+    <Field Name="SHA-1" DataType="Text" Key="field_8"/>
+    <Field Name="File Size" DataType="LongInteger" Key="field_9"/>
+  </Fields>
+  <Batch>
+    <Documents>
+      <Document DocID="c9a2cbeb2ff4b83487682abbb26149b39e189674" DocType="File" MimeType="filesystem/directory">
+        <FieldValues>
+          <field_0>filesystem/directory</field_0>
+          <field_1>2024-09-17T13:48:04.772+00:00</field_1>
+          <field_2>C:\Work_Innovation\ProServ-NLI-Builder\python\test\resources\certificates</field_2>
+          <field_3>2024-09-17T13:56:04.997+00:00</field_3>
+          <field_4>2024-09-17T13:48:04.772+00:00</field_4>
+          <field_5>2024-09-17T13:48:30.394+00:00</field_5>
+          <field_6>Undefined</field_6>
+          <field_7>certificates</field_7>
+          <field_8>c9a2cbeb2ff4b83487682abbb26149b39e189674</field_8>
+          <field_9>81920</field_9>
+        </FieldValues>
+        <Locations>
+          <Location>
+            <Custodian>Unknown</Custodian>
+            <Description>Location on Disk</Description>
+            <LocationURI>file:///C:/Work_Innovation/ProServ-NLI-Builder/python/test/resources/certificates</LocationURI>
+          </Location>
+        </Locations>
+      </Document>
+    </Documents>
+    <Relationships/>
+    <Folders/>
+  </Batch>
+</Root>

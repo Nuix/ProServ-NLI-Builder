@@ -58,12 +58,12 @@ class PsListSimple(CSVRowEntry):
 class NLITests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.envars: str = r'\\innovation.nuix.com\SharedFolder\Koblenz\data\envars.csv'
-        self.pslist: str = r'./resources/windows.pslist.PsList.csv'
-        self.minps: str = r'C:\projects\proserv\Koblenz\NuixMemoryAnalysis\running\physmem.raw\windows.pslist.MinPsList.csv'
-        self.memory: str = r'C:\projects\proserv\Koblenz\example.ps1'
-        self.folder: str = r'C:\projects\proserv\MemoryAnalysis\Results'
-        self.output_path: Path = Path(r'C:\projects\proserv\Koblenz\output')
+        self.envars: str = str(Path(".", "resources", "envars.csv").absolute())
+        self.pslist: str = str(Path('.', 'resources', 'windows.pslist.PsList.csv').absolute())
+        self.minps: str = str(Path('.', 'resources', 'windows.pslist.MinPsList.csv').absolute())
+        self.memory: str = str(Path('.', 'resources', 'example.ps1').absolute())
+        self.folder: str = str(Path(".", "resources", "source").absolute())
+        self.output_path: Path = Path(".", "resources", "output").absolute()
 
     def test_base_csv(self):
         entry = CSVEntry(self.envars, row_generator=EnvEntry)
@@ -72,10 +72,10 @@ class NLITests(unittest.TestCase):
         generator.save(self.output_path / 'csv_test.nli')
 
     def test_cc_csv(self):
-        entry = CSVEntry(r'C:\projects\proserv\nli\CC.Medium.csv', row_generator=CCEntry)
+        entry = CSVEntry(str(Path('.', 'resources', 'CC.Medium.csv').absolute()), row_generator=CCEntry)
         generator = NLIGenerator()
         generator.add_entry(entry)
-        generator.save(Path(r'C:\projects\proserv\nli') / 'cc_test.nli')
+        generator.save(self.output_path / 'cc_test.nli')
 
     def test_pslist1_csv(self):
         generator = NLIGenerator()
@@ -83,7 +83,7 @@ class NLITests(unittest.TestCase):
         d = generator.add_directory(self.folder)
         entry = CSVEntry(self.pslist, row_generator=PsListSimple, parent_id=d)
         generator.add_entry(entry)
-        generator.save(Path(r'C:\projects\proserv\nli') / 'pslist_simple.nli')
+        generator.save(self.output_path / 'pslist_simple.nli')
 
     # def test_nli_csv(self):
     #     entry = CSVEntry(self.envars)

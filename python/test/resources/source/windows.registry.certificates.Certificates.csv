@@ -1,0 +1,51 @@
+TreeDepth,Certificate path,Certificate section,Certificate ID,Certificate name
+0,"Microsoft\SystemCertificates",AuthRoot,AutoUpdate,-
+0,"Microsoft\SystemCertificates",AuthRoot,AutoUpdate,-
+0,"Microsoft\SystemCertificates",AuthRoot,AutoUpdate,-
+0,"Microsoft\SystemCertificates",AuthRoot,AutoUpdate,-
+0,"Microsoft\SystemCertificates",AuthRoot,AutoUpdate,-
+0,"Microsoft\SystemCertificates",AuthRoot,AutoUpdate,-
+0,"Microsoft\SystemCertificates",AuthRoot,AutoUpdate,-
+0,"Microsoft\SystemCertificates",AuthRoot,02FAF3E291435468607857694DF5E45B68851868,The USERTrust Network™
+0,"Microsoft\SystemCertificates",AuthRoot,0563B8630D62D75ABBC8AB1E4BDFB5A899B24D43,DigiCert
+0,"Microsoft\SystemCertificates",AuthRoot,2796BAE63F1801E277261BA0D77770028F20EEE4,Go Daddy Class 2 Certification Authority
+0,"Microsoft\SystemCertificates",AuthRoot,3679CA35668772304D30A5FB873B0FA77BB70D54,VeriSign Universal Root Certification Authority
+0,"Microsoft\SystemCertificates",AuthRoot,3E2BF7F2031B96F38CE6C4D8A85D3E2D58476A0F,StartCom Certification Authority
+0,"Microsoft\SystemCertificates",AuthRoot,4EB6D578499B1CCF5F581EAD56BE3D9B6744A5E5,VeriSign
+0,"Microsoft\SystemCertificates",AuthRoot,51501FBFCE69189D609CFAF140C576755DCC1FDF,Hotspot 2.0 Trust Root CA - 03
+0,"Microsoft\SystemCertificates",AuthRoot,5FB7EE0633E259DBAD0C4C9AE6D38F1A61C7DC25,DigiCert
+0,"Microsoft\SystemCertificates",AuthRoot,742C3192E607E424EB4549542BE1BBC53E6174E2,VeriSign Class 3 Public Primary CA
+0,"Microsoft\SystemCertificates",AuthRoot,75E0ABB6138512271C04F85FDDDE38E4B7242EFE,Google Trust Services - GlobalSign Root CA-R2
+0,"Microsoft\SystemCertificates",AuthRoot,91C6D6EE3E8AC86384E548C299295C756C817B81,thawte
+0,"Microsoft\SystemCertificates",AuthRoot,A8985D3A65E5E5C4B2D7D66D40C6DD2FB19C5436,DigiCert
+0,"Microsoft\SystemCertificates",AuthRoot,AD7E1C28B064EF8F6003402014C3D0E3370EB58A,Starfield Class 2 Certification Authority
+0,"Microsoft\SystemCertificates",AuthRoot,B1BC968BD4F49D622AA89A81F2150152A41D829C,GlobalSign Root CA - R1
+0,"Microsoft\SystemCertificates",AuthRoot,D23209AD23D314232174E40D7F9D62139786633A,GeoTrust
+0,"Microsoft\SystemCertificates",AuthRoot,D4DE20D05E66FC53FE1A50882C78DB2852CAE474,DigiCert Baltimore Root
+0,"Microsoft\SystemCertificates",AuthRoot,DE28F4A4FFE5B92FA3C503D1A349A7F9962A8212,GeoTrust Global CA
+0,"Microsoft\SystemCertificates",AuthRoot,E12DFB4B41D7D9C32B30514BAC1D81D8385E2D46,-
+0,"Microsoft\SystemCertificates",CA,109F1CAED645BB78B3EA2B94C0697C740733031C,-
+0,"Microsoft\SystemCertificates",CA,83DA05A9886F7658BE73ACF0A4930C0F99B92F01,-
+0,"Microsoft\SystemCertificates",CA,D559A586669B08F46A30A133F8A9ED3D038E2EA8,-
+0,"Microsoft\SystemCertificates",CA,FEE449EE0E3965A5246F000E87FDE2A065FD89D4,-
+0,"Microsoft\SystemCertificates",CA,A377D1B1C0538833035211F4083D00FECC414DAB,-
+0,"Microsoft\SystemCertificates",Disallowed,27748148BBE67A43CDBFEC6C3784862CE134E6EA,-
+0,"Microsoft\SystemCertificates",FlightRoot,F8DB7E1C16F1FFD4AAAD4AAD8DFF0F2445184AEB,Microsoft Flighting Root 2014
+0,"Microsoft\SystemCertificates",ROOT,18F7C1FCC3090203FD5BAA2F861A754976C8DD25,VeriSign Time Stamping CA
+0,"Microsoft\SystemCertificates",ROOT,245C97DF7514E7CF2DF8BE72AE957B9E04741E85,Microsoft Timestamp Root
+0,"Microsoft\SystemCertificates",ROOT,3B1EFD3A66EA28B16697394703A72CA340A05BD5,Microsoft Root Certificate Authority 2010
+0,"Microsoft\SystemCertificates",ROOT,7F88CD7223F3C813818C994614A89C99FA3B5247,Microsoft Authenticode(tm) Root
+0,"Microsoft\SystemCertificates",ROOT,8F43288AD272F3103B6FB1428485EA3014C0BCFE,Microsoft Root Certificate Authority 2011
+0,"Microsoft\SystemCertificates",ROOT,92B46C76E13054E104F230517E6E504D43AB10B5,-
+0,"Microsoft\SystemCertificates",ROOT,A43489159A520F0D93D032CCAF37E7FE20A8B419,Microsoft Root Authority
+0,"Microsoft\SystemCertificates",ROOT,BE36A4562FB2EE05DBB3D32323ADF445084ED656,Thawte Timestamping CA
+0,"Microsoft\SystemCertificates",ROOT,CDD4EEAE6000AC7F40C3802C171E30148030C072,Microsoft Root Certificate Authority
+0,"Microsoft\SystemCertificates",Windows Live ID Token Issuer,0217922CA1B6F0BD0F1D7FF6E7BDC29B2FAAA060,-
+0,"Microsoft\SystemCertificates",Windows Live ID Token Issuer,2C85006A1A028BCC349DF23C474724C055FDE8B6,-
+0,"Software\Microsoft\SystemCertificates",CA,90E98BB05040666936B20E23F209B10C3CBC4D96,-
+0,"Software\Microsoft\SystemCertificates",Root,ProtectedRoots,-
+0,"Software\Microsoft\SystemCertificates",Root,ProtectedRoots,-
+0,"Software\Microsoft\SystemCertificates",AuthRoot,AutoUpdate,-
+0,"Software\Microsoft\SystemCertificates",Root,ProtectedRoots,-
+
+

@@ -8,13 +8,13 @@ from nuix_nli_lib.edrm import DirectoryEntry, EDRMBuilder, FileEntry, MappingEnt
 class TestEDRM(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.sample_directory: str = r'\\innovation.nuix.com\SharedFolder\Koblenz\data\certificates'
-        self.sample_file: str = r'C:\projects\proserv\Koblenz\example.ps1'
+        self.sample_directory: str = str(Path(".", "resources", "certificates").absolute())
+        self.sample_file: str = str(Path(".", "resources", "top-level-MD5-digests.txt").absolute())
         self.sample_mapping: dict[str, Any] = {'a': 1, 'b': 2}
-        self.output_path: Path = Path(r'C:\projects\proserv\Koblenz\output')
+        self.output_path: Path = Path(".", "resources", "output").absolute()
 
     def test_simple_file(self):
-        file_entry = FileEntry(self.sample_file, "application/powershell_script")
+        file_entry = FileEntry(self.sample_file, "plain/text")
         builder = EDRMBuilder()
         builder.as_nli = False
         builder.output_path = self.output_path / 'edrm_test.xml'

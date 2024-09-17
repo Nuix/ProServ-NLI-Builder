@@ -1,0 +1,23 @@
+TreeDepth,Offset,FileFullPath,File output
+0,0x8b8534030000,,Disabled
+0,0x8b853403d000,"\REGISTRY\MACHINE\SYSTEM",Disabled
+0,0x8b853407d000,"\REGISTRY\MACHINE\HARDWARE",Disabled
+0,0x8b85349fd000,"\SystemRoot\System32\Config\SOFTWARE",Disabled
+0,0x8b853d876000," language=""neutral"" processorArchit",Disabled
+0,0x8b853db53000,"\SystemRoot\System32\Config\SECURITY",Disabled
+0,0x8b853db26000,"\SystemRoot\System32\Config\SAM",Disabled
+0,0x8b853dbcf000,"\??\C:\WINDOWS\ServiceProfiles\NetworkService\NTUSER.DAT",Disabled
+0,0x8b853dca6000,"\SystemRoot\System32\Config\BBI",Disabled
+0,0x8b853dcbd000,"\??\C:\WINDOWS\ServiceProfiles\LocalService\NTUSER.DAT",Disabled
+0,0x8b853e4db000,"\??\C:\WINDOWS\AppCompat\Programs\Amcache.hve",Disabled
+0,0x8b853edb1000,"\??\C:\Users\passmark\ntuser.dat",Disabled
+0,0x8b853450c000,"\Device\HarddiskVolume1\Boot\BCD",Disabled
+0,0x8b85371a8000,"\??\C:\Users\passmark\ntuser.dat",Disabled
+0,0x8b853ae83000,"\??\C:\Users\passmark\AppData\Local\Microsoft\Windows\UsrClass.dat",Disabled
+0,0x8b853e616000,"\??\C:\ProgramData\Microsoft\Windows\AppRepository\Packages\Microsoft.Windows.Cortana_1.8.12.15063_neutral_neutral_cw5n1h2txyewy\ActivationStore.dat",Disabled
+0,0x8b853e706000,"\??\C:\Users\passmark\AppData\Local\Packages\Microsoft.Windows.Cortana_cw5n1h2txyewy\Settings\settings.dat",Disabled
+0,0x8b853e6bb000,"\??\C:\ProgramData\Microsoft\Windows\AppRepository\Packages\Microsoft.Windows.ShellExperienceHost_10.0.15063.936_neutral_neutral_cw5n1h2txyewy\ActivationStore.dat",Disabled
+0,0x8b853e6e8000,"\??\C:\Users\passmark\AppData\Local\Packages\Microsoft.Windows.ShellExperienceHost_cw5n1h2txyewy\Settings\settings.dat",Disabled
+0,0x8b853ea08000,"\??\C:\ProgramData\Microsoft\Windows\AppRepository\Packages\Microsoft.SkypeApp_12.1815.209.0_x64__kzf8qxf38zg5c\ActivationStore.dat",Disabled
+0,0x8b853edbd000,"\??\C:\Users\passmark\AppData\Local\Packages\Microsoft.SkypeApp_kzf8qxf38zg5c\Settings\settings.dat",Disabled
+
