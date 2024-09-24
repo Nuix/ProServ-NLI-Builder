@@ -52,7 +52,8 @@ class CSVEntry(FileEntry):
     def __init__(self, file_path: str,
                  mimetype: str = "text/csv",
                  parent_id: str = None,
-                 row_generator: Type[Any] = None):
+                 row_generator: Type[Any] = None,
+                 delimiter = ','):
         """
         :param file_path: Full path to the CSV file.  This will read the file into memory.  Errors will occur if the
                           file is not accessible or not in the expected CSV format
@@ -77,8 +78,8 @@ class CSVEntry(FileEntry):
             raise IOError(f'File does not exist or is not a file: {self.file_path}')
 
         with self.file_path.open(mode='r', encoding=data_types.configs['encoding']) as file:
-            reader: csv.DictReader = csv.DictReader(file)
-            self.__row_fields = list(reader.fieldnames)
+            reader: csv.DictReader = csv.DictReader(file, delimiter=delimiter)
+            self.__row_fields = [f for f in list(reader.fieldnames) if len(f.strip()) > 0]
             for row in reader:
                 self.__data.append(row)
 
@@ -128,7 +129,7 @@ class CSVRowEntry(MappingEntry):
 
     @property
     def fields(self) -> list[str]:
-        return self.__parent_csv.row_fields
+        return [f for f in self.__parent_csv.row_fields if len(f.strip()) > 0]
 
     @property
     def data(self) -> dict[str, Any]:

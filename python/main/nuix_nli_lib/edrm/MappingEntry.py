@@ -2,6 +2,7 @@ import copy
 import hashlib
 import urllib
 from datetime import datetime
+from operator import contains
 from typing import Any, Union
 from xml.dom.minidom import Document, Element
 
@@ -61,7 +62,15 @@ class MappingEntry(EntryInterface):
                 data_type = EntryField.TYPE_TEXT
                 _value = str(value)
 
-            self[key] = FieldFactory.generate_field(key, data_type, _value)
+            key_name = key.strip()
+            if len(key_name) == 0:
+                incrementor = 1
+                placeholder = f"key_{incrementor}"
+                while contains(self, placeholder):
+                    incrementor += 1
+                    placeholder = f"key_{incrementor}"
+                key_name = placeholder
+            self[key_name] = FieldFactory.generate_field(key_name, data_type, _value)
 
     def __fill_generic_fields(self, mimetype: str):
         """

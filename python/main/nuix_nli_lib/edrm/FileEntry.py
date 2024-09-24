@@ -161,7 +161,12 @@ class FileEntry(EntryInterface):
         file_element.appendChild(external_file)
 
         if for_nli:
-            relative_path = Path(eutes.generate_relative_path(self, entry_map))
+            from nuix_nli_lib.edrm import DirectoryEntry
+            if self.parent is None or isinstance(self.parent, DirectoryEntry):
+                relative_path = relative_path = Path(eutes.generate_relative_path(self, entry_map))
+            else:
+                relative_path = Path("natives") / self.name
+
             file_path = relative_path.parent if relative_path.parent != Path('') else ''
             external_file.setAttribute('FilePath', str(file_path))
         else:

@@ -7,7 +7,7 @@ import shutil
 from typing import Any
 from xml.dom.minidom import getDOMImplementation, Document, Element
 
-from nuix_nli_lib import edrm, debug_log
+from nuix_nli_lib import edrm, debug_log, configs as nli_configs
 from nuix_nli_lib.edrm import DirectoryEntry, EDRMBuilder, EntryInterface, FileEntry, MappingEntry, EDRMUtilities as eutes
 
 
@@ -129,7 +129,9 @@ class NLIGenerator(object):
         :param file_path: Path to the location the NLI file should be saved, including the file name and extension
         :return: None
         """
-        with tempfile.TemporaryDirectory() as temp_loc:
+
+        do_delete = not nli_configs['debug'] if 'debug' in nli_configs else True
+        with tempfile.TemporaryDirectory(delete=do_delete) as temp_loc:
             temp_path = Path(temp_loc)
             build_path = temp_path / 'NLI_Gen'
             metadata_path = build_path / '._metadata'
@@ -149,7 +151,10 @@ class NLIGenerator(object):
             for entry in self.__edrm_builder.entry_map.values():
                 debug_log(f"Copying {entry.name} to {build_path}", flush=True)
                 if isinstance(entry, FileEntry):
-                    relative_path = eutes.generate_relative_path(entry, entry_map)
+                    if entry.parent is None or isinstance(entry.parent, DirectoryEntry):
+                        relative_path = eutes.generate_relative_path(entry, entry_map)
+                    else:
+                        relative_path = Path("natives") / entry.name
                     debug_log(f"\tTemp Path {build_path / relative_path}", flush=True)
                     destination_path = build_path / relative_path
 
