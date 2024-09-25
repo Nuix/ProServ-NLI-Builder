@@ -14,9 +14,10 @@ Copy-Item "$env_src\python"  -Destination "$env_dest\python" -Recurse
 Copy-Item "$env_code\nuix_nli_lib" -Destination "$env_dest\python\vendor" -Recurse
 Copy-Item "$env_rsrc\init_nuix_nli_env.py" -Destination "$env_dest\python\"
 Copy-Item "$env_rsrc\nli_builder.bat" -Destination "$env_dest\"
+Copy-Item "$env_rsrc\run_nli_cmds.py" -Destination "$env_dest\"
 
 $dist_settings = @{
-  Path = "$env_dest\python", "$env_dest\nli_builder.bat"
+  Path = "$env_dest\python", "$env_dest\nli_builder.bat", "$env_dest\run_nli_cmds.py"
   DestinationPath = "$env_dest\nli_builder.zip"
   CompressionLevel = "Optimal"
 }

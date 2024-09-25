@@ -131,7 +131,7 @@ class NLIGenerator(object):
         """
 
         do_delete = not nli_configs['debug'] if 'debug' in nli_configs else True
-        with tempfile.TemporaryDirectory(delete=do_delete) as temp_loc:
+        with tempfile.TemporaryDirectory() if do_delete else tempfile.mkdtemp() as temp_loc:
             temp_path = Path(temp_loc)
             build_path = temp_path / 'NLI_Gen'
             metadata_path = build_path / '._metadata'
