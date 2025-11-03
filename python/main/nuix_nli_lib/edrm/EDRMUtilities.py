@@ -155,6 +155,12 @@ XML_ILLEGAL_CHARS_COMPILED_RE = re.compile(XML_ILLEGAL_CHARS_REGEX)
 
 
 def sanitize_xml_content(content: str) -> str:
+    """
+    Sanitize the provided string by removing any characters that result in illegal XML and replacing them with an
+    underscore.
+    :param content: The string to sanitize
+    :return: The sanitized string
+    """
     return XML_ILLEGAL_CHARS_COMPILED_RE.sub('_', content)
 
 
@@ -168,6 +174,15 @@ FILE_INVALID_CHARS_COMPILED_RE = re.compile(FILE_INVALID_CHARS_REGEX)
 
 
 def sanitize_filename(filename: str) -> str:
+    """
+    Sanitize the provided filename by removing any characters that result in illegal characters for a filename and
+    replacing them with an underscore.  The list of illegal characters is a combination of illegal characters for
+    Windows and Linux, and so is likely more restrictive than needed for any given system while being safe across
+    operating systems.  All illegal characters are replaced with underscores.  Additionally, if the filename ends with
+    a period, the period will be removed.
+    :param filename: The filename to sanitize
+    :return: The sanitized filename
+    """
     output: str = FILE_INVALID_CHARS_COMPILED_RE.sub("_", filename).strip()
     output = output[:-1] if output.endswith('.') else output
     return output

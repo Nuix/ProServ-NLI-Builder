@@ -96,7 +96,7 @@ class NLIGenerator(object):
 
         sw_element: Element = metadata_file.createElement('property')
         sw_element.setAttribute("key", "creation-software-name")
-        sw_element.setAttribute("value", "Nuix Memory Analysis Tool")
+        sw_element.setAttribute("value", "Nuix NLI Builder")
         property_list.appendChild(sw_element)
 
         swv_element: Element = metadata_file.createElement('property')

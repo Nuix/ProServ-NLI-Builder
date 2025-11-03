@@ -1,0 +1,80 @@
+TreeDepth,Last Write Time,Hive Offset,Type,Key,Name,Data,Volatile
+0,2018-06-21 06:46:36.000000 ,0x8b8534030000,Key,[NONAME],A,N/A,False
+0,2018-06-21 06:43:27.000000 ,0x8b8534030000,Key,[NONAME],MACHINE,N/A,False
+0,2018-06-21 06:35:48.000000 ,0x8b8534030000,Key,[NONAME],USER,N/A,False
+0,2018-06-08 00:11:34.000000 ,0x8b8534030000,Key,[NONAME],WC,N/A,False
+0,2017-10-04 03:14:35.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",ActivationBroker,N/A,False
+0,2017-10-04 03:14:36.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",ControlSet001,N/A,False
+0,2018-01-22 00:26:07.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",DriverDatabase,N/A,False
+0,2017-10-04 03:14:36.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",Keyboard Layout,N/A,False
+0,2017-10-04 03:14:36.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",ResourceManager,N/A,False
+0,2017-10-04 03:14:36.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",ResourcePolicyStore,N/A,False
+0,2018-06-08 00:11:34.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",RNG,N/A,False
+0,2017-10-04 03:14:36.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",Select,N/A,False
+0,2018-06-08 00:13:11.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",Setup,N/A,False
+0,2017-10-04 03:14:36.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",Software,N/A,False
+0,2018-06-21 06:37:09.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",WPA,N/A,False
+0,2018-06-08 00:11:34.000000 ,0x8b853403d000,Key,"\REGISTRY\MACHINE\SYSTEM",CurrentControlSet,N/A,True
+0,2018-06-08 00:11:34.000000 ,0x8b853407d000,Key,"\REGISTRY\MACHINE\HARDWARE",ACPI,N/A,False
+0,2018-06-08 00:11:34.000000 ,0x8b853407d000,Key,"\REGISTRY\MACHINE\HARDWARE",DESCRIPTION,N/A,False
+0,2018-06-08 00:12:24.000000 ,0x8b853407d000,Key,"\REGISTRY\MACHINE\HARDWARE",DEVICEMAP,N/A,False
+0,2018-06-08 00:11:34.000000 ,0x8b853407d000,Key,"\REGISTRY\MACHINE\HARDWARE",RESOURCEMAP,N/A,True
+0,2017-10-04 03:17:23.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",AMD,N/A,False
+0,2017-10-04 03:16:56.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",ATI,N/A,False
+0,2017-10-04 03:16:56.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",ATI Technologies,N/A,False
+0,2018-06-07 04:10:17.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Classes,N/A,False
+0,2017-10-04 03:14:36.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Clients,N/A,False
+0,2017-10-04 03:22:34.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Dell,N/A,False
+0,2017-10-04 03:14:28.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Google,N/A,False
+0,2017-10-04 03:16:43.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",InstalledOptions,N/A,False
+0,2017-10-04 03:14:28.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Intel,N/A,False
+0,2017-10-04 03:16:10.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Khronos,N/A,False
+0,2018-06-21 06:49:24.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Licenses,N/A,False
+0,2017-10-04 03:14:28.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Macromedia,N/A,False
+0,2018-06-08 00:13:13.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Microsoft,N/A,False
+0,2017-10-04 03:14:28.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",ODBC,N/A,False
+0,2018-01-21 23:46:51.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",OEM,N/A,False
+0,2017-10-04 03:14:28.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Partner,N/A,False
+0,2018-02-07 05:32:06.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",PassMark,N/A,False
+0,2017-11-19 23:15:46.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Policies,N/A,False
+0,2018-05-29 05:52:57.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Python,N/A,False
+0,2018-01-21 23:51:31.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",RegisteredApplications,N/A,False
+0,2017-10-04 03:22:45.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Synaptics,N/A,False
+0,2017-10-04 03:22:45.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",Tenable,N/A,False
+0,2018-06-08 00:12:23.000000 ,0x8b85349fd000,Key,"\SystemRoot\System32\Config\SOFTWARE",WOW6432Node,N/A,False
+0,2017-10-04 03:14:28.000000 ,0x8b853d876000,Key," language=""neutral"" processorArchit",Control Panel,N/A,False
+0,2017-10-04 03:14:28.000000 ,0x8b853d876000,Key," language=""neutral"" processorArchit",Environment,N/A,False
+0,2017-10-04 03:14:28.000000 ,0x8b853d876000,Key," language=""neutral"" processorArchit",EUDC,N/A,False
+0,2017-10-04 03:21:32.000000 ,0x8b853d876000,Key," language=""neutral"" processorArchit",Keyboard Layout,N/A,False
+0,2017-10-04 03:24:48.000000 ,0x8b853d876000,Key," language=""neutral"" processorArchit",Printers,N/A,False
+0,2017-10-04 03:23:00.000000 ,0x8b853d876000,Key," language=""neutral"" processorArchit",Software,N/A,False
+0,2018-02-12 08:00:03.000000 ,0x8b853d876000,Key," language=""neutral"" processorArchit",System,N/A,False
+0,2017-10-04 03:14:07.000000 ,0x8b853db53000,Key,"\SystemRoot\System32\Config\SECURITY",Cache,N/A,False
+0,2015-07-10 12:20:52.000000 ,0x8b853db53000,Key,"\SystemRoot\System32\Config\SECURITY",Policy,N/A,False
+0,2017-10-04 03:23:00.000000 ,0x8b853db53000,Key,"\SystemRoot\System32\Config\SECURITY",RXACT,N/A,False
+0,2018-06-08 00:12:25.000000 ,0x8b853db53000,Key,"\SystemRoot\System32\Config\SECURITY",SAM,N/A,True
+0,2017-10-04 03:14:08.000000 ,0x8b853db26000,Key,"\SystemRoot\System32\Config\SAM",SAM,N/A,False
+0,2017-10-04 03:14:11.000000 ,0x8b853dbcf000,Key,"\??\C:\WINDOWS\ServiceProfiles\NetworkService\NTUSER.DAT",AppEvents,N/A,False
+0,2017-10-04 03:14:11.000000 ,0x8b853dbcf000,Key,"\??\C:\WINDOWS\ServiceProfiles\NetworkService\NTUSER.DAT",Console,N/A,False
+0,2017-10-04 03:14:11.000000 ,0x8b853dbcf000,Key,"\??\C:\WINDOWS\ServiceProfiles\NetworkService\NTUSER.DAT",Control Panel,N/A,False
+0,2017-10-04 03:14:11.000000 ,0x8b853dbcf000,Key,"\??\C:\WINDOWS\ServiceProfiles\NetworkService\NTUSER.DAT",Environment,N/A,False
+0,2017-10-04 03:14:11.000000 ,0x8b853dbcf000,Key,"\??\C:\WINDOWS\ServiceProfiles\NetworkService\NTUSER.DAT",EUDC,N/A,False
+0,2017-10-04 03:14:11.000000 ,0x8b853dbcf000,Key,"\??\C:\WINDOWS\ServiceProfiles\NetworkService\NTUSER.DAT",Keyboard Layout,N/A,False
+0,2017-10-04 03:14:11.000000 ,0x8b853dbcf000,Key,"\??\C:\WINDOWS\ServiceProfiles\NetworkService\NTUSER.DAT",Software,N/A,False
+0,2017-10-04 03:14:11.000000 ,0x8b853dbcf000,Key,"\??\C:\WINDOWS\ServiceProfiles\NetworkService\NTUSER.DAT",System,N/A,False
+0,2018-06-21 06:48:15.000000 ,0x8b853dca6000,Key,"\SystemRoot\System32\Config\BBI",Events,N/A,False
+0,2018-06-08 00:26:25.000000 ,0x8b853dca6000,Key,"\SystemRoot\System32\Config\BBI",PackageImportance,N/A,False
+0,2018-06-21 06:48:11.000000 ,0x8b853dca6000,Key,"\SystemRoot\System32\Config\BBI",WorkItems,N/A,False
+0,2017-10-04 03:24:18.000000 ,0x8b853dca6000,REG_DWORD,"\SystemRoot\System32\Config\BBI",Version,2,False
+0,2017-10-04 03:24:18.000000 ,0x8b853dca6000,REG_DWORD,"\SystemRoot\System32\Config\BBI",MinorVersion,2,False
+0,2017-10-04 03:14:17.000000 ,0x8b853dcbd000,Key,"\??\C:\WINDOWS\ServiceProfiles\LocalService\NTUSER.DAT",AppEvents,N/A,False
+0,2017-10-04 03:14:17.000000 ,0x8b853dcbd000,Key,"\??\C:\WINDOWS\ServiceProfiles\LocalService\NTUSER.DAT",Console,N/A,False
+0,2017-10-04 03:14:17.000000 ,0x8b853dcbd000,Key,"\??\C:\WINDOWS\ServiceProfiles\LocalService\NTUSER.DAT",Control Panel,N/A,False
+0,2017-10-04 03:14:17.000000 ,0x8b853dcbd000,Key,"\??\C:\WINDOWS\ServiceProfiles\LocalService\NTUSER.DAT",Environment,N/A,False
+0,2017-10-04 03:14:17.000000 ,0x8b853dcbd000,Key,"\??\C:\WINDOWS\ServiceProfiles\LocalService\NTUSER.DAT",EUDC,N/A,False
+0,2017-10-04 03:14:17.000000 ,0x8b853dcbd000,Key,"\??\C:\WINDOWS\ServiceProfiles\LocalService\NTUSER.DAT",Keyboard Layout,N/A,False
+0,2017-10-04 03:14:17.000000 ,0x8b853dcbd000,Key,"\??\C:\WINDOWS\ServiceProfiles\LocalService\NTUSER.DAT",Software,N/A,False
+0,2017-10-04 03:14:17.000000 ,0x8b853dcbd000,Key,"\??\C:\WINDOWS\ServiceProfiles\LocalService\NTUSER.DAT",System,N/A,False
+0,2018-06-08 00:16:47.000000 ,0x8b853e4db000,Key,"\??\C:\WINDOWS\AppCompat\Programs\Amcache.hve",Root,N/A,False
+
+

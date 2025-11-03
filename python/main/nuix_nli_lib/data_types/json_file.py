@@ -1,5 +1,5 @@
 import json
-from typing import Any, Type, Union
+from typing import Any, Type, Union, Callable
 
 from nuix_nli_lib.edrm import FileEntry, MappingEntry, EDRMBuilder
 from nuix_nli_lib.data_types import configs
@@ -99,6 +99,208 @@ class JSONArrayEntry(MappingEntry):
     def text(self) -> str:
         return ', '.join([str(_v) for _v in self.data.values()])
 
+    def get_child_object_generator(self, index: str) -> type["JSONObjectEntry"] | None:
+        """
+        Allow a JSONArrayEntry to provide its own implementation of JSONObjectEntry to use for any nested objects.  For
+        example, assuming a JSON array is defined as:
+        <code>
+        [
+          {
+            "sender": "Alice",
+            "message": "Hello, how are you?"
+          },
+          {
+            "sender": "Bob",
+            "message": "I'm good, thanks!"
+          }
+        ]
+        </code>
+        Then you might have a specific JSONObjectEntry implementation to handle the nested objects:
+        <code>
+        class MyJSONArrayEntry(JSONArrayEntry):
+          @override
+          def get_child_object_generator(self, index: int) -> type["JSONObjectEntry"] | None:
+            return ChatMessageEntry
+        <code>
+
+        This would also support more complex JSON arrays where nested objects may have different types:
+        <code>
+        [
+          {
+            "type": "chat_message",
+            "sender": "Alice",
+            "message": "Hello, how are you?"
+          },
+          {
+            "type": "call",
+            "from": "Alice",
+            "to": "Bob",
+            "duration": 120
+          }
+        ]
+        </code>
+
+        In which case you may have a get_child_object_generator method that returns a different implementation based on
+        the content at a specific index in the array:
+        <code>
+        class MyJSONArrayEntry(JSONArrayEntry):
+          @override
+          def get_child_object_generator(self, index: int) -> type["JSONObjectEntry"] | None:
+            item_data = self.data[index]
+            if item_data["type"] == "chat_message":
+                return ChatMessageEntry
+            elif item_data["type"] == "call":
+                return CallEntry
+            else:
+                return None
+        </code>
+
+        If this method returns None, then the default JSONObjectEntry provided to the JSONEntry during initialization
+        will be used.  The default implementation will return None.
+
+        :param index: Index into the array used to look up the source data.  Note that this will be provided as a
+                      string.  The source data for the array (self.data) is a dictionary with the indexes as keys, also
+                      in a string format, as a consequence of generalizing the MappingEntry interface from which this
+                      class inherits.  Thus the index passed in can be directly used to look up the source data.
+        :return: An instance of JSONObjectEntry to use to generate the child item, or None to use the default
+                 JSONObjectEntry.
+        """
+        return None
+
+    def get_child_array_generator(self, index: str) -> type["JSONArrayEntry"] | None:
+        """
+        Allow a JSONArrayEntry to provide its own implementation of JSONArrayEntry to use for any nested arrays.  For
+        example, assuming a JSON array is defined as:
+        <code>
+        [
+          [
+            {
+              "sender": "Alice",
+              "message": "Hello, how are you?"
+            },
+            {
+              "sender": "Bob",
+              "message": "I'm good, thanks!"
+            }
+          ],
+          [
+            {
+              "sender": "Frank",
+              "message": "Hello, how are you?"
+            },
+            {
+              "sender": "Jen",
+              "message": "I'm good, thanks!"
+            }
+          ]
+        ]
+        </code>
+        Then you might have a specific JSONArrayEntry implementation to handle the nested arrays as chat threads:
+        <code>
+        class MyJSONArrayEntry(JSONArrayEntry):
+          @override
+          def get_child_array_generator(self, index: int) -> type["JSONArrayEntry"] | None:
+            return ChatThreadEntry
+        <code>
+
+        This would also support more complex JSON arrays where nested arrays may have different types:
+        <code>
+        [
+          [
+            {
+              "type": "group_chat",
+              "sender": "Alice",
+              "message": "Hello, how are you?"
+            },
+            {
+              "type": "group_chat",
+              "sender": "Bob",
+              "message": "I'm good, thanks!"
+            }
+          ],
+          [
+            {
+              "type": "private_chat",
+              "sender": "Frank",
+              "message": "Hello, how are you?"
+            },
+            {
+              "type": "private_chat",
+              "sender": "Jen",
+              "message": "I'm good, thanks!"
+            }
+          ]
+        ]
+        </code>
+
+        In which case you may have a get_child_array_generator method that returns a different implementation based on
+        the content at a specific index in the array:
+        <code>
+        class MyJSONArrayEntry(JSONArrayEntry):
+          @override
+          def get_child_array_generator(self, index: int) -> type["JSONArrayEntry"] | None:
+            item_data = self.data[index]
+            if item_data["0"]["type"] == "group_chat":
+                return GroupChatThread
+            elif item_data["0"]["type"] == "private_chat":
+                return PrivateChatThread
+            else:
+                return None
+        </code>
+
+        If this method returns None, then the default JSONObjectEntry provided to the JSONEntry during initialization
+        will be used.  The default implementation will return None.
+
+        :param index: Index into the array used to look up the source data.  Note that this will be provided as a
+                      string.  The source data for the array (self.data) is a dictionary with the indexes as keys, also
+                      in a string format, as a consequence of generalizing the MappingEntry interface from which this
+                      class inherits.  Thus the index passed in can be directly used to look up the source data.
+        :return: An instance of JSONArrayEntry to use to generate the child item, or None to use the default
+                 JSONArrayEntry.
+        """
+        return None
+
+    def get_child_value_generator(self, index: str) -> type["JSONValueEntry"] | None:
+        """
+        Allow a JSONArrayEntry to provide its own implementation of JSONValueEntry to use for any nested values.  For
+        example, assuming a JSON array is defined as:
+        <code>
+        [
+          "my_document.pdf",
+          "file://server/files/attachments/message_12345.pdf",
+          "https://my.website.com/data/12345.jpg"
+        ]
+        </code>
+        In this case, each value in the array, although a simple string, might represent different ways of pointing to
+        data to add as children.  Thus, you might have a specific JSONValueEntry implementation to handle the nested
+        values:
+        <code>
+        class MyJSONArrayEntry(JSONArrayEntry):
+          @override
+          def get_child_value_generator(self, index: int) -> type["JSONValueEntry"] | None:
+            source_address = self.data[index]
+            if utils.matches_relative_path(source_address):
+              return LoadLocalChildEntry
+            elif utils.matches_file_url(source_address):
+              return LoadServedChildEntry
+            elif utils.matches_url(source_address):
+              return DownloadURLChildEntry
+            else:
+              return None
+        <code>
+
+        If this method returns None, then the default JSONValueEntry provided to the JSONEntry during initialization
+        will be used.  The default implementation will return None.
+
+        :param index: Index into the array used to look up the source data.  Note that this will be provided as a
+                      string.  The source data for the array (self.data) is a dictionary with the indexes as keys, also
+                      in a string format, as a consequence of generalizing the MappingEntry interface from which this
+                      class inherits.  Thus the index passed in can be directly used to look up the source data.
+        :return: An instance of JSONValueEntry to use to generate the child item, or None to use the default
+                 JSONValueEntry.
+        """
+        return None
+
 
 class JSONObjectEntry(MappingEntry):
     """
@@ -129,6 +331,158 @@ class JSONObjectEntry(MappingEntry):
     def add_as_parent_path(self, existing_path: str):
         return f'{self.name}/{existing_path}'
 
+    def get_child_object_generator(self, child_key: str) -> type["JSONObjectEntry"] | None:
+        """
+        Allow a JSONObjectEntry to contain different mappings dependent on the key used to identify the child entry.
+        For example, assuming a JSON object is defined as:
+        <code>
+        {
+          "chat_message": {
+            "sender": "Alice",
+            "message": "Hello, how are you?"
+          },
+          "document": {
+            "name": "document.pdf",
+            "size": 12345
+          },
+          "call": {
+            "from": "Alice",
+            "to": "Bob",
+            "duration": 120
+          }
+        }
+        </code>
+        Then you might have different JSONObjectEntry implementations, and override this method to return the correct
+        implementation based on the key used to identify the object:
+        <code>
+        class MyJSONObjectEntry(JSONObjectEntry):
+          @override
+          def get_child_object_generator(self, child_key: str) -> type["JSONObjectEntry"] | None:
+            if child_key == "chat_message":
+              return ChatMessageEntry
+            elif child_key == "document":
+              return DocumentEntry
+            elif child_key == "call":
+              return CallEntry
+            else:
+              return None
+        <code>
+
+        If this method returns None, then the default JSONObjectEntry provided to the JSONEntry during initialization
+        will be used.  The default implementation will return None.
+
+        :param child_key: The name of the key used to identify the type of child object to return an Entry for.
+        :return: An instance of JSONObjectEntry to use to generate the child item, or None to use the default
+                 JSONObjectEntry.
+        """
+        return None
+
+    def get_child_array_generator(self, child_key: str) -> type["JSONArrayEntry"] | None:
+        """
+        Allow a JSONObjectEntry to contain different mappings dependent on the key used to identify the child entry.
+        For example, assuming a JSON object is defined as:
+        <code>
+        {
+          "chat_messages": [
+            {
+              "sender": "Alice",
+              "message": "Hello, how are you?"
+            },
+            {
+              "sender": "Bob",
+              "message": "I'm good, thanks!"
+            }
+          ],
+          "documents": [
+            {
+              "name": "document.pdf",
+              "size": 12345
+            },
+            {
+              "name": "document2.pdf",
+              "size": 18445
+            }
+          ],
+          "calls": [
+            {
+              "from": "Alice",
+              "to": "Bob",
+              "duration": 120
+            },
+            {
+              "from": "Bob",
+              "to": "Alice",
+              "duration": 90
+            }
+          ]
+        }
+        </code>
+        Then you might have different JSONArrayEntry implementations, and override this method to return the correct
+        implementation based on the key used to identify the array:
+        <code>
+        class MyJSONObjectEntry(JSONObjectEntry):
+          @override
+          def get_child_array_generator(self, child_key: str) -> type["JSONArrayEntry"] | None:
+            if child_key == "chat_messages":
+              return ChatMessagesEntry
+            elif child_key == "documents":
+              return DocumentsEntry
+            elif child_key == "calls":
+              return CallsEntry
+            else:
+              return None
+        <code>
+
+        If this method returns None, then the default JSONArrayEntry provided to the JSONEntry during initialization
+        will be used.  The default implementation will return None.
+
+        :param child_key: The name of the key used to identify the type of child object to return an Entry for.
+        :return: An instance of JSONArrayEntry to use to generate the child item, or None to use the default
+                 JSONArrayEntry.
+        """
+        return None
+
+    def get_child_value_generator(self, child_key: str) -> type["JSONValueEntry"] | None:
+        """
+        Allow a JSONObjectEntry to contain different definitions dependent on the key used to identify the child entry.
+        For example, assuming a JSON object is defined as:
+        <code>
+        {
+          "sender": "a-5443",
+          "response_to": null,
+          "sent_time": "2023-01-01T00:00:00Z",
+          "message": "Hello, how are you?"
+          "attachment": "/files/attachments/message_12345.pdf"
+        }
+        </code>
+        Then you might have different JSONValueEntry implementations: (a) One for "sender" may lookup a user by id and
+        return a name instead of the id, (b) One for "response_to" may lookup a different chat and add this as a child
+        to it, (c) One for "sent_time" may convert the string to a date, and (d) one for "attachment" may load the file
+        as a child FileEntry.
+        <code>
+        class MyJSONObjectEntry(JSONObjectEntry):
+          @override
+          def get_child_value_generator(self, child_key: str) -> type["JSONValueEntry"] | None:
+            if child_key == "sender":
+              return UserIdToNameLookupEntry
+            elif child_key == "response_to":
+              return RespondToChatEntry
+            elif child_key == "sent_time":
+              return SentTimeEntry
+            elif child_key == "attachment":
+              return AttachFileAsChildEntry
+            else:
+              return None
+        <code>
+
+        If this method returns None, then the default JSONValueEntry provided to the JSONEntry during initialization
+        will be used.  The default implementation will return None.
+
+        :param child_key: The name of the key used to identify the type of child object to return an Entry for.
+        :return: An instance of JSONValueEntry to use to generate the child item, or None to use the default
+                 JSONValueEntry.
+        """
+        return None
 
 class JSONFileEntry(FileEntry):
     """
@@ -184,7 +538,17 @@ class JSONFileEntry(FileEntry):
     def add_as_parent_path(self, existing_path: str):
         return f'{self.name}/{existing_path}'
 
-    def __add_object(self, builder: EDRMBuilder, name: str, obj: dict, parent_id: str):
+    def __add_object(self, builder: EDRMBuilder, name: str, obj: dict, parent_id: str,
+                     object_generator: type["JSONObjectEntry"] | None = None,
+                     array_generator: type["JSONArrayEntry"] | None = None,
+                     value_generator: type["JSONValueEntry"] | None = None) -> JSONObjectEntry:
+        if object_generator is None:
+            object_generator = self.__object_value_generator
+        if array_generator is None:
+            array_generator = self.__array_value_generator
+        if value_generator is None:
+            value_generator = self.__simple_value_generator
+
         _contents: dict[str, Any] = {}
         _objects: dict[str, dict[str, Any]] = {}
         _arrays: dict[str, list[Any]] = {}
@@ -195,41 +559,66 @@ class JSONFileEntry(FileEntry):
             elif isinstance(value, list):
                 _arrays[key] = value
             else:
-                val_value = self.__simple_value_generator(key, 'Value', value)
+                val_value = value_generator(key, 'Value', value)
                 _contents[key] = val_value['Value'].value
 
-        object_entry = self.__object_value_generator(name, _contents, parent_id=parent_id)
+        object_entry = object_generator(name, _contents, parent_id=parent_id)
         object_id = object_entry[object_entry.identifier_field].value
 
         for key, value in _objects.items():
-            self.__add_object(builder, key, value, parent_id=object_id)
+            self.__add_object(builder, key, value, parent_id=object_id,
+                              object_generator=object_entry.get_child_object_generator(key),
+                              array_generator=object_entry.get_child_array_generator(key),
+                              value_generator=object_entry.get_child_value_generator(key))
 
         for key, value in _arrays.items():
-            self.__add_array(builder, key, value, parent_id=object_id)
+            self.__add_array(builder, key, value, parent_id=object_id,
+                             object_generator=object_entry.get_child_object_generator(key),
+                             array_generator=object_entry.get_child_array_generator(key),
+                             value_generator=object_entry.get_child_value_generator(key))
 
         builder.add_entry(object_entry)
 
-    def __add_array(self, builder: EDRMBuilder, name: str, array: list, parent_id: str) -> JSONArrayEntry:
+        return object_entry
+
+    def __add_array(self, builder: EDRMBuilder, name: str, array: list, parent_id: str,
+                     object_generator: type["JSONObjectEntry"] | None = None,
+                     array_generator: type["JSONArrayEntry"] | None = None,
+                     value_generator: type["JSONValueEntry"] | None = None) -> JSONArrayEntry:
+        if object_generator is None:
+            object_generator = self.__object_value_generator
+        if array_generator is None:
+            array_generator = self.__array_value_generator
+        if value_generator is None:
+            value_generator = self.__simple_value_generator
+
         _contents: dict[str, Any] = {}
         _objects: dict[str, dict[str, Any]] = {}
         _arrays: dict[str, list[Any]] = {}
+
         for idx, itm in enumerate(array):
             if isinstance(itm, dict):
                 _objects[str(idx)] = itm
             elif isinstance(itm, list):
                 _arrays[str(idx)] = itm
             else:
-                itm_value = self.__simple_value_generator(str(idx), 'Value', itm)
+                itm_value = value_generator(str(idx), 'Value', itm)
                 _contents[str(idx)] = itm_value['Value'].value
 
-        array_entry = self.__array_value_generator(name, _contents, parent_id=parent_id)
+        array_entry = array_generator(name, _contents, parent_id=parent_id)
         array_id = array_entry[array_entry.identifier_field].value
 
         for obj_name, obj in _objects.items():
-            self.__add_object(builder, obj_name, obj, parent_id=array_id)
+            self.__add_object(builder, obj_name, obj, parent_id=array_id,
+                              object_generator=array_entry.get_child_object_generator(),
+                              array_generator=array_entry.get_child_array_generator(),
+                              value_generator=array_entry.get_child_value_generator())
 
         for ary_name, ary in _arrays.items():
-            self.__add_array(builder, ary_name, ary, parent_id=array_id)
+            self.__add_array(builder, ary_name, ary, parent_id=array_id,
+                              object_generator=array_entry.get_child_object_generator(),
+                              array_generator=array_entry.get_child_array_generator(),
+                              value_generator=array_entry.get_child_value_generator())
 
         builder.add_entry(array_entry)
 

@@ -1,0 +1,155 @@
+TreeDepth,Offset(V),Name,PID,PPID,Sess,JobSess,Wow64,Total,Active,Term,JobLink,Process
+0,0xd98df6729600,svchost.exe,804,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6729600,svchost.exe,804,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df674c600,svchost.exe,1056,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df674c600,svchost.exe,1056,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6774600,svchost.exe,1140,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6774600,svchost.exe,1140,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6781600,svchost.exe,1260,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6781600,svchost.exe,1260,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df67cc600,svchost.exe,1316,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df67cc600,svchost.exe,1316,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df67e0600,svchost.exe,1368,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df67e0600,svchost.exe,1368,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df682f600,svchost.exe,1412,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df682f600,svchost.exe,1412,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df681b600,svchost.exe,1420,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df681b600,svchost.exe,1420,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6838600,svchost.exe,1436,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6838600,svchost.exe,1436,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6867600,svchost.exe,1532,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6867600,svchost.exe,1532,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6887600,svchost.exe,1548,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6887600,svchost.exe,1548,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6894600,svchost.exe,1568,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6894600,svchost.exe,1568,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df68bb600,svchost.exe,1644,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df68bb600,svchost.exe,1644,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df68c9600,svchost.exe,1652,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df68c9600,svchost.exe,1652,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df686a600,svchost.exe,1724,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df686a600,svchost.exe,1724,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df691a600,svchost.exe,1824,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df691a600,svchost.exe,1824,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\System32\svchost.exe"
+0,0xd98df6949600,svchost.exe,1872,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6949600,svchost.exe,1872,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df696a600,svchost.exe,1940,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df696a600,svchost.exe,1940,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df698e600,svchost.exe,1948,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df698e600,svchost.exe,1948,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\System32\svchost.exe"
+0,0xd98df69b2600,svchost.exe,2036,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df69b2600,svchost.exe,2036,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6a2c380,svchost.exe,2068,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6a2c380,svchost.exe,2068,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\system32\svchost.exe"
+0,0xd98df6a94600,svchost.exe,2260,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6a94600,svchost.exe,2260,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\system32\svchost.exe"
+0,0xd98df6aa1600,svchost.exe,2304,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6aa1600,svchost.exe,2304,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6b08600,svchost.exe,2424,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6b08600,svchost.exe,2424,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6b53600,svchost.exe,2504,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6b53600,svchost.exe,2504,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6b61600,svchost.exe,2656,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6b61600,svchost.exe,2656,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6b78600,svchost.exe,2664,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6b78600,svchost.exe,2664,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6bdb600,svchost.exe,2696,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6bdb600,svchost.exe,2696,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6bed600,svchost.exe,2704,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6bed600,svchost.exe,2704,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\system32\svchost.exe"
+0,0xd98df6bef600,svchost.exe,2712,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6bef600,svchost.exe,2712,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6bf1600,svchost.exe,2720,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6bf1600,svchost.exe,2720,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6bf7600,svchost.exe,2736,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6bf7600,svchost.exe,2736,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\System32\svchost.exe"
+0,0xd98df6bfc600,svchost.exe,2748,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6bfc600,svchost.exe,2748,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6c01600,svchost.exe,2756,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6c01600,svchost.exe,2756,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6c0c600,svchost.exe,2772,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6c0c600,svchost.exe,2772,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6c10600,svchost.exe,2780,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6c10600,svchost.exe,2780,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6c12600,svchost.exe,2792,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6c12600,svchost.exe,2792,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6d1d600,svchost.exe,2464,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6d1d600,svchost.exe,2464,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6df8600,svchost.exe,3188,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6df8600,svchost.exe,3188,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6dff600,svchost.exe,3288,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6dff600,svchost.exe,3288,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df6f24600,svchost.exe,3400,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6f24600,svchost.exe,3400,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df713d600,svchost.exe,3880,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df713d600,svchost.exe,3880,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df70de600,svchost.exe,3888,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df70de600,svchost.exe,3888,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df719b4c0,svchost.exe,3972,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df719b4c0,svchost.exe,3972,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\system32\svchost.exe"
+0,0xd98df59cb600,svchost.exe,2828,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df59cb600,svchost.exe,2828,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df73ac080,svchost.exe,4108,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df73ac080,svchost.exe,4108,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df7406600,svchost.exe,4264,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df7406600,svchost.exe,4264,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df74fc080,svchost.exe,4504,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df74fc080,svchost.exe,4504,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df5cf5600,svchost.exe,3448,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df5cf5600,svchost.exe,3448,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df5ce9600,svchost.exe,2988,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df5ce9600,svchost.exe,2988,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df3e5b600,svchost.exe,4660,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df3e5b600,svchost.exe,4660,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df5244600,svchost.exe,5648,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df5244600,svchost.exe,5648,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df5caa080,svchost.exe,5764,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df5caa080,svchost.exe,5764,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df5227600,svchost.exe,2872,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df5227600,svchost.exe,2872,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df759c600,svchost.exe,7324,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df759c600,svchost.exe,7324,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\system32\svchost.exe"
+0,0xd98df3827080,svchost.exe,7812,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df3827080,svchost.exe,7812,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df5cee600,svchost.exe,7944,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df5cee600,svchost.exe,7944,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df641d080,remsh.exe,9932,1568,0,0,False,34,1,0,N/A,(Original Process)
+1,0xd98df641d080,remsh.exe,9932,1568,0,0,False,0,0,0,Yes,"C:\Program Files\rempl\remsh.exe"
+0,0xd98df6426600,svchost.exe,9200,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df6426600,svchost.exe,9200,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\System32\svchost.exe"
+0,0xd98df3d56600,svchost.exe,3560,716,2,2,False,1,1,0,N/A,(Original Process)
+1,0xd98df3d56600,svchost.exe,3560,716,2,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df42b0080,svchost.exe,3540,716,2,2,False,1,1,0,N/A,(Original Process)
+1,0xd98df42b0080,svchost.exe,3540,716,2,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df7e11080,taskhostw.exe,7048,1568,2,2,False,1,1,0,N/A,(Original Process)
+1,0xd98df7e11080,taskhostw.exe,7048,1568,2,0,False,0,0,0,Yes,"c:\windows\system32\taskhostw.exe"
+0,0xd98dfa4ee600,SynTPHelper.ex,7736,2388,2,2,False,1,1,0,N/A,(Original Process)
+1,0xd98dfa4ee600,SynTPHelper.ex,7736,2388,2,0,False,0,0,0,Yes,"C:\PROGRAM FILES\SYNAPTICS\SYNTP\SYNTPHELPER.EXE"
+0,0xd98df97b9600,SearchUI.exe,5368,868,2,2,False,1,1,0,N/A,(Original Process)
+1,0xd98df97b9600,SearchUI.exe,5368,868,2,0,False,0,0,0,Yes,"C:\Windows\SystemApps\Microsoft.Windows.Cortana_cw5n1h2txyewy\SearchUI.exe"
+0,0xd98df4229600,ShellExperienc,7004,868,2,2,False,1,1,0,N/A,(Original Process)
+1,0xd98df4229600,ShellExperienc,7004,868,2,0,False,0,0,0,Yes,"C:\WINDOWS\SystemApps\ShellExperienceHost_cw5n1h2txyewy\ShellExperienceHost.exe"
+0,0xd98df8760080,SkypeHost.exe,9788,868,2,2,False,1,1,0,N/A,(Original Process)
+1,0xd98df8760080,SkypeHost.exe,9788,868,2,0,False,0,0,0,Yes,"C:\Program Files\WindowsApps\Microsoft.SkypeApp_12.1815.209.0_x64__kzf8qxf38zg5c\SkypeHost.exe"
+0,0xd98df8f9c600,svchost.exe,7764,716,0,0,False,1,1,0,N/A,(Original Process)
+0,0xd98df3984600,svchost.exe,5520,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df3984600,svchost.exe,5520,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df5c59200,svchost.exe,7496,716,2,2,False,1,1,0,N/A,(Original Process)
+1,0xd98df5c59200,svchost.exe,7496,716,2,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df9d45600,software_repor,6708,6624,2,2,False,1,1,0,N/A,(Original Process)
+0,0xd98df9421080,svchost.exe,7380,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df9421080,svchost.exe,7380,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\System32\svchost.exe"
+0,0xd98df8584480,taskhostw.exe,7252,1568,0,0,False,2,1,0,N/A,(Original Process)
+0,0xd98df8791600,svchost.exe,3156,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df8791600,svchost.exe,3156,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df8831080,svchost.exe,428,716,0,0,False,1,1,0,N/A,(Original Process)
+0,0xd98df64f3400,svchost.exe,9888,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df64f3400,svchost.exe,9888,716,0,0,False,0,0,0,Yes,"c:\windows\system32\svchost.exe"
+0,0xd98df480e080,osf64.exe,8892,5352,2,2,False,33,1,0,N/A,(Original Process)
+1,0xd98df480e080,osf64.exe,8892,5352,2,0,False,0,0,0,Yes,"C:\Program Files\OSForensics\osf64.exe"
+0,0xd98df6361600,WmiPrvSE.exe,7080,868,0,0,False,15,1,0,N/A,(Original Process)
+1,0xd98df6361600,WmiPrvSE.exe,7080,868,0,0,False,0,0,0,Yes,"C:\WINDOWS\system32\wbem\wmiprvse.exe"
+0,0xd98df5f05600,svchost.exe,8704,716,0,0,False,1,1,0,N/A,(Original Process)
+1,0xd98df5f05600,svchost.exe,8704,716,0,0,False,0,0,0,Yes,"C:\WINDOWS\system32\svchost.exe"
+0,0xd98df80cf2c0,svchost.exe,7776,716,0,0,False,1,1,0,N/A,(Original Process)
+

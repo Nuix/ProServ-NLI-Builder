@@ -7,7 +7,7 @@ from nuix_nli_lib.edrm.MappingEntry import MappingEntry
 from nuix_nli_lib import data_types
 
 """
-This module provides classes that can be used to simplifying adding CSV files to an EDRM XML load file, or NLI file.
+This module provides classes that can be used to simplify adding CSV files to an EDRM XML load file, or NLI file.
 It contains two base classes:
 
 CSVEntry:
@@ -15,7 +15,7 @@ This subclass of edrm.FileEntry represents a CSV file.  It will read the CSV fil
 It can then provide access to individual rows using the `data` property.  The class also adds an `add_to_builder`
 method, which, when used instead of the traditional `edrm.EDRMBuilder#add_entry` method, will also construct and add
 CSVRowEntry instances to the builder representing each row in the CSV file.  Additional modifications to the base
-FileEntry type include tha abolity to act as a parent (generally to do so for the CSV rows).
+FileEntry type include tha ability to act as a parent (generally to do so for the CSV rows).
 
 CSVRowEntry:
 This subclass of edrm.MappingEntry represents a row on a CSV file.  It only exists in the context of its parent
@@ -23,7 +23,7 @@ CSVEntry.  It will provide fields and values based on the CSVEntry's data proper
 
 When using a CSV File, it will usually be required to customize it in some way to work with the CSVs data - for example
 to provide meaningful names or correct time fields for each row.  In this case, it is usually only necessary to override
-the CSVRowEnty class and provide it as the row_generator when constucting the CSVEntry.  See the test.csv_tests.EnvEntry
+the CSVRowEnty class and provide it as the row_generator when constructing the CSVEntry.  See the test.csv_tests.EnvEntry
 as a basic example, and test.csv_tests.ProcessEntry for a more complete example.
 
 <code>

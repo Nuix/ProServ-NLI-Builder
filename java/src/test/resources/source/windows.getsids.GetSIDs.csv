@@ -1,0 +1,1646 @@
+TreeDepth,PID,Process,SID,Name
+0,4,System,S-1-5-18,Local System
+0,4,System,S-1-5-32-544,Administrators
+0,4,System,S-1-1-0,Everyone
+0,4,System,S-1-5-11,Authenticated Users
+0,4,System,S-1-16-16384,System Mandatory Level
+0,356,smss.exe,S-1-5-18,Local System
+0,356,smss.exe,S-1-5-32-544,Administrators
+0,356,smss.exe,S-1-1-0,Everyone
+0,356,smss.exe,S-1-5-11,Authenticated Users
+0,356,smss.exe,S-1-16-16384,System Mandatory Level
+0,468,csrss.exe,S-1-5-18,Local System
+0,468,csrss.exe,S-1-5-32-544,Administrators
+0,468,csrss.exe,S-1-1-0,Everyone
+0,468,csrss.exe,S-1-5-11,Authenticated Users
+0,468,csrss.exe,S-1-16-16384,System Mandatory Level
+0,568,wininit.exe,S-1-5-18,Local System
+0,568,wininit.exe,S-1-5-32-544,Administrators
+0,568,wininit.exe,S-1-1-0,Everyone
+0,568,wininit.exe,S-1-5-11,Authenticated Users
+0,568,wininit.exe,S-1-16-16384,System Mandatory Level
+0,716,services.exe,S-1-5-18,Local System
+0,716,services.exe,S-1-5-32-544,Administrators
+0,716,services.exe,S-1-1-0,Everyone
+0,716,services.exe,S-1-5-11,Authenticated Users
+0,716,services.exe,S-1-16-16384,System Mandatory Level
+0,744,lsass.exe,S-1-5-18,Local System
+0,744,lsass.exe,S-1-5-32-544,Administrators
+0,744,lsass.exe,S-1-1-0,Everyone
+0,744,lsass.exe,S-1-5-11,Authenticated Users
+0,744,lsass.exe,S-1-16-16384,System Mandatory Level
+0,844,svchost.exe,S-1-5-18,Local System
+0,844,svchost.exe,S-1-16-16384,System Mandatory Level
+0,844,svchost.exe,S-1-1-0,Everyone
+0,844,svchost.exe,S-1-5-32-545,Users
+0,844,svchost.exe,S-1-5-6,Service
+0,844,svchost.exe,S-1-5-11,Authenticated Users
+0,844,svchost.exe,S-1-5-15,This Organization
+0,844,svchost.exe,S-1-5-80-1981970923-922788642-3535304421-2999920573-318732269,PlugPlay
+0,844,svchost.exe,S-1-5-5-0-50905,Logon Session
+0,844,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,844,svchost.exe,S-1-5-32-544,Administrators
+0,868,svchost.exe,S-1-5-18,Local System
+0,868,svchost.exe,S-1-16-16384,System Mandatory Level
+0,868,svchost.exe,S-1-1-0,Everyone
+0,868,svchost.exe,S-1-5-32-545,Users
+0,868,svchost.exe,S-1-5-6,Service
+0,868,svchost.exe,S-1-5-11,Authenticated Users
+0,868,svchost.exe,S-1-5-15,This Organization
+0,868,svchost.exe,S-1-5-80-1988685059-1921232356-378231328-2704142597-890457928,-
+0,868,svchost.exe,S-1-5-80-1601830629-990752416-3372939810-977361409-3075122917,DcomLaunch
+0,868,svchost.exe,S-1-5-80-2659457741-469498900-3203170401-3149177360-3048467625,-
+0,868,svchost.exe,S-1-5-80-1230977110-1477712667-2747199032-477530733-939374687,-
+0,868,svchost.exe,S-1-5-80-2343416411-2961288913-598565901-392633850-2111459193,Power
+0,868,svchost.exe,S-1-5-80-1662832393-3268938575-4001313665-1200257238-783911988,-
+0,868,svchost.exe,S-1-5-5-0-51664,Logon Session
+0,868,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,868,svchost.exe,S-1-5-32-544,Administrators
+0,920,svchost.exe,S-1-5-20,NT Authority
+0,920,svchost.exe,S-1-16-16384,System Mandatory Level
+0,920,svchost.exe,S-1-1-0,Everyone
+0,920,svchost.exe,S-1-5-32-545,Users
+0,920,svchost.exe,S-1-5-6,Service
+0,920,svchost.exe,S-1-5-11,Authenticated Users
+0,920,svchost.exe,S-1-5-15,This Organization
+0,920,svchost.exe,S-1-5-80-521322694-906040134-3864710659-1525148216-3451224162,RpcEptMapper
+0,920,svchost.exe,S-1-5-80-979556362-403687129-3954533659-2335141334-1547273080,RpcSs
+0,920,svchost.exe,S-1-5-5-0-66900,Logon Session
+0,920,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,944,fontdrvhost.ex,S-1-5-96-0-0,-
+0,944,fontdrvhost.ex,S-1-16-4096,Low Mandatory Level
+0,944,fontdrvhost.ex,S-1-1-0,Everyone
+0,944,fontdrvhost.ex,S-1-5-32-545,Users
+0,944,fontdrvhost.ex,S-1-5-4,Interactive
+0,944,fontdrvhost.ex,S-1-5-11,Authenticated Users
+0,944,fontdrvhost.ex,S-1-5-15,This Organization
+0,944,fontdrvhost.ex,S-1-5-5-0-51246,Logon Session
+0,944,fontdrvhost.ex,S-1-5-96-0,-
+0,72,svchost.exe,S-1-5-18,Local System
+0,72,svchost.exe,S-1-16-16384,System Mandatory Level
+0,72,svchost.exe,S-1-1-0,Everyone
+0,72,svchost.exe,S-1-5-32-545,Users
+0,72,svchost.exe,S-1-5-6,Service
+0,72,svchost.exe,S-1-5-11,Authenticated Users
+0,72,svchost.exe,S-1-5-15,This Organization
+0,72,svchost.exe,S-1-5-80-1230977110-1477712667-2747199032-477530733-939374687,-
+0,72,svchost.exe,S-1-5-5-0-67986,Logon Session
+0,72,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,72,svchost.exe,S-1-5-32-544,Administrators
+0,804,svchost.exe,S-1-5-18,Local System
+0,804,svchost.exe,S-1-16-16384,System Mandatory Level
+0,804,svchost.exe,S-1-1-0,Everyone
+0,804,svchost.exe,S-1-5-32-545,Users
+0,804,svchost.exe,S-1-5-6,Service
+0,804,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,804,svchost.exe,S-1-5-11,Authenticated Users
+0,804,svchost.exe,S-1-5-15,This Organization
+0,804,svchost.exe,S-1-5-80-3169048008-2586333165-76651690-3609634147-4147641610,-
+0,804,svchost.exe,S-1-5-5-0-71858,Logon Session
+0,804,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,804,svchost.exe,S-1-5-32-544,Administrators
+0,1056,svchost.exe,S-1-5-19,NT Authority
+0,1056,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1056,svchost.exe,S-1-1-0,Everyone
+0,1056,svchost.exe,S-1-5-32-545,Users
+0,1056,svchost.exe,S-1-5-6,Service
+0,1056,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1056,svchost.exe,S-1-5-11,Authenticated Users
+0,1056,svchost.exe,S-1-5-15,This Organization
+0,1056,svchost.exe,S-1-5-80-410965207-2550896871-1717734767-2321332215-3755966139,-
+0,1056,svchost.exe,S-1-5-80-3557709225-3446934100-2592608561-3401846376-4273827271,-
+0,1056,svchost.exe,S-1-5-5-0-72729,Logon Session
+0,1056,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1140,svchost.exe,S-1-5-18,Local System
+0,1140,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1140,svchost.exe,S-1-1-0,Everyone
+0,1140,svchost.exe,S-1-5-32-545,Users
+0,1140,svchost.exe,S-1-5-6,Service
+0,1140,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1140,svchost.exe,S-1-5-11,Authenticated Users
+0,1140,svchost.exe,S-1-5-15,This Organization
+0,1140,svchost.exe,S-1-5-80-89818136-74175777-88572358-3912780041-2421659406,hidserv
+0,1140,svchost.exe,S-1-5-5-0-73557,Logon Session
+0,1140,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1140,svchost.exe,S-1-5-32-544,Administrators
+0,1260,svchost.exe,S-1-5-19,NT Authority
+0,1260,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1260,svchost.exe,S-1-1-0,Everyone
+0,1260,svchost.exe,S-1-5-32-545,Users
+0,1260,svchost.exe,S-1-5-6,Service
+0,1260,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1260,svchost.exe,S-1-5-11,Authenticated Users
+0,1260,svchost.exe,S-1-5-15,This Organization
+0,1260,svchost.exe,S-1-5-80-880578595-1860270145-482643319-2788375705-1540778122,eventlog
+0,1260,svchost.exe,S-1-5-5-0-77664,Logon Session
+0,1260,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1288,atiesrxx.exe,S-1-5-18,Local System
+0,1288,atiesrxx.exe,S-1-5-32-544,Administrators
+0,1288,atiesrxx.exe,S-1-1-0,Everyone
+0,1288,atiesrxx.exe,S-1-5-11,Authenticated Users
+0,1288,atiesrxx.exe,S-1-16-16384,System Mandatory Level
+0,1316,svchost.exe,S-1-5-19,NT Authority
+0,1316,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1316,svchost.exe,S-1-1-0,Everyone
+0,1316,svchost.exe,S-1-5-32-545,Users
+0,1316,svchost.exe,S-1-5-6,Service
+0,1316,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1316,svchost.exe,S-1-5-11,Authenticated Users
+0,1316,svchost.exe,S-1-5-15,This Organization
+0,1316,svchost.exe,S-1-5-80-2310782386-4237065203-3688974353-390202159-3511571085,nsi
+0,1316,svchost.exe,S-1-5-5-0-80606,Logon Session
+0,1316,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1368,svchost.exe,S-1-5-19,NT Authority
+0,1368,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1368,svchost.exe,S-1-1-0,Everyone
+0,1368,svchost.exe,S-1-5-32-545,Users
+0,1368,svchost.exe,S-1-5-6,Service
+0,1368,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1368,svchost.exe,S-1-5-11,Authenticated Users
+0,1368,svchost.exe,S-1-5-15,This Organization
+0,1368,svchost.exe,S-1-5-80-2940520708-3855866260-481812779-327648279-1710889582,Dhcp
+0,1368,svchost.exe,S-1-5-5-0-81299,Logon Session
+0,1368,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1412,svchost.exe,S-1-5-18,Local System
+0,1412,svchost.exe,S-1-5-32-544,Administrators
+0,1412,svchost.exe,S-1-1-0,Everyone
+0,1412,svchost.exe,S-1-5-11,Authenticated Users
+0,1412,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1420,svchost.exe,S-1-5-18,Local System
+0,1420,svchost.exe,S-1-5-32-544,Administrators
+0,1420,svchost.exe,S-1-1-0,Everyone
+0,1420,svchost.exe,S-1-5-11,Authenticated Users
+0,1420,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1436,svchost.exe,S-1-5-19,NT Authority
+0,1436,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1436,svchost.exe,S-1-1-0,Everyone
+0,1436,svchost.exe,S-1-5-32-545,Users
+0,1436,svchost.exe,S-1-5-6,Service
+0,1436,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1436,svchost.exe,S-1-5-11,Authenticated Users
+0,1436,svchost.exe,S-1-5-15,This Organization
+0,1436,svchost.exe,S-1-5-80-1772571935-1555666882-3369284645-1675012128-2386634627,EventSystem
+0,1436,svchost.exe,S-1-5-5-0-82885,Logon Session
+0,1436,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1532,svchost.exe,S-1-5-20,NT Authority
+0,1532,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1532,svchost.exe,S-1-1-0,Everyone
+0,1532,svchost.exe,S-1-5-32-545,Users
+0,1532,svchost.exe,S-1-5-6,Service
+0,1532,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1532,svchost.exe,S-1-5-11,Authenticated Users
+0,1532,svchost.exe,S-1-5-15,This Organization
+0,1532,svchost.exe,S-1-5-80-3141615172-2057878085-1754447212-2405740020-3916490453,NlaSvc
+0,1532,svchost.exe,S-1-5-5-0-84454,Logon Session
+0,1532,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1548,svchost.exe,S-1-5-18,Local System
+0,1548,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1548,svchost.exe,S-1-1-0,Everyone
+0,1548,svchost.exe,S-1-5-32-545,Users
+0,1548,svchost.exe,S-1-5-6,Service
+0,1548,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1548,svchost.exe,S-1-5-11,Authenticated Users
+0,1548,svchost.exe,S-1-5-15,This Organization
+0,1548,svchost.exe,S-1-5-80-4259241309-1822918763-1176128033-1339750638-3428293995,SENS
+0,1548,svchost.exe,S-1-5-5-0-84991,Logon Session
+0,1548,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1548,svchost.exe,S-1-5-32-544,Administrators
+0,1568,svchost.exe,S-1-5-18,Local System
+0,1568,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1568,svchost.exe,S-1-1-0,Everyone
+0,1568,svchost.exe,S-1-5-32-545,Users
+0,1568,svchost.exe,S-1-5-6,Service
+0,1568,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1568,svchost.exe,S-1-5-11,Authenticated Users
+0,1568,svchost.exe,S-1-5-15,This Organization
+0,1568,svchost.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,1568,svchost.exe,S-1-5-5-0-85163,Logon Session
+0,1568,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1568,svchost.exe,S-1-5-32-544,Administrators
+0,1644,svchost.exe,S-1-5-18,Local System
+0,1644,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1644,svchost.exe,S-1-1-0,Everyone
+0,1644,svchost.exe,S-1-5-32-545,Users
+0,1644,svchost.exe,S-1-5-6,Service
+0,1644,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1644,svchost.exe,S-1-5-11,Authenticated Users
+0,1644,svchost.exe,S-1-5-15,This Organization
+0,1644,svchost.exe,S-1-5-80-1580948945-3239616721-2529237571-3761093093-1214243633,AudioEndpointBuilder
+0,1644,svchost.exe,S-1-5-5-0-86646,Logon Session
+0,1644,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1644,svchost.exe,S-1-5-32-544,Administrators
+0,1652,svchost.exe,S-1-5-19,NT Authority
+0,1652,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1652,svchost.exe,S-1-1-0,Everyone
+0,1652,svchost.exe,S-1-5-32-545,Users
+0,1652,svchost.exe,S-1-5-6,Service
+0,1652,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1652,svchost.exe,S-1-5-11,Authenticated Users
+0,1652,svchost.exe,S-1-5-15,This Organization
+0,1652,svchost.exe,S-1-5-80-3655275221-2954682349-3644260495-855223267-1438849333,FontCache
+0,1652,svchost.exe,S-1-5-5-0-86757,Logon Session
+0,1652,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1724,svchost.exe,S-1-5-19,NT Authority
+0,1724,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1724,svchost.exe,S-1-1-0,Everyone
+0,1724,svchost.exe,S-1-5-32-545,Users
+0,1724,svchost.exe,S-1-5-6,Service
+0,1724,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1724,svchost.exe,S-1-5-11,Authenticated Users
+0,1724,svchost.exe,S-1-5-15,This Organization
+0,1724,svchost.exe,S-1-5-80-3635958274-2059881490-2225992882-984577281-633327304,netprofm
+0,1724,svchost.exe,S-1-5-5-0-87635,Logon Session
+0,1724,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1824,svchost.exe,S-1-5-19,NT Authority
+0,1824,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1824,svchost.exe,S-1-1-0,Everyone
+0,1824,svchost.exe,S-1-5-32-545,Users
+0,1824,svchost.exe,S-1-5-6,Service
+0,1824,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1824,svchost.exe,S-1-5-11,Authenticated Users
+0,1824,svchost.exe,S-1-5-15,This Organization
+0,1824,svchost.exe,S-1-5-80-2676549577-1911656217-2625096541-4178041876-1366760775,Audiosrv
+0,1824,svchost.exe,S-1-5-5-0-90476,Logon Session
+0,1824,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1872,svchost.exe,S-1-5-18,Local System
+0,1872,svchost.exe,S-1-5-32-544,Administrators
+0,1872,svchost.exe,S-1-1-0,Everyone
+0,1872,svchost.exe,S-1-5-11,Authenticated Users
+0,1872,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1940,svchost.exe,S-1-5-20,NT Authority
+0,1940,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1940,svchost.exe,S-1-1-0,Everyone
+0,1940,svchost.exe,S-1-5-32-545,Users
+0,1940,svchost.exe,S-1-5-6,Service
+0,1940,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1940,svchost.exe,S-1-5-11,Authenticated Users
+0,1940,svchost.exe,S-1-5-15,This Organization
+0,1940,svchost.exe,S-1-5-80-859482183-879914841-863379149-1145462774-2388618682,Dnscache
+0,1940,svchost.exe,S-1-5-5-0-93822,Logon Session
+0,1940,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1948,svchost.exe,S-1-5-19,NT Authority
+0,1948,svchost.exe,S-1-16-16384,System Mandatory Level
+0,1948,svchost.exe,S-1-1-0,Everyone
+0,1948,svchost.exe,S-1-5-32-545,Users
+0,1948,svchost.exe,S-1-5-6,Service
+0,1948,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1948,svchost.exe,S-1-5-11,Authenticated Users
+0,1948,svchost.exe,S-1-5-15,This Organization
+0,1948,svchost.exe,S-1-5-80-4071458001-3563271761-1846288968-3700919931-3809667977,-
+0,1948,svchost.exe,S-1-5-5-0-93825,Logon Session
+0,1948,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2036,svchost.exe,S-1-5-18,Local System
+0,2036,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2036,svchost.exe,S-1-1-0,Everyone
+0,2036,svchost.exe,S-1-5-32-545,Users
+0,2036,svchost.exe,S-1-5-6,Service
+0,2036,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2036,svchost.exe,S-1-5-11,Authenticated Users
+0,2036,svchost.exe,S-1-5-15,This Organization
+0,2036,svchost.exe,S-1-5-80-4118144674-975173503-976751360-2062754009-4288402176,-
+0,2036,svchost.exe,S-1-5-5-0-95280,Logon Session
+0,2036,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2036,svchost.exe,S-1-5-32-544,Administrators
+0,2068,svchost.exe,S-1-5-19,NT Authority
+0,2068,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2068,svchost.exe,S-1-1-0,Everyone
+0,2068,svchost.exe,S-1-5-32-545,Users
+0,2068,svchost.exe,S-1-5-6,Service
+0,2068,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2068,svchost.exe,S-1-5-11,Authenticated Users
+0,2068,svchost.exe,S-1-5-15,This Organization
+0,2068,svchost.exe,S-1-5-80-4155767994-3874329934-3800885181-2130851812-726865888,-
+0,2068,svchost.exe,S-1-5-5-0-97480,Logon Session
+0,2068,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2260,svchost.exe,S-1-5-18,Local System
+0,2260,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2260,svchost.exe,S-1-1-0,Everyone
+0,2260,svchost.exe,S-1-5-32-545,Users
+0,2260,svchost.exe,S-1-5-6,Service
+0,2260,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2260,svchost.exe,S-1-5-11,Authenticated Users
+0,2260,svchost.exe,S-1-5-15,This Organization
+0,2260,svchost.exe,S-1-5-80-1428027539-3309602793-2678353003-1498846795-3763184142,Wlansvc
+0,2260,svchost.exe,S-1-5-5-0-102802,Logon Session
+0,2260,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2260,svchost.exe,S-1-5-32-544,Administrators
+0,2304,svchost.exe,S-1-5-18,Local System
+0,2304,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2304,svchost.exe,S-1-1-0,Everyone
+0,2304,svchost.exe,S-1-5-32-545,Users
+0,2304,svchost.exe,S-1-5-6,Service
+0,2304,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2304,svchost.exe,S-1-5-11,Authenticated Users
+0,2304,svchost.exe,S-1-5-15,This Organization
+0,2304,svchost.exe,S-1-5-80-1690854464-3758363787-3981977099-3843555589-1401248062,ShellHWDetection
+0,2304,svchost.exe,S-1-5-5-0-104893,Logon Session
+0,2304,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2304,svchost.exe,S-1-5-32-544,Administrators
+0,2364,spoolsv.exe,S-1-5-18,Local System
+0,2364,spoolsv.exe,S-1-16-16384,System Mandatory Level
+0,2364,spoolsv.exe,S-1-1-0,Everyone
+0,2364,spoolsv.exe,S-1-5-32-545,Users
+0,2364,spoolsv.exe,S-1-5-6,Service
+0,2364,spoolsv.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2364,spoolsv.exe,S-1-5-11,Authenticated Users
+0,2364,spoolsv.exe,S-1-5-15,This Organization
+0,2364,spoolsv.exe,S-1-5-80-3951239711-1671533544-1416304335-3763227691-3930497994,Spooler
+0,2364,spoolsv.exe,S-1-5-5-0-107066,Logon Session
+0,2364,spoolsv.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2364,spoolsv.exe,S-1-5-32-544,Administrators
+0,2424,svchost.exe,S-1-5-19,NT Authority
+0,2424,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2424,svchost.exe,S-1-1-0,Everyone
+0,2424,svchost.exe,S-1-5-32-545,Users
+0,2424,svchost.exe,S-1-5-6,Service
+0,2424,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2424,svchost.exe,S-1-5-11,Authenticated Users
+0,2424,svchost.exe,S-1-5-15,This Organization
+0,2424,svchost.exe,S-1-5-80-1383147646-27650227-2710666058-1662982300-1023958487,BFE
+0,2424,svchost.exe,S-1-5-80-1021139062-1866602279-1255292388-1008060685-2498416891,-
+0,2424,svchost.exe,S-1-5-80-2970612574-78537857-698502321-558674196-1451644582,DPS
+0,2424,svchost.exe,S-1-5-80-3088073201-1464728630-1879813800-1107566885-823218052,MpsSvc
+0,2424,svchost.exe,S-1-5-80-639065985-1709096039-2702309040-2770678766-2981280942,-
+0,2424,svchost.exe,S-1-5-80-2661322625-712705077-2999183737-3043590567-590698655,pla
+0,2424,svchost.exe,S-1-5-80-3981856537-581775623-1136376035-2066872258-409572886,WwanSvc
+0,2424,svchost.exe,S-1-5-5-0-109338,Logon Session
+0,2424,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2424,svchost.exe,S-1-5-33,Write Restricted
+0,2504,svchost.exe,S-1-5-20,NT Authority
+0,2504,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2504,svchost.exe,S-1-1-0,Everyone
+0,2504,svchost.exe,S-1-5-32-545,Users
+0,2504,svchost.exe,S-1-5-6,Service
+0,2504,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2504,svchost.exe,S-1-5-11,Authenticated Users
+0,2504,svchost.exe,S-1-5-15,This Organization
+0,2504,svchost.exe,S-1-5-80-719998295-2833700043-1566817583-4093942769-1414026312,LanmanWorkstation
+0,2504,svchost.exe,S-1-5-5-0-112141,Logon Session
+0,2504,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2656,svchost.exe,S-1-5-18,Local System
+0,2656,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2656,svchost.exe,S-1-1-0,Everyone
+0,2656,svchost.exe,S-1-5-32-545,Users
+0,2656,svchost.exe,S-1-5-6,Service
+0,2656,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2656,svchost.exe,S-1-5-11,Authenticated Users
+0,2656,svchost.exe,S-1-5-15,This Organization
+0,2656,svchost.exe,S-1-5-80-2536636004-4072673470-1048721469-2703517266-1433793019,-
+0,2656,svchost.exe,S-1-5-5-0-116678,Logon Session
+0,2656,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2656,svchost.exe,S-1-5-32-544,Administrators
+0,2664,svchost.exe,S-1-5-18,Local System
+0,2664,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2664,svchost.exe,S-1-1-0,Everyone
+0,2664,svchost.exe,S-1-5-32-545,Users
+0,2664,svchost.exe,S-1-5-6,Service
+0,2664,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2664,svchost.exe,S-1-5-11,Authenticated Users
+0,2664,svchost.exe,S-1-5-15,This Organization
+0,2664,svchost.exe,S-1-5-80-1948712186-1330865447-943413596-1669284603-1648638051,PcaSvc
+0,2664,svchost.exe,S-1-5-5-0-116820,Logon Session
+0,2664,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2664,svchost.exe,S-1-5-32-544,Administrators
+0,2672,SynTPEnhServic,S-1-5-18,Local System
+0,2672,SynTPEnhServic,S-1-5-32-544,Administrators
+0,2672,SynTPEnhServic,S-1-1-0,Everyone
+0,2672,SynTPEnhServic,S-1-5-11,Authenticated Users
+0,2672,SynTPEnhServic,S-1-16-16384,System Mandatory Level
+0,2688,MsMpEng.exe,S-1-5-18,Local System
+0,2688,MsMpEng.exe,S-1-16-16384,System Mandatory Level
+0,2688,MsMpEng.exe,S-1-1-0,Everyone
+0,2688,MsMpEng.exe,S-1-5-32-545,Users
+0,2688,MsMpEng.exe,S-1-5-6,Service
+0,2688,MsMpEng.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2688,MsMpEng.exe,S-1-5-11,Authenticated Users
+0,2688,MsMpEng.exe,S-1-5-15,This Organization
+0,2688,MsMpEng.exe,S-1-5-80-1913148863-3492339771-4165695881-2087618961-4109116736,WinDefend
+0,2688,MsMpEng.exe,S-1-5-5-0-116751,Logon Session
+0,2688,MsMpEng.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2688,MsMpEng.exe,S-1-5-32-544,Administrators
+0,2696,svchost.exe,S-1-5-18,Local System
+0,2696,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2696,svchost.exe,S-1-1-0,Everyone
+0,2696,svchost.exe,S-1-5-32-545,Users
+0,2696,svchost.exe,S-1-5-6,Service
+0,2696,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2696,svchost.exe,S-1-5-11,Authenticated Users
+0,2696,svchost.exe,S-1-5-15,This Organization
+0,2696,svchost.exe,S-1-5-80-768763963-4214222998-2156221936-2953597973-713500239,TrkWks
+0,2696,svchost.exe,S-1-5-5-0-117221,Logon Session
+0,2696,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2696,svchost.exe,S-1-5-32-544,Administrators
+0,2704,svchost.exe,S-1-5-19,NT Authority
+0,2704,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2704,svchost.exe,S-1-1-0,Everyone
+0,2704,svchost.exe,S-1-5-32-545,Users
+0,2704,svchost.exe,S-1-5-6,Service
+0,2704,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2704,svchost.exe,S-1-5-11,Authenticated Users
+0,2704,svchost.exe,S-1-5-15,This Organization
+0,2704,svchost.exe,S-1-5-80-3182985763-1431228038-2757062859-428472846-3914011746,StiSvc
+0,2704,svchost.exe,S-1-5-5-0-117024,Logon Session
+0,2704,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2712,svchost.exe,S-1-5-19,NT Authority
+0,2712,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2712,svchost.exe,S-1-1-0,Everyone
+0,2712,svchost.exe,S-1-5-32-545,Users
+0,2712,svchost.exe,S-1-5-6,Service
+0,2712,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2712,svchost.exe,S-1-5-11,Authenticated Users
+0,2712,svchost.exe,S-1-5-15,This Organization
+0,2712,svchost.exe,S-1-5-80-2455429942-3131183193-3617688776-595395669-3772047725,WinHttpAutoProxySvc
+0,2712,svchost.exe,S-1-5-5-0-116704,Logon Session
+0,2712,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2720,svchost.exe,S-1-5-18,Local System
+0,2720,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2720,svchost.exe,S-1-1-0,Everyone
+0,2720,svchost.exe,S-1-5-32-545,Users
+0,2720,svchost.exe,S-1-5-6,Service
+0,2720,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2720,svchost.exe,S-1-5-11,Authenticated Users
+0,2720,svchost.exe,S-1-5-15,This Organization
+0,2720,svchost.exe,S-1-5-80-1938892561-4120931771-3580170924-3403102300-2651602529,-
+0,2720,svchost.exe,S-1-5-5-0-116651,Logon Session
+0,2720,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2720,svchost.exe,S-1-5-32-544,Administrators
+0,2736,svchost.exe,S-1-5-18,Local System
+0,2736,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2736,svchost.exe,S-1-1-0,Everyone
+0,2736,svchost.exe,S-1-5-32-545,Users
+0,2736,svchost.exe,S-1-5-6,Service
+0,2736,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2736,svchost.exe,S-1-5-11,Authenticated Users
+0,2736,svchost.exe,S-1-5-15,This Organization
+0,2736,svchost.exe,S-1-5-80-2620808479-2171380039-3191355562-2070425692-3097948119,-
+0,2736,svchost.exe,S-1-5-5-0-116650,Logon Session
+0,2736,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2736,svchost.exe,S-1-5-32-544,Administrators
+0,2748,svchost.exe,S-1-5-19,NT Authority
+0,2748,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2748,svchost.exe,S-1-1-0,Everyone
+0,2748,svchost.exe,S-1-5-32-545,Users
+0,2748,svchost.exe,S-1-5-6,Service
+0,2748,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2748,svchost.exe,S-1-5-11,Authenticated Users
+0,2748,svchost.exe,S-1-5-15,This Organization
+0,2748,svchost.exe,S-1-5-80-2970612574-78537857-698502321-558674196-1451644582,DPS
+0,2748,svchost.exe,S-1-5-5-0-116684,Logon Session
+0,2748,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2748,svchost.exe,S-1-5-33,Write Restricted
+0,2756,svchost.exe,S-1-5-20,NT Authority
+0,2756,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2756,svchost.exe,S-1-1-0,Everyone
+0,2756,svchost.exe,S-1-5-32-545,Users
+0,2756,svchost.exe,S-1-5-6,Service
+0,2756,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2756,svchost.exe,S-1-5-11,Authenticated Users
+0,2756,svchost.exe,S-1-5-15,This Organization
+0,2756,svchost.exe,S-1-5-80-242729624-280608522-2219052887-3187409060-2225943459,CryptSvc
+0,2756,svchost.exe,S-1-5-5-0-117349,Logon Session
+0,2756,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2764,svchost.exe,S-1-5-18,Local System
+0,2764,svchost.exe,S-1-5-32-544,Administrators
+0,2764,svchost.exe,S-1-1-0,Everyone
+0,2764,svchost.exe,S-1-5-11,Authenticated Users
+0,2764,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2772,svchost.exe,S-1-5-18,Local System
+0,2772,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2772,svchost.exe,S-1-1-0,Everyone
+0,2772,svchost.exe,S-1-5-32-545,Users
+0,2772,svchost.exe,S-1-5-6,Service
+0,2772,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2772,svchost.exe,S-1-5-11,Authenticated Users
+0,2772,svchost.exe,S-1-5-15,This Organization
+0,2772,svchost.exe,S-1-5-80-3750560858-172214265-3889451188-1914796615-4100997547,Winmgmt
+0,2772,svchost.exe,S-1-5-5-0-117295,Logon Session
+0,2772,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2772,svchost.exe,S-1-5-32-544,Administrators
+0,2780,svchost.exe,S-1-5-18,Local System
+0,2780,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2780,svchost.exe,S-1-1-0,Everyone
+0,2780,svchost.exe,S-1-5-32-545,Users
+0,2780,svchost.exe,S-1-5-6,Service
+0,2780,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2780,svchost.exe,S-1-5-11,Authenticated Users
+0,2780,svchost.exe,S-1-5-15,This Organization
+0,2780,svchost.exe,S-1-5-80-1385144741-1362966867-180516107-799844779-105018228,-
+0,2780,svchost.exe,S-1-5-5-0-117196,Logon Session
+0,2780,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2780,svchost.exe,S-1-5-32-544,Administrators
+0,2792,svchost.exe,S-1-5-18,Local System
+0,2792,svchost.exe,S-1-5-32-544,Administrators
+0,2792,svchost.exe,S-1-1-0,Everyone
+0,2792,svchost.exe,S-1-5-11,Authenticated Users
+0,2792,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2800,SecurityHealth,S-1-5-18,Local System
+0,2800,SecurityHealth,S-1-16-16384,System Mandatory Level
+0,2800,SecurityHealth,S-1-1-0,Everyone
+0,2800,SecurityHealth,S-1-5-32-545,Users
+0,2800,SecurityHealth,S-1-5-6,Service
+0,2800,SecurityHealth,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2800,SecurityHealth,S-1-5-11,Authenticated Users
+0,2800,SecurityHealth,S-1-5-15,This Organization
+0,2800,SecurityHealth,S-1-5-80-259296475-4084429506-1152984619-38739575-565535606,-
+0,2800,SecurityHealth,S-1-5-5-0-116934,Logon Session
+0,2800,SecurityHealth,S-1-2-0,Local (Users with the ability to log in locally)
+0,2800,SecurityHealth,S-1-5-32-544,Administrators
+0,3052,MemCompression,S-1-5-18,Local System
+0,3052,MemCompression,S-1-5-32-544,Administrators
+0,3052,MemCompression,S-1-1-0,Everyone
+0,3052,MemCompression,S-1-5-11,Authenticated Users
+0,3052,MemCompression,S-1-16-16384,System Mandatory Level
+0,2464,svchost.exe,S-1-5-19,NT Authority
+0,2464,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2464,svchost.exe,S-1-1-0,Everyone
+0,2464,svchost.exe,S-1-5-32-545,Users
+0,2464,svchost.exe,S-1-5-6,Service
+0,2464,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2464,svchost.exe,S-1-5-11,Authenticated Users
+0,2464,svchost.exe,S-1-5-15,This Organization
+0,2464,svchost.exe,S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420,WdiServiceHost
+0,2464,svchost.exe,S-1-5-5-0-123683,Logon Session
+0,2464,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2980,dasHost.exe,S-1-5-19,NT Authority
+0,2980,dasHost.exe,S-1-16-16384,System Mandatory Level
+0,2980,dasHost.exe,S-1-1-0,Everyone
+0,2980,dasHost.exe,S-1-5-32-545,Users
+0,2980,dasHost.exe,S-1-5-6,Service
+0,2980,dasHost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2980,dasHost.exe,S-1-5-11,Authenticated Users
+0,2980,dasHost.exe,S-1-5-15,This Organization
+0,2980,dasHost.exe,S-1-5-92-933257453-1117212482-1216340100-3328771170-0,-
+0,2980,dasHost.exe,S-1-5-92-3339056971-1291069075-3798698925-2882100687-0,-
+0,2980,dasHost.exe,S-1-5-92-1467204242-1103346305-4253404563-2848856930-0,-
+0,2980,dasHost.exe,S-1-5-92-1465950962-1269850781-1201917113-1807638133-0,-
+0,2980,dasHost.exe,S-1-5-92-772714260-1330759245-1607081917-2237938158-0,-
+0,2980,dasHost.exe,S-1-5-92-507857385-1133792159-3243016362-2537263318-0,-
+0,2980,dasHost.exe,S-1-5-21-2702878673-795188819-444038987-1031,-
+0,2980,dasHost.exe,S-1-5-21-2702878673-795188819-444038987-1033,-
+0,2980,dasHost.exe,S-1-5-21-2702878673-795188819-444038987-1447,-
+0,2980,dasHost.exe,S-1-5-21-2702878673-795188819-444038987-1043,-
+0,3188,svchost.exe,S-1-5-18,Local System
+0,3188,svchost.exe,S-1-16-16384,System Mandatory Level
+0,3188,svchost.exe,S-1-1-0,Everyone
+0,3188,svchost.exe,S-1-5-32-545,Users
+0,3188,svchost.exe,S-1-5-6,Service
+0,3188,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3188,svchost.exe,S-1-5-11,Authenticated Users
+0,3188,svchost.exe,S-1-5-15,This Organization
+0,3188,svchost.exe,S-1-5-80-879696042-2351668846-370232824-2524288904-4023536711,LanmanServer
+0,3188,svchost.exe,S-1-5-5-0-126148,Logon Session
+0,3188,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,3188,svchost.exe,S-1-5-32-544,Administrators
+0,3288,svchost.exe,S-1-5-18,Local System
+0,3288,svchost.exe,S-1-16-16384,System Mandatory Level
+0,3288,svchost.exe,S-1-1-0,Everyone
+0,3288,svchost.exe,S-1-5-32-545,Users
+0,3288,svchost.exe,S-1-5-6,Service
+0,3288,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3288,svchost.exe,S-1-5-11,Authenticated Users
+0,3288,svchost.exe,S-1-5-15,This Organization
+0,3288,svchost.exe,S-1-5-80-62724632-2456781206-3863850748-1496050881-1042387526,iphlpsvc
+0,3288,svchost.exe,S-1-5-5-0-127081,Logon Session
+0,3288,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,3288,svchost.exe,S-1-5-32-544,Administrators
+0,3400,svchost.exe,S-1-5-19,NT Authority
+0,3400,svchost.exe,S-1-16-16384,System Mandatory Level
+0,3400,svchost.exe,S-1-1-0,Everyone
+0,3400,svchost.exe,S-1-5-32-545,Users
+0,3400,svchost.exe,S-1-5-6,Service
+0,3400,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3400,svchost.exe,S-1-5-11,Authenticated Users
+0,3400,svchost.exe,S-1-5-15,This Organization
+0,3400,svchost.exe,S-1-5-80-486568272-975562994-1883531608-2732234258-332540751,SSDPSRV
+0,3400,svchost.exe,S-1-5-5-0-134314,Logon Session
+0,3400,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,3880,svchost.exe,S-1-5-19,NT Authority
+0,3880,svchost.exe,S-1-16-16384,System Mandatory Level
+0,3880,svchost.exe,S-1-1-0,Everyone
+0,3880,svchost.exe,S-1-5-32-545,Users
+0,3880,svchost.exe,S-1-5-6,Service
+0,3880,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3880,svchost.exe,S-1-5-11,Authenticated Users
+0,3880,svchost.exe,S-1-5-15,This Organization
+0,3880,svchost.exe,S-1-5-80-639065985-1709096039-2702309040-2770678766-2981280942,-
+0,3880,svchost.exe,S-1-5-5-0-149872,Logon Session
+0,3880,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,3880,svchost.exe,S-1-5-33,Write Restricted
+0,3888,svchost.exe,S-1-5-19,NT Authority
+0,3888,svchost.exe,S-1-16-16384,System Mandatory Level
+0,3888,svchost.exe,S-1-1-0,Everyone
+0,3888,svchost.exe,S-1-5-32-545,Users
+0,3888,svchost.exe,S-1-5-6,Service
+0,3888,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3888,svchost.exe,S-1-5-11,Authenticated Users
+0,3888,svchost.exe,S-1-5-15,This Organization
+0,3888,svchost.exe,S-1-5-80-3215268152-2863950836-530904203-4246843131-2183915461,FDResPub
+0,3888,svchost.exe,S-1-5-5-0-149868,Logon Session
+0,3888,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,3972,svchost.exe,S-1-5-19,NT Authority
+0,3972,svchost.exe,S-1-16-16384,System Mandatory Level
+0,3972,svchost.exe,S-1-1-0,Everyone
+0,3972,svchost.exe,S-1-5-32-545,Users
+0,3972,svchost.exe,S-1-5-6,Service
+0,3972,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3972,svchost.exe,S-1-5-11,Authenticated Users
+0,3972,svchost.exe,S-1-5-15,This Organization
+0,3972,svchost.exe,S-1-5-80-364023826-931424190-487969545-1024119571-74567675,fdPHost
+0,3972,svchost.exe,S-1-5-5-0-153895,Logon Session
+0,3972,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2828,svchost.exe,S-1-5-18,Local System
+0,2828,svchost.exe,S-1-5-32-544,Administrators
+0,2828,svchost.exe,S-1-1-0,Everyone
+0,2828,svchost.exe,S-1-5-11,Authenticated Users
+0,2828,svchost.exe,S-1-16-16384,System Mandatory Level
+0,4108,svchost.exe,S-1-5-20,NT Authority
+0,4108,svchost.exe,S-1-16-16384,System Mandatory Level
+0,4108,svchost.exe,S-1-1-0,Everyone
+0,4108,svchost.exe,S-1-5-32-545,Users
+0,4108,svchost.exe,S-1-5-6,Service
+0,4108,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,4108,svchost.exe,S-1-5-11,Authenticated Users
+0,4108,svchost.exe,S-1-5-15,This Organization
+0,4108,svchost.exe,S-1-5-80-3044542841-3639452079-4096941652-1606687743-1256249853,PolicyAgent
+0,4108,svchost.exe,S-1-5-5-0-189450,Logon Session
+0,4108,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,4264,svchost.exe,S-1-5-19,NT Authority
+0,4264,svchost.exe,S-1-16-16384,System Mandatory Level
+0,4264,svchost.exe,S-1-1-0,Everyone
+0,4264,svchost.exe,S-1-5-32-545,Users
+0,4264,svchost.exe,S-1-5-6,Service
+0,4264,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,4264,svchost.exe,S-1-5-11,Authenticated Users
+0,4264,svchost.exe,S-1-5-15,This Organization
+0,4264,svchost.exe,S-1-5-80-2620923248-4247863784-3378508180-2659151310-2535246811,HomeGroupProvider
+0,4264,svchost.exe,S-1-5-5-0-200310,Logon Session
+0,4264,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,4504,svchost.exe,S-1-5-19,NT Authority
+0,4504,svchost.exe,S-1-16-16384,System Mandatory Level
+0,4504,svchost.exe,S-1-1-0,Everyone
+0,4504,svchost.exe,S-1-5-32-545,Users
+0,4504,svchost.exe,S-1-5-6,Service
+0,4504,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,4504,svchost.exe,S-1-5-11,Authenticated Users
+0,4504,svchost.exe,S-1-5-15,This Organization
+0,4504,svchost.exe,S-1-5-80-3433512109-503559027-1389316256-1766580070-2256751264,-
+0,4504,svchost.exe,S-1-5-5-0-211957,Logon Session
+0,4504,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,5020,NisSrv.exe,S-1-5-19,NT Authority
+0,5020,NisSrv.exe,S-1-16-16384,System Mandatory Level
+0,5020,NisSrv.exe,S-1-1-0,Everyone
+0,5020,NisSrv.exe,S-1-5-32-545,Users
+0,5020,NisSrv.exe,S-1-5-6,Service
+0,5020,NisSrv.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,5020,NisSrv.exe,S-1-5-11,Authenticated Users
+0,5020,NisSrv.exe,S-1-5-15,This Organization
+0,5020,NisSrv.exe,S-1-5-80-3668810961-2468724468-4084584310-3029221373-430494444,-
+0,5020,NisSrv.exe,S-1-5-5-0-231258,Logon Session
+0,5020,NisSrv.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,3448,svchost.exe,S-1-5-19,NT Authority
+0,3448,svchost.exe,S-1-16-16384,System Mandatory Level
+0,3448,svchost.exe,S-1-1-0,Everyone
+0,3448,svchost.exe,S-1-5-32-545,Users
+0,3448,svchost.exe,S-1-5-6,Service
+0,3448,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3448,svchost.exe,S-1-5-11,Authenticated Users
+0,3448,svchost.exe,S-1-5-15,This Organization
+0,3448,svchost.exe,S-1-5-80-2168654060-3115992504-1782388893-2584760693-2634250426,-
+0,3448,svchost.exe,S-1-5-5-0-418402,Logon Session
+0,3448,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2988,svchost.exe,S-1-5-18,Local System
+0,2988,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2988,svchost.exe,S-1-1-0,Everyone
+0,2988,svchost.exe,S-1-5-32-545,Users
+0,2988,svchost.exe,S-1-5-6,Service
+0,2988,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2988,svchost.exe,S-1-5-11,Authenticated Users
+0,2988,svchost.exe,S-1-5-15,This Organization
+0,2988,svchost.exe,S-1-5-80-2962817144-200689703-2266453665-3849882635-1986547430,BDESVC
+0,2988,svchost.exe,S-1-5-80-864916184-135290571-3087830041-1716922880-4237303741,BITS
+0,2988,svchost.exe,S-1-5-80-3256172449-2363790065-3617575471-4144056108-756904704,CertPropSvc
+0,2988,svchost.exe,S-1-5-80-3841379657-834162867-3056945855-2577476187-70241904,-
+0,2988,svchost.exe,S-1-5-80-3055155277-3816794035-3994065555-2874236192-2193176987,-
+0,2988,svchost.exe,S-1-5-80-3578261754-285310837-913589462-2834155770-667502746,EapHost
+0,2988,svchost.exe,S-1-5-80-698886940-375981264-2691324669-2937073286-3841916615,IKEEXT
+0,2988,svchost.exe,S-1-5-80-3704025948-1094794811-1175534343-2088422159-783153058,-
+0,2988,svchost.exe,S-1-5-80-917953661-2020045820-2727011118-2260243830-4032185929,MSiSCSI
+0,2988,svchost.exe,S-1-5-80-154974075-1852685594-3179713959-2755908004-3936262621,-
+0,2988,svchost.exe,S-1-5-80-1802467488-1541022566-2033325545-854566965-652742428,RasAuto
+0,2988,svchost.exe,S-1-5-80-4176366874-305252471-2256717057-2714189771-3552532790,RasMan
+0,2988,svchost.exe,S-1-5-80-1954729425-4294152082-187165618-318331177-3831297489,RemoteAccess
+0,2988,svchost.exe,S-1-5-80-1691538513-4084330536-1620899472-1113280783-3554754292,SCPolicySvc
+0,2988,svchost.exe,S-1-5-80-4022436659-1090538466-1613889075-870485073-3428993833,SessionEnv
+0,2988,svchost.exe,S-1-5-80-2009329905-444645132-2728249442-922493431-93864177,SharedAccess
+0,2988,svchost.exe,S-1-5-80-223807737-1693445485-119162242-1977420160-1403034029,-
+0,2988,svchost.exe,S-1-5-80-3594706986-2537596223-181334840-1741483385-1351671666,wercplsupport
+0,2988,svchost.exe,S-1-5-80-2952724807-2252311773-3412998076-2712868122-780978283,-
+0,2988,svchost.exe,S-1-5-80-1014140700-3308905587-3330345912-272242898-93311788,wuauserv
+0,2988,svchost.exe,S-1-5-80-603222039-1779857981-708438124-1730083285-3435298639,-
+0,2988,svchost.exe,S-1-5-80-1352715831-1104254428-97934242-2131353953-1898040052,-
+0,2988,svchost.exe,S-1-5-5-0-424963,Logon Session
+0,2988,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2988,svchost.exe,S-1-5-32-544,Administrators
+0,4660,svchost.exe,S-1-5-18,Local System
+0,4660,svchost.exe,S-1-5-32-544,Administrators
+0,4660,svchost.exe,S-1-1-0,Everyone
+0,4660,svchost.exe,S-1-5-11,Authenticated Users
+0,4660,svchost.exe,S-1-16-16384,System Mandatory Level
+0,5648,svchost.exe,S-1-5-18,Local System
+0,5648,svchost.exe,S-1-5-32-544,Administrators
+0,5648,svchost.exe,S-1-1-0,Everyone
+0,5648,svchost.exe,S-1-5-11,Authenticated Users
+0,5648,svchost.exe,S-1-16-16384,System Mandatory Level
+0,5932,GoogleCrashHan,S-1-5-18,Local System
+0,5932,GoogleCrashHan,S-1-16-16384,System Mandatory Level
+0,5932,GoogleCrashHan,S-1-1-0,Everyone
+0,5932,GoogleCrashHan,S-1-5-32-545,Users
+0,5932,GoogleCrashHan,S-1-5-6,Service
+0,5932,GoogleCrashHan,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,5932,GoogleCrashHan,S-1-5-11,Authenticated Users
+0,5932,GoogleCrashHan,S-1-5-15,This Organization
+0,5932,GoogleCrashHan,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,5932,GoogleCrashHan,S-1-5-5-0-85163,Logon Session
+0,5932,GoogleCrashHan,S-1-2-0,Local (Users with the ability to log in locally)
+0,5932,GoogleCrashHan,S-1-5-32-544,Administrators
+0,5764,svchost.exe,S-1-5-18,Local System
+0,5764,svchost.exe,S-1-16-16384,System Mandatory Level
+0,5764,svchost.exe,S-1-1-0,Everyone
+0,5764,svchost.exe,S-1-5-32-545,Users
+0,5764,svchost.exe,S-1-5-6,Service
+0,5764,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,5764,svchost.exe,S-1-5-11,Authenticated Users
+0,5764,svchost.exe,S-1-5-15,This Organization
+0,5764,svchost.exe,S-1-5-80-3055155277-3816794035-3994065555-2874236192-2193176987,-
+0,5764,svchost.exe,S-1-5-5-0-1468763,Logon Session
+0,5764,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,5764,svchost.exe,S-1-5-32-544,Administrators
+0,5940,GoogleCrashHan,S-1-5-18,Local System
+0,5940,GoogleCrashHan,S-1-16-16384,System Mandatory Level
+0,5940,GoogleCrashHan,S-1-1-0,Everyone
+0,5940,GoogleCrashHan,S-1-5-32-545,Users
+0,5940,GoogleCrashHan,S-1-5-6,Service
+0,5940,GoogleCrashHan,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,5940,GoogleCrashHan,S-1-5-11,Authenticated Users
+0,5940,GoogleCrashHan,S-1-5-15,This Organization
+0,5940,GoogleCrashHan,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,5940,GoogleCrashHan,S-1-5-5-0-85163,Logon Session
+0,5940,GoogleCrashHan,S-1-2-0,Local (Users with the ability to log in locally)
+0,5940,GoogleCrashHan,S-1-5-32-544,Administrators
+0,2872,svchost.exe,S-1-5-19,NT Authority
+0,2872,svchost.exe,S-1-16-16384,System Mandatory Level
+0,2872,svchost.exe,S-1-1-0,Everyone
+0,2872,svchost.exe,S-1-5-32-545,Users
+0,2872,svchost.exe,S-1-5-6,Service
+0,2872,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2872,svchost.exe,S-1-5-11,Authenticated Users
+0,2872,svchost.exe,S-1-5-15,This Organization
+0,2872,svchost.exe,S-1-5-80-3232712927-1625117661-2590453128-1738570065-3637376297,wscsvc
+0,2872,svchost.exe,S-1-5-5-0-1488660,Logon Session
+0,2872,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,5380,SearchIndexer.,S-1-5-18,Local System
+0,5380,SearchIndexer.,S-1-16-16384,System Mandatory Level
+0,5380,SearchIndexer.,S-1-1-0,Everyone
+0,5380,SearchIndexer.,S-1-5-32-545,Users
+0,5380,SearchIndexer.,S-1-5-6,Service
+0,5380,SearchIndexer.,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,5380,SearchIndexer.,S-1-5-11,Authenticated Users
+0,5380,SearchIndexer.,S-1-5-15,This Organization
+0,5380,SearchIndexer.,S-1-5-80-117416528-2204451360-1913602512-1355018040-1234992034,WSearch
+0,5380,SearchIndexer.,S-1-5-5-0-1490651,Logon Session
+0,5380,SearchIndexer.,S-1-2-0,Local (Users with the ability to log in locally)
+0,5380,SearchIndexer.,S-1-5-32-544,Administrators
+0,7324,svchost.exe,S-1-5-18,Local System
+0,7324,svchost.exe,S-1-16-16384,System Mandatory Level
+0,7324,svchost.exe,S-1-1-0,Everyone
+0,7324,svchost.exe,S-1-5-32-545,Users
+0,7324,svchost.exe,S-1-5-6,Service
+0,7324,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7324,svchost.exe,S-1-5-11,Authenticated Users
+0,7324,svchost.exe,S-1-5-15,This Organization
+0,7324,svchost.exe,S-1-5-80-2652678385-582572993-1835434367-1344795993-749280709,wudfsvc
+0,7324,svchost.exe,S-1-5-5-0-2314742,Logon Session
+0,7324,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7324,svchost.exe,S-1-5-32-544,Administrators
+0,7812,svchost.exe,S-1-5-18,Local System
+0,7812,svchost.exe,S-1-16-16384,System Mandatory Level
+0,7812,svchost.exe,S-1-1-0,Everyone
+0,7812,svchost.exe,S-1-5-32-545,Users
+0,7812,svchost.exe,S-1-5-6,Service
+0,7812,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7812,svchost.exe,S-1-5-11,Authenticated Users
+0,7812,svchost.exe,S-1-5-15,This Organization
+0,7812,svchost.exe,S-1-5-80-3704025948-1094794811-1175534343-2088422159-783153058,-
+0,7812,svchost.exe,S-1-5-5-0-2624461,Logon Session
+0,7812,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7812,svchost.exe,S-1-5-32-544,Administrators
+0,7944,svchost.exe,S-1-5-18,Local System
+0,7944,svchost.exe,S-1-16-16384,System Mandatory Level
+0,7944,svchost.exe,S-1-1-0,Everyone
+0,7944,svchost.exe,S-1-5-32-545,Users
+0,7944,svchost.exe,S-1-5-6,Service
+0,7944,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7944,svchost.exe,S-1-5-11,Authenticated Users
+0,7944,svchost.exe,S-1-5-15,This Organization
+0,7944,svchost.exe,S-1-5-80-3355894222-2288616474-3163838539-1515771758-43395969,StorSvc
+0,7944,svchost.exe,S-1-5-5-0-2641641,Logon Session
+0,7944,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7944,svchost.exe,S-1-5-32-544,Administrators
+0,6920,smss.exe,S-1-5-18,Local System
+0,6920,smss.exe,S-1-5-32-544,Administrators
+0,6920,smss.exe,S-1-1-0,Everyone
+0,6920,smss.exe,S-1-5-11,Authenticated Users
+0,6920,smss.exe,S-1-16-16384,System Mandatory Level
+0,9312,csrss.exe,S-1-5-18,Local System
+0,9312,csrss.exe,S-1-5-32-544,Administrators
+0,9312,csrss.exe,S-1-1-0,Everyone
+0,9312,csrss.exe,S-1-5-11,Authenticated Users
+0,9312,csrss.exe,S-1-16-16384,System Mandatory Level
+0,3376,winlogon.exe,S-1-5-18,Local System
+0,3376,winlogon.exe,S-1-5-32-544,Administrators
+0,3376,winlogon.exe,S-1-1-0,Everyone
+0,3376,winlogon.exe,S-1-5-11,Authenticated Users
+0,3376,winlogon.exe,S-1-16-16384,System Mandatory Level
+0,2932,fontdrvhost.ex,S-1-5-96-0-2,-
+0,2932,fontdrvhost.ex,S-1-16-4096,Low Mandatory Level
+0,2932,fontdrvhost.ex,S-1-1-0,Everyone
+0,2932,fontdrvhost.ex,S-1-5-32-545,Users
+0,2932,fontdrvhost.ex,S-1-5-4,Interactive
+0,2932,fontdrvhost.ex,S-1-5-11,Authenticated Users
+0,2932,fontdrvhost.ex,S-1-5-15,This Organization
+0,2932,fontdrvhost.ex,S-1-5-5-0-2833827,Logon Session
+0,2932,fontdrvhost.ex,S-1-5-96-0,-
+0,6976,dwm.exe,S-1-5-90-0-2,-
+0,6976,dwm.exe,S-1-16-16384,System Mandatory Level
+0,6976,dwm.exe,S-1-1-0,Everyone
+0,6976,dwm.exe,S-1-5-32-545,Users
+0,6976,dwm.exe,S-1-5-4,Interactive
+0,6976,dwm.exe,S-1-5-11,Authenticated Users
+0,6976,dwm.exe,S-1-5-15,This Organization
+0,6976,dwm.exe,S-1-5-19,NT Authority
+0,6976,dwm.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,6976,dwm.exe,S-1-5-90-0,-
+0,9336,atieclxx.exe,S-1-5-18,Local System
+0,9336,atieclxx.exe,S-1-5-32-544,Administrators
+0,9336,atieclxx.exe,S-1-1-0,Everyone
+0,9336,atieclxx.exe,S-1-5-11,Authenticated Users
+0,9336,atieclxx.exe,S-1-16-16384,System Mandatory Level
+0,9932,remsh.exe,S-1-5-18,Local System
+0,9932,remsh.exe,S-1-16-16384,System Mandatory Level
+0,9932,remsh.exe,S-1-1-0,Everyone
+0,9932,remsh.exe,S-1-5-32-545,Users
+0,9932,remsh.exe,S-1-5-6,Service
+0,9932,remsh.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,9932,remsh.exe,S-1-5-11,Authenticated Users
+0,9932,remsh.exe,S-1-5-15,This Organization
+0,9932,remsh.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,9932,remsh.exe,S-1-5-5-0-85163,Logon Session
+0,9932,remsh.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,9932,remsh.exe,S-1-5-32-544,Administrators
+0,9200,svchost.exe,S-1-5-19,NT Authority
+0,9200,svchost.exe,S-1-16-16384,System Mandatory Level
+0,9200,svchost.exe,S-1-1-0,Everyone
+0,9200,svchost.exe,S-1-5-32-545,Users
+0,9200,svchost.exe,S-1-5-6,Service
+0,9200,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,9200,svchost.exe,S-1-5-11,Authenticated Users
+0,9200,svchost.exe,S-1-5-15,This Organization
+0,9200,svchost.exe,S-1-5-80-172094073-716411664-54255058-185476446-2329512179,lmhosts
+0,9200,svchost.exe,S-1-5-5-0-2928956,Logon Session
+0,9200,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2192,SynTPEnh.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,2192,SynTPEnh.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,2192,SynTPEnh.exe,S-1-1-0,Everyone
+0,2192,SynTPEnh.exe,S-1-5-114,Local Account (Member of Administrators)
+0,2192,SynTPEnh.exe,S-1-5-32-544,Administrators
+0,2192,SynTPEnh.exe,S-1-5-32-545,Users
+0,2192,SynTPEnh.exe,S-1-5-4,Interactive
+0,2192,SynTPEnh.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2192,SynTPEnh.exe,S-1-5-11,Authenticated Users
+0,2192,SynTPEnh.exe,S-1-5-15,This Organization
+0,2192,SynTPEnh.exe,S-1-5-113,Local Account
+0,2192,SynTPEnh.exe,S-1-5-5-0-10202227,Logon Session
+0,2192,SynTPEnh.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2192,SynTPEnh.exe,S-1-5-64-10,NTLM Authentication
+0,2192,SynTPEnh.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,2192,SynTPEnh.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,2192,SynTPEnh.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,2192,SynTPEnh.exe,S-1-16-8192,Medium Mandatory Level
+0,2388,SynTPEnh.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,2388,SynTPEnh.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,2388,SynTPEnh.exe,S-1-1-0,Everyone
+0,2388,SynTPEnh.exe,S-1-5-114,Local Account (Member of Administrators)
+0,2388,SynTPEnh.exe,S-1-5-32-544,Administrators
+0,2388,SynTPEnh.exe,S-1-5-32-545,Users
+0,2388,SynTPEnh.exe,S-1-5-4,Interactive
+0,2388,SynTPEnh.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2388,SynTPEnh.exe,S-1-5-11,Authenticated Users
+0,2388,SynTPEnh.exe,S-1-5-15,This Organization
+0,2388,SynTPEnh.exe,S-1-5-113,Local Account
+0,2388,SynTPEnh.exe,S-1-5-5-0-10202227,Logon Session
+0,2388,SynTPEnh.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2388,SynTPEnh.exe,S-1-5-64-10,NTLM Authentication
+0,2388,SynTPEnh.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,2388,SynTPEnh.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,2388,SynTPEnh.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,2388,SynTPEnh.exe,S-1-16-8192,Medium Mandatory Level
+0,3560,svchost.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,3560,svchost.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,3560,svchost.exe,S-1-1-0,Everyone
+0,3560,svchost.exe,S-1-5-114,Local Account (Member of Administrators)
+0,3560,svchost.exe,S-1-5-32-544,Administrators
+0,3560,svchost.exe,S-1-5-32-545,Users
+0,3560,svchost.exe,S-1-5-4,Interactive
+0,3560,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3560,svchost.exe,S-1-5-11,Authenticated Users
+0,3560,svchost.exe,S-1-5-15,This Organization
+0,3560,svchost.exe,S-1-5-113,Local Account
+0,3560,svchost.exe,S-1-5-5-0-10202227,Logon Session
+0,3560,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,3560,svchost.exe,S-1-5-64-10,NTLM Authentication
+0,3560,svchost.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,3560,svchost.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,3560,svchost.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,3560,svchost.exe,S-1-16-8192,Medium Mandatory Level
+0,3752,sihost.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,3752,sihost.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,3752,sihost.exe,S-1-1-0,Everyone
+0,3752,sihost.exe,S-1-5-114,Local Account (Member of Administrators)
+0,3752,sihost.exe,S-1-5-32-544,Administrators
+0,3752,sihost.exe,S-1-5-32-545,Users
+0,3752,sihost.exe,S-1-5-4,Interactive
+0,3752,sihost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3752,sihost.exe,S-1-5-11,Authenticated Users
+0,3752,sihost.exe,S-1-5-15,This Organization
+0,3752,sihost.exe,S-1-5-113,Local Account
+0,3752,sihost.exe,S-1-5-5-0-10202227,Logon Session
+0,3752,sihost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,3752,sihost.exe,S-1-5-64-10,NTLM Authentication
+0,3752,sihost.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,3752,sihost.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,3752,sihost.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,3752,sihost.exe,S-1-16-8192,Medium Mandatory Level
+0,3540,svchost.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,3540,svchost.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,3540,svchost.exe,S-1-1-0,Everyone
+0,3540,svchost.exe,S-1-5-114,Local Account (Member of Administrators)
+0,3540,svchost.exe,S-1-5-32-544,Administrators
+0,3540,svchost.exe,S-1-5-32-545,Users
+0,3540,svchost.exe,S-1-5-4,Interactive
+0,3540,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3540,svchost.exe,S-1-5-11,Authenticated Users
+0,3540,svchost.exe,S-1-5-15,This Organization
+0,3540,svchost.exe,S-1-5-113,Local Account
+0,3540,svchost.exe,S-1-5-5-0-10202227,Logon Session
+0,3540,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,3540,svchost.exe,S-1-5-64-10,NTLM Authentication
+0,3540,svchost.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,3540,svchost.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,3540,svchost.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,3540,svchost.exe,S-1-16-8192,Medium Mandatory Level
+0,7300,userinit.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,7300,userinit.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,7300,userinit.exe,S-1-1-0,Everyone
+0,7300,userinit.exe,S-1-5-114,Local Account (Member of Administrators)
+0,7300,userinit.exe,S-1-5-32-544,Administrators
+0,7300,userinit.exe,S-1-5-32-545,Users
+0,7300,userinit.exe,S-1-5-4,Interactive
+0,7300,userinit.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7300,userinit.exe,S-1-5-11,Authenticated Users
+0,7300,userinit.exe,S-1-5-15,This Organization
+0,7300,userinit.exe,S-1-5-113,Local Account
+0,7300,userinit.exe,S-1-5-5-0-10202227,Logon Session
+0,7300,userinit.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7300,userinit.exe,S-1-5-64-10,NTLM Authentication
+0,7300,userinit.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,7300,userinit.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,7300,userinit.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,7300,userinit.exe,S-1-16-8192,Medium Mandatory Level
+0,7048,taskhostw.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,7048,taskhostw.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,7048,taskhostw.exe,S-1-1-0,Everyone
+0,7048,taskhostw.exe,S-1-5-114,Local Account (Member of Administrators)
+0,7048,taskhostw.exe,S-1-5-32-544,Administrators
+0,7048,taskhostw.exe,S-1-5-32-545,Users
+0,7048,taskhostw.exe,S-1-5-4,Interactive
+0,7048,taskhostw.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7048,taskhostw.exe,S-1-5-11,Authenticated Users
+0,7048,taskhostw.exe,S-1-5-15,This Organization
+0,7048,taskhostw.exe,S-1-5-113,Local Account
+0,7048,taskhostw.exe,S-1-5-5-0-10202227,Logon Session
+0,7048,taskhostw.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7048,taskhostw.exe,S-1-5-64-10,NTLM Authentication
+0,7048,taskhostw.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,7048,taskhostw.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,7048,taskhostw.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,7048,taskhostw.exe,S-1-16-8192,Medium Mandatory Level
+0,7688,explorer.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,7688,explorer.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,7688,explorer.exe,S-1-1-0,Everyone
+0,7688,explorer.exe,S-1-5-114,Local Account (Member of Administrators)
+0,7688,explorer.exe,S-1-5-32-544,Administrators
+0,7688,explorer.exe,S-1-5-32-545,Users
+0,7688,explorer.exe,S-1-5-4,Interactive
+0,7688,explorer.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7688,explorer.exe,S-1-5-11,Authenticated Users
+0,7688,explorer.exe,S-1-5-15,This Organization
+0,7688,explorer.exe,S-1-5-113,Local Account
+0,7688,explorer.exe,S-1-5-5-0-10202227,Logon Session
+0,7688,explorer.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7688,explorer.exe,S-1-5-64-10,NTLM Authentication
+0,7688,explorer.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,7688,explorer.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,7688,explorer.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,7688,explorer.exe,S-1-16-8192,Medium Mandatory Level
+0,7736,SynTPHelper.ex,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,7736,SynTPHelper.ex,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,7736,SynTPHelper.ex,S-1-1-0,Everyone
+0,7736,SynTPHelper.ex,S-1-5-114,Local Account (Member of Administrators)
+0,7736,SynTPHelper.ex,S-1-5-32-544,Administrators
+0,7736,SynTPHelper.ex,S-1-5-32-545,Users
+0,7736,SynTPHelper.ex,S-1-5-4,Interactive
+0,7736,SynTPHelper.ex,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7736,SynTPHelper.ex,S-1-5-11,Authenticated Users
+0,7736,SynTPHelper.ex,S-1-5-15,This Organization
+0,7736,SynTPHelper.ex,S-1-5-113,Local Account
+0,7736,SynTPHelper.ex,S-1-5-5-0-10202227,Logon Session
+0,7736,SynTPHelper.ex,S-1-2-0,Local (Users with the ability to log in locally)
+0,7736,SynTPHelper.ex,S-1-5-64-10,NTLM Authentication
+0,7736,SynTPHelper.ex,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,7736,SynTPHelper.ex,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,7736,SynTPHelper.ex,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,7736,SynTPHelper.ex,S-1-16-12288,High Mandatory Level
+0,5368,SearchUI.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,5368,SearchUI.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,5368,SearchUI.exe,S-1-1-0,Everyone
+0,5368,SearchUI.exe,S-1-5-114,Local Account (Member of Administrators)
+0,5368,SearchUI.exe,S-1-5-32-544,Administrators
+0,5368,SearchUI.exe,S-1-5-32-545,Users
+0,5368,SearchUI.exe,S-1-5-4,Interactive
+0,5368,SearchUI.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,5368,SearchUI.exe,S-1-5-11,Authenticated Users
+0,5368,SearchUI.exe,S-1-5-15,This Organization
+0,5368,SearchUI.exe,S-1-5-113,Local Account
+0,5368,SearchUI.exe,S-1-5-5-0-10202227,Logon Session
+0,5368,SearchUI.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,5368,SearchUI.exe,S-1-5-64-10,NTLM Authentication
+0,5368,SearchUI.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,5368,SearchUI.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,5368,SearchUI.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,5368,SearchUI.exe,S-1-16-4096,Low Mandatory Level
+0,7004,ShellExperienc,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,7004,ShellExperienc,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,7004,ShellExperienc,S-1-1-0,Everyone
+0,7004,ShellExperienc,S-1-5-114,Local Account (Member of Administrators)
+0,7004,ShellExperienc,S-1-5-32-544,Administrators
+0,7004,ShellExperienc,S-1-5-32-545,Users
+0,7004,ShellExperienc,S-1-5-4,Interactive
+0,7004,ShellExperienc,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7004,ShellExperienc,S-1-5-11,Authenticated Users
+0,7004,ShellExperienc,S-1-5-15,This Organization
+0,7004,ShellExperienc,S-1-5-113,Local Account
+0,7004,ShellExperienc,S-1-5-5-0-10202227,Logon Session
+0,7004,ShellExperienc,S-1-2-0,Local (Users with the ability to log in locally)
+0,7004,ShellExperienc,S-1-5-64-10,NTLM Authentication
+0,7004,ShellExperienc,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,7004,ShellExperienc,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,7004,ShellExperienc,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,7004,ShellExperienc,S-1-16-4096,Low Mandatory Level
+0,7220,RuntimeBroker.,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,7220,RuntimeBroker.,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,7220,RuntimeBroker.,S-1-1-0,Everyone
+0,7220,RuntimeBroker.,S-1-5-114,Local Account (Member of Administrators)
+0,7220,RuntimeBroker.,S-1-5-32-544,Administrators
+0,7220,RuntimeBroker.,S-1-5-32-545,Users
+0,7220,RuntimeBroker.,S-1-5-4,Interactive
+0,7220,RuntimeBroker.,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7220,RuntimeBroker.,S-1-5-11,Authenticated Users
+0,7220,RuntimeBroker.,S-1-5-15,This Organization
+0,7220,RuntimeBroker.,S-1-5-113,Local Account
+0,7220,RuntimeBroker.,S-1-5-5-0-10202227,Logon Session
+0,7220,RuntimeBroker.,S-1-2-0,Local (Users with the ability to log in locally)
+0,7220,RuntimeBroker.,S-1-5-64-10,NTLM Authentication
+0,7220,RuntimeBroker.,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,7220,RuntimeBroker.,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,7220,RuntimeBroker.,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,7220,RuntimeBroker.,S-1-16-8192,Medium Mandatory Level
+0,9788,SkypeHost.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,9788,SkypeHost.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,9788,SkypeHost.exe,S-1-1-0,Everyone
+0,9788,SkypeHost.exe,S-1-5-114,Local Account (Member of Administrators)
+0,9788,SkypeHost.exe,S-1-5-32-544,Administrators
+0,9788,SkypeHost.exe,S-1-5-32-545,Users
+0,9788,SkypeHost.exe,S-1-5-4,Interactive
+0,9788,SkypeHost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,9788,SkypeHost.exe,S-1-5-11,Authenticated Users
+0,9788,SkypeHost.exe,S-1-5-15,This Organization
+0,9788,SkypeHost.exe,S-1-5-113,Local Account
+0,9788,SkypeHost.exe,S-1-5-5-0-10202227,Logon Session
+0,9788,SkypeHost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,9788,SkypeHost.exe,S-1-5-64-10,NTLM Authentication
+0,9788,SkypeHost.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,9788,SkypeHost.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,9788,SkypeHost.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,9788,SkypeHost.exe,S-1-16-4096,Low Mandatory Level
+0,2820,MSASCuiL.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,2820,MSASCuiL.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,2820,MSASCuiL.exe,S-1-1-0,Everyone
+0,2820,MSASCuiL.exe,S-1-5-114,Local Account (Member of Administrators)
+0,2820,MSASCuiL.exe,S-1-5-32-544,Administrators
+0,2820,MSASCuiL.exe,S-1-5-32-545,Users
+0,2820,MSASCuiL.exe,S-1-5-4,Interactive
+0,2820,MSASCuiL.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2820,MSASCuiL.exe,S-1-5-11,Authenticated Users
+0,2820,MSASCuiL.exe,S-1-5-15,This Organization
+0,2820,MSASCuiL.exe,S-1-5-113,Local Account
+0,2820,MSASCuiL.exe,S-1-5-5-0-10202227,Logon Session
+0,2820,MSASCuiL.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2820,MSASCuiL.exe,S-1-5-64-10,NTLM Authentication
+0,2820,MSASCuiL.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,2820,MSASCuiL.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,2820,MSASCuiL.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,2820,MSASCuiL.exe,S-1-16-8192,Medium Mandatory Level
+0,4444,MOM.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,4444,MOM.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,4444,MOM.exe,S-1-1-0,Everyone
+0,4444,MOM.exe,S-1-5-114,Local Account (Member of Administrators)
+0,4444,MOM.exe,S-1-5-32-544,Administrators
+0,4444,MOM.exe,S-1-5-32-545,Users
+0,4444,MOM.exe,S-1-5-4,Interactive
+0,4444,MOM.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,4444,MOM.exe,S-1-5-11,Authenticated Users
+0,4444,MOM.exe,S-1-5-15,This Organization
+0,4444,MOM.exe,S-1-5-113,Local Account
+0,4444,MOM.exe,S-1-5-5-0-10202227,Logon Session
+0,4444,MOM.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,4444,MOM.exe,S-1-5-64-10,NTLM Authentication
+0,4444,MOM.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,4444,MOM.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,4444,MOM.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,4444,MOM.exe,S-1-16-8192,Medium Mandatory Level
+0,880,CCC.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,880,CCC.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,880,CCC.exe,S-1-1-0,Everyone
+0,880,CCC.exe,S-1-5-114,Local Account (Member of Administrators)
+0,880,CCC.exe,S-1-5-32-544,Administrators
+0,880,CCC.exe,S-1-5-32-545,Users
+0,880,CCC.exe,S-1-5-4,Interactive
+0,880,CCC.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,880,CCC.exe,S-1-5-11,Authenticated Users
+0,880,CCC.exe,S-1-5-15,This Organization
+0,880,CCC.exe,S-1-5-113,Local Account
+0,880,CCC.exe,S-1-5-5-0-10202227,Logon Session
+0,880,CCC.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,880,CCC.exe,S-1-5-64-10,NTLM Authentication
+0,880,CCC.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,880,CCC.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,880,CCC.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,880,CCC.exe,S-1-16-8192,Medium Mandatory Level
+0,7764,svchost.exe,S-1-5-19,NT Authority
+0,7764,svchost.exe,S-1-16-16384,System Mandatory Level
+0,7764,svchost.exe,S-1-1-0,Everyone
+0,7764,svchost.exe,S-1-5-32-545,Users
+0,7764,svchost.exe,S-1-5-6,Service
+0,7764,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7764,svchost.exe,S-1-5-11,Authenticated Users
+0,7764,svchost.exe,S-1-5-15,This Organization
+0,7764,svchost.exe,S-1-5-80-3765985997-1043742756-2756022526-3497566756-2081646175,-
+0,7764,svchost.exe,S-1-5-5-0-10547770,Logon Session
+0,7764,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,5520,svchost.exe,S-1-5-19,NT Authority
+0,5520,svchost.exe,S-1-16-16384,System Mandatory Level
+0,5520,svchost.exe,S-1-1-0,Everyone
+0,5520,svchost.exe,S-1-5-32-545,Users
+0,5520,svchost.exe,S-1-5-6,Service
+0,5520,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,5520,svchost.exe,S-1-5-11,Authenticated Users
+0,5520,svchost.exe,S-1-5-15,This Organization
+0,5520,svchost.exe,S-1-5-80-3435701886-799518250-3791383489-3228296122-2938884314,SstpSvc
+0,5520,svchost.exe,S-1-5-5-0-10555670,Logon Session
+0,5520,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7496,svchost.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,7496,svchost.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,7496,svchost.exe,S-1-1-0,Everyone
+0,7496,svchost.exe,S-1-5-114,Local Account (Member of Administrators)
+0,7496,svchost.exe,S-1-5-32-544,Administrators
+0,7496,svchost.exe,S-1-5-32-545,Users
+0,7496,svchost.exe,S-1-5-4,Interactive
+0,7496,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7496,svchost.exe,S-1-5-11,Authenticated Users
+0,7496,svchost.exe,S-1-5-15,This Organization
+0,7496,svchost.exe,S-1-5-113,Local Account
+0,7496,svchost.exe,S-1-5-5-0-10202227,Logon Session
+0,7496,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7496,svchost.exe,S-1-5-64-10,NTLM Authentication
+0,7496,svchost.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,7496,svchost.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,7496,svchost.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,7496,svchost.exe,S-1-16-8192,Medium Mandatory Level
+0,4428,OneDrive.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,4428,OneDrive.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,4428,OneDrive.exe,S-1-1-0,Everyone
+0,4428,OneDrive.exe,S-1-5-114,Local Account (Member of Administrators)
+0,4428,OneDrive.exe,S-1-5-32-544,Administrators
+0,4428,OneDrive.exe,S-1-5-32-545,Users
+0,4428,OneDrive.exe,S-1-5-4,Interactive
+0,4428,OneDrive.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,4428,OneDrive.exe,S-1-5-11,Authenticated Users
+0,4428,OneDrive.exe,S-1-5-15,This Organization
+0,4428,OneDrive.exe,S-1-5-113,Local Account
+0,4428,OneDrive.exe,S-1-5-5-0-10202227,Logon Session
+0,4428,OneDrive.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,4428,OneDrive.exe,S-1-5-64-10,NTLM Authentication
+0,4428,OneDrive.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,4428,OneDrive.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,4428,OneDrive.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,4428,OneDrive.exe,S-1-16-8192,Medium Mandatory Level
+0,6624,software_repor,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,6624,software_repor,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,6624,software_repor,S-1-1-0,Everyone
+0,6624,software_repor,S-1-5-114,Local Account (Member of Administrators)
+0,6624,software_repor,S-1-5-32-544,Administrators
+0,6624,software_repor,S-1-5-32-545,Users
+0,6624,software_repor,S-1-5-4,Interactive
+0,6624,software_repor,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,6624,software_repor,S-1-5-11,Authenticated Users
+0,6624,software_repor,S-1-5-15,This Organization
+0,6624,software_repor,S-1-5-113,Local Account
+0,6624,software_repor,S-1-5-5-0-10202227,Logon Session
+0,6624,software_repor,S-1-2-0,Local (Users with the ability to log in locally)
+0,6624,software_repor,S-1-5-64-10,NTLM Authentication
+0,6624,software_repor,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,6624,software_repor,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,6624,software_repor,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,6624,software_repor,S-1-16-8192,Medium Mandatory Level
+0,6620,software_repor,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,6620,software_repor,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,6620,software_repor,S-1-1-0,Everyone
+0,6620,software_repor,S-1-5-114,Local Account (Member of Administrators)
+0,6620,software_repor,S-1-5-32-544,Administrators
+0,6620,software_repor,S-1-5-32-545,Users
+0,6620,software_repor,S-1-5-4,Interactive
+0,6620,software_repor,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,6620,software_repor,S-1-5-11,Authenticated Users
+0,6620,software_repor,S-1-5-15,This Organization
+0,6620,software_repor,S-1-5-113,Local Account
+0,6620,software_repor,S-1-5-5-0-10202227,Logon Session
+0,6620,software_repor,S-1-2-0,Local (Users with the ability to log in locally)
+0,6620,software_repor,S-1-5-64-10,NTLM Authentication
+0,6620,software_repor,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,6620,software_repor,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,6620,software_repor,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,6620,software_repor,S-1-16-8192,Medium Mandatory Level
+0,6708,software_repor,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,6708,software_repor,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,6708,software_repor,S-1-1-0,Everyone
+0,6708,software_repor,S-1-5-114,Local Account (Member of Administrators)
+0,6708,software_repor,S-1-5-32-544,Administrators
+0,6708,software_repor,S-1-5-32-545,Users
+0,6708,software_repor,S-1-5-4,Interactive
+0,6708,software_repor,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,6708,software_repor,S-1-5-11,Authenticated Users
+0,6708,software_repor,S-1-5-15,This Organization
+0,6708,software_repor,S-1-5-113,Local Account
+0,6708,software_repor,S-1-5-5-0-10202227,Logon Session
+0,6708,software_repor,S-1-2-0,Local (Users with the ability to log in locally)
+0,6708,software_repor,S-1-5-64-10,NTLM Authentication
+0,6708,software_repor,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,6708,software_repor,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,6708,software_repor,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,6708,software_repor,S-1-16-0,Untrusted Mandatory Level
+0,6512,InstallAgent.e,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,6512,InstallAgent.e,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,6512,InstallAgent.e,S-1-1-0,Everyone
+0,6512,InstallAgent.e,S-1-5-114,Local Account (Member of Administrators)
+0,6512,InstallAgent.e,S-1-5-32-544,Administrators
+0,6512,InstallAgent.e,S-1-5-32-545,Users
+0,6512,InstallAgent.e,S-1-5-4,Interactive
+0,6512,InstallAgent.e,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,6512,InstallAgent.e,S-1-5-11,Authenticated Users
+0,6512,InstallAgent.e,S-1-5-15,This Organization
+0,6512,InstallAgent.e,S-1-5-113,Local Account
+0,6512,InstallAgent.e,S-1-5-5-0-10202227,Logon Session
+0,6512,InstallAgent.e,S-1-2-0,Local (Users with the ability to log in locally)
+0,6512,InstallAgent.e,S-1-5-64-10,NTLM Authentication
+0,6512,InstallAgent.e,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,6512,InstallAgent.e,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,6512,InstallAgent.e,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,6512,InstallAgent.e,S-1-16-8192,Medium Mandatory Level
+0,7876,InstallAgentUs,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,7876,InstallAgentUs,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,7876,InstallAgentUs,S-1-1-0,Everyone
+0,7876,InstallAgentUs,S-1-5-114,Local Account (Member of Administrators)
+0,7876,InstallAgentUs,S-1-5-32-544,Administrators
+0,7876,InstallAgentUs,S-1-5-32-545,Users
+0,7876,InstallAgentUs,S-1-5-4,Interactive
+0,7876,InstallAgentUs,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7876,InstallAgentUs,S-1-5-11,Authenticated Users
+0,7876,InstallAgentUs,S-1-5-15,This Organization
+0,7876,InstallAgentUs,S-1-5-113,Local Account
+0,7876,InstallAgentUs,S-1-5-5-0-10202227,Logon Session
+0,7876,InstallAgentUs,S-1-2-0,Local (Users with the ability to log in locally)
+0,7876,InstallAgentUs,S-1-5-64-10,NTLM Authentication
+0,7876,InstallAgentUs,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,7876,InstallAgentUs,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,7876,InstallAgentUs,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,7876,InstallAgentUs,S-1-16-8192,Medium Mandatory Level
+0,7380,svchost.exe,S-1-5-18,Local System
+0,7380,svchost.exe,S-1-16-16384,System Mandatory Level
+0,7380,svchost.exe,S-1-1-0,Everyone
+0,7380,svchost.exe,S-1-5-32-545,Users
+0,7380,svchost.exe,S-1-5-6,Service
+0,7380,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7380,svchost.exe,S-1-5-11,Authenticated Users
+0,7380,svchost.exe,S-1-5-15,This Organization
+0,7380,svchost.exe,S-1-5-80-3524758515-3090971750-345616940-2322499744-3530715838,WdiSystemHost
+0,7380,svchost.exe,S-1-5-5-0-11470023,Logon Session
+0,7380,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7380,svchost.exe,S-1-5-32-544,Administrators
+0,7252,taskhostw.exe,S-1-5-18,Local System
+0,7252,taskhostw.exe,S-1-16-16384,System Mandatory Level
+0,7252,taskhostw.exe,S-1-1-0,Everyone
+0,7252,taskhostw.exe,S-1-5-32-545,Users
+0,7252,taskhostw.exe,S-1-5-6,Service
+0,7252,taskhostw.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7252,taskhostw.exe,S-1-5-11,Authenticated Users
+0,7252,taskhostw.exe,S-1-5-15,This Organization
+0,7252,taskhostw.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,7252,taskhostw.exe,S-1-5-5-0-85163,Logon Session
+0,7252,taskhostw.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7252,taskhostw.exe,S-1-5-32-544,Administrators
+0,1048,mcbuilder.exe,S-1-5-18,Local System
+0,1048,mcbuilder.exe,S-1-16-16384,System Mandatory Level
+0,1048,mcbuilder.exe,S-1-1-0,Everyone
+0,1048,mcbuilder.exe,S-1-5-32-545,Users
+0,1048,mcbuilder.exe,S-1-5-6,Service
+0,1048,mcbuilder.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1048,mcbuilder.exe,S-1-5-11,Authenticated Users
+0,1048,mcbuilder.exe,S-1-5-15,This Organization
+0,1048,mcbuilder.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,1048,mcbuilder.exe,S-1-5-5-0-85163,Logon Session
+0,1048,mcbuilder.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1048,mcbuilder.exe,S-1-5-32-544,Administrators
+0,3156,svchost.exe,S-1-5-18,Local System
+0,3156,svchost.exe,S-1-16-16384,System Mandatory Level
+0,3156,svchost.exe,S-1-1-0,Everyone
+0,3156,svchost.exe,S-1-5-32-545,Users
+0,3156,svchost.exe,S-1-5-6,Service
+0,3156,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3156,svchost.exe,S-1-5-11,Authenticated Users
+0,3156,svchost.exe,S-1-5-15,This Organization
+0,3156,svchost.exe,S-1-5-80-1551822644-3134808374-1042292604-2865742758-3851661496,-
+0,3156,svchost.exe,S-1-5-5-0-12222130,Logon Session
+0,3156,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,3156,svchost.exe,S-1-5-32-544,Administrators
+0,9324,conhost.exe,S-1-5-18,Local System
+0,9324,conhost.exe,S-1-16-16384,System Mandatory Level
+0,9324,conhost.exe,S-1-1-0,Everyone
+0,9324,conhost.exe,S-1-5-32-545,Users
+0,9324,conhost.exe,S-1-5-6,Service
+0,9324,conhost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,9324,conhost.exe,S-1-5-11,Authenticated Users
+0,9324,conhost.exe,S-1-5-15,This Organization
+0,9324,conhost.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,9324,conhost.exe,S-1-5-5-0-85163,Logon Session
+0,9324,conhost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,9324,conhost.exe,S-1-5-32-544,Administrators
+0,6492,ngentask.exe,S-1-5-18,Local System
+0,6492,ngentask.exe,S-1-16-16384,System Mandatory Level
+0,6492,ngentask.exe,S-1-1-0,Everyone
+0,6492,ngentask.exe,S-1-5-32-545,Users
+0,6492,ngentask.exe,S-1-5-6,Service
+0,6492,ngentask.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,6492,ngentask.exe,S-1-5-11,Authenticated Users
+0,6492,ngentask.exe,S-1-5-15,This Organization
+0,6492,ngentask.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,6492,ngentask.exe,S-1-5-5-0-85163,Logon Session
+0,6492,ngentask.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,6492,ngentask.exe,S-1-5-32-544,Administrators
+0,1336,ngentask.exe,S-1-5-18,Local System
+0,1336,ngentask.exe,S-1-16-16384,System Mandatory Level
+0,1336,ngentask.exe,S-1-1-0,Everyone
+0,1336,ngentask.exe,S-1-5-32-545,Users
+0,1336,ngentask.exe,S-1-5-6,Service
+0,1336,ngentask.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1336,ngentask.exe,S-1-5-11,Authenticated Users
+0,1336,ngentask.exe,S-1-5-15,This Organization
+0,1336,ngentask.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,1336,ngentask.exe,S-1-5-5-0-85163,Logon Session
+0,1336,ngentask.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1336,ngentask.exe,S-1-5-32-544,Administrators
+0,8648,conhost.exe,S-1-5-18,Local System
+0,8648,conhost.exe,S-1-16-16384,System Mandatory Level
+0,8648,conhost.exe,S-1-1-0,Everyone
+0,8648,conhost.exe,S-1-5-32-545,Users
+0,8648,conhost.exe,S-1-5-6,Service
+0,8648,conhost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,8648,conhost.exe,S-1-5-11,Authenticated Users
+0,8648,conhost.exe,S-1-5-15,This Organization
+0,8648,conhost.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,8648,conhost.exe,S-1-5-5-0-85163,Logon Session
+0,8648,conhost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,8648,conhost.exe,S-1-5-32-544,Administrators
+0,2120,conhost.exe,S-1-5-18,Local System
+0,2120,conhost.exe,S-1-16-16384,System Mandatory Level
+0,2120,conhost.exe,S-1-1-0,Everyone
+0,2120,conhost.exe,S-1-5-32-545,Users
+0,2120,conhost.exe,S-1-5-6,Service
+0,2120,conhost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,2120,conhost.exe,S-1-5-11,Authenticated Users
+0,2120,conhost.exe,S-1-5-15,This Organization
+0,2120,conhost.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,2120,conhost.exe,S-1-5-5-0-85163,Logon Session
+0,2120,conhost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,2120,conhost.exe,S-1-5-32-544,Administrators
+0,9756,ngen.exe,S-1-5-18,Local System
+0,9756,ngen.exe,S-1-16-16384,System Mandatory Level
+0,9756,ngen.exe,S-1-1-0,Everyone
+0,9756,ngen.exe,S-1-5-32-545,Users
+0,9756,ngen.exe,S-1-5-6,Service
+0,9756,ngen.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,9756,ngen.exe,S-1-5-11,Authenticated Users
+0,9756,ngen.exe,S-1-5-15,This Organization
+0,9756,ngen.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,9756,ngen.exe,S-1-5-5-0-85163,Logon Session
+0,9756,ngen.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,9756,ngen.exe,S-1-5-32-544,Administrators
+0,5684,ngen.exe,S-1-5-18,Local System
+0,5684,ngen.exe,S-1-16-16384,System Mandatory Level
+0,5684,ngen.exe,S-1-1-0,Everyone
+0,5684,ngen.exe,S-1-5-32-545,Users
+0,5684,ngen.exe,S-1-5-6,Service
+0,5684,ngen.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,5684,ngen.exe,S-1-5-11,Authenticated Users
+0,5684,ngen.exe,S-1-5-15,This Organization
+0,5684,ngen.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,5684,ngen.exe,S-1-5-5-0-85163,Logon Session
+0,5684,ngen.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,5684,ngen.exe,S-1-5-32-544,Administrators
+0,428,svchost.exe,S-1-5-18,Local System
+0,428,svchost.exe,S-1-5-32-544,Administrators
+0,428,svchost.exe,S-1-1-0,Everyone
+0,428,svchost.exe,S-1-5-11,Authenticated Users
+0,428,svchost.exe,S-1-16-16384,System Mandatory Level
+0,9888,svchost.exe,S-1-5-19,NT Authority
+0,9888,svchost.exe,S-1-16-16384,System Mandatory Level
+0,9888,svchost.exe,S-1-1-0,Everyone
+0,9888,svchost.exe,S-1-5-32-545,Users
+0,9888,svchost.exe,S-1-5-6,Service
+0,9888,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,9888,svchost.exe,S-1-5-11,Authenticated Users
+0,9888,svchost.exe,S-1-5-15,This Organization
+0,9888,svchost.exe,S-1-5-80-1555863574-1012459212-3842453055-37978308-1142448422,wcncsvc
+0,9888,svchost.exe,S-1-5-5-0-12857062,Logon Session
+0,9888,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,4596,audiodg.exe,S-1-5-19,NT Authority
+0,4596,audiodg.exe,S-1-16-16384,System Mandatory Level
+0,4596,audiodg.exe,S-1-1-0,Everyone
+0,4596,audiodg.exe,S-1-5-32-545,Users
+0,4596,audiodg.exe,S-1-5-6,Service
+0,4596,audiodg.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,4596,audiodg.exe,S-1-5-11,Authenticated Users
+0,4596,audiodg.exe,S-1-5-15,This Organization
+0,4596,audiodg.exe,S-1-5-80-2676549577-1911656217-2625096541-4178041876-1366760775,Audiosrv
+0,4596,audiodg.exe,S-1-5-5-0-90476,Logon Session
+0,4596,audiodg.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,9660,svchost.exe,S-1-5-18,Local System
+0,9660,svchost.exe,S-1-16-16384,System Mandatory Level
+0,9660,svchost.exe,S-1-1-0,Everyone
+0,9660,svchost.exe,S-1-5-32-545,Users
+0,9660,svchost.exe,S-1-5-6,Service
+0,9660,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,9660,svchost.exe,S-1-5-11,Authenticated Users
+0,9660,svchost.exe,S-1-5-15,This Organization
+0,9660,svchost.exe,S-1-5-80-1949724575-2387902436-65106593-1201171665-3967308604,-
+0,9660,svchost.exe,S-1-5-5-0-13305981,Logon Session
+0,9660,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,9660,svchost.exe,S-1-5-32-544,Administrators
+0,1168,SearchProtocol,S-1-5-18,Local System
+0,1168,SearchProtocol,S-1-16-16384,System Mandatory Level
+0,1168,SearchProtocol,S-1-1-0,Everyone
+0,1168,SearchProtocol,S-1-5-32-545,Users
+0,1168,SearchProtocol,S-1-5-6,Service
+0,1168,SearchProtocol,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1168,SearchProtocol,S-1-5-11,Authenticated Users
+0,1168,SearchProtocol,S-1-5-15,This Organization
+0,1168,SearchProtocol,S-1-5-80-117416528-2204451360-1913602512-1355018040-1234992034,WSearch
+0,1168,SearchProtocol,S-1-5-5-0-1490651,Logon Session
+0,1168,SearchProtocol,S-1-2-0,Local (Users with the ability to log in locally)
+0,1168,SearchProtocol,S-1-5-32-544,Administrators
+0,8892,osf64.exe,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,8892,osf64.exe,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,8892,osf64.exe,S-1-1-0,Everyone
+0,8892,osf64.exe,S-1-5-114,Local Account (Member of Administrators)
+0,8892,osf64.exe,S-1-5-32-544,Administrators
+0,8892,osf64.exe,S-1-5-32-545,Users
+0,8892,osf64.exe,S-1-5-4,Interactive
+0,8892,osf64.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,8892,osf64.exe,S-1-5-11,Authenticated Users
+0,8892,osf64.exe,S-1-5-15,This Organization
+0,8892,osf64.exe,S-1-5-113,Local Account
+0,8892,osf64.exe,S-1-5-5-0-10202227,Logon Session
+0,8892,osf64.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,8892,osf64.exe,S-1-5-64-10,NTLM Authentication
+0,8892,osf64.exe,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,8892,osf64.exe,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,8892,osf64.exe,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,8892,osf64.exe,S-1-16-12288,High Mandatory Level
+0,7080,WmiPrvSE.exe,S-1-5-20,NT Authority
+0,7080,WmiPrvSE.exe,S-1-16-16384,System Mandatory Level
+0,7080,WmiPrvSE.exe,S-1-1-0,Everyone
+0,7080,WmiPrvSE.exe,S-1-5-32-545,Users
+0,7080,WmiPrvSE.exe,S-1-5-6,Service
+0,7080,WmiPrvSE.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7080,WmiPrvSE.exe,S-1-5-11,Authenticated Users
+0,7080,WmiPrvSE.exe,S-1-5-15,This Organization
+0,7080,WmiPrvSE.exe,S-1-5-86-615999462-62705297-2911207457-59056572-3668589837,WMI (Network Service)
+0,7080,WmiPrvSE.exe,S-1-5-5-0-14015375,Logon Session
+0,3672,CompatTelRunne,S-1-5-18,Local System
+0,3672,CompatTelRunne,S-1-16-16384,System Mandatory Level
+0,3672,CompatTelRunne,S-1-1-0,Everyone
+0,3672,CompatTelRunne,S-1-5-32-545,Users
+0,3672,CompatTelRunne,S-1-5-6,Service
+0,3672,CompatTelRunne,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,3672,CompatTelRunne,S-1-5-11,Authenticated Users
+0,3672,CompatTelRunne,S-1-5-15,This Organization
+0,3672,CompatTelRunne,S-1-5-80-1948712186-1330865447-943413596-1669284603-1648638051,PcaSvc
+0,3672,CompatTelRunne,S-1-5-5-0-116820,Logon Session
+0,3672,CompatTelRunne,S-1-2-0,Local (Users with the ability to log in locally)
+0,3672,CompatTelRunne,S-1-5-32-544,Administrators
+0,1612,conhost.exe,S-1-5-18,Local System
+0,1612,conhost.exe,S-1-16-16384,System Mandatory Level
+0,1612,conhost.exe,S-1-1-0,Everyone
+0,1612,conhost.exe,S-1-5-32-545,Users
+0,1612,conhost.exe,S-1-5-6,Service
+0,1612,conhost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,1612,conhost.exe,S-1-5-11,Authenticated Users
+0,1612,conhost.exe,S-1-5-15,This Organization
+0,1612,conhost.exe,S-1-5-80-1948712186-1330865447-943413596-1669284603-1648638051,PcaSvc
+0,1612,conhost.exe,S-1-5-5-0-116820,Logon Session
+0,1612,conhost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,1612,conhost.exe,S-1-5-32-544,Administrators
+0,8704,svchost.exe,S-1-5-18,Local System
+0,8704,svchost.exe,S-1-16-16384,System Mandatory Level
+0,8704,svchost.exe,S-1-1-0,Everyone
+0,8704,svchost.exe,S-1-5-32-545,Users
+0,8704,svchost.exe,S-1-5-6,Service
+0,8704,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,8704,svchost.exe,S-1-5-11,Authenticated Users
+0,8704,svchost.exe,S-1-5-15,This Organization
+0,8704,svchost.exe,S-1-5-80-2952724807-2252311773-3412998076-2712868122-780978283,-
+0,8704,svchost.exe,S-1-5-5-0-14266658,Logon Session
+0,8704,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,8704,svchost.exe,S-1-5-32-544,Administrators
+0,7776,svchost.exe,S-1-5-18,Local System
+0,7776,svchost.exe,S-1-16-16384,System Mandatory Level
+0,7776,svchost.exe,S-1-1-0,Everyone
+0,7776,svchost.exe,S-1-5-32-545,Users
+0,7776,svchost.exe,S-1-5-6,Service
+0,7776,svchost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,7776,svchost.exe,S-1-5-11,Authenticated Users
+0,7776,svchost.exe,S-1-5-15,This Organization
+0,7776,svchost.exe,S-1-5-80-4125092361-1567024937-842823819-2091237918-836075745,Schedule
+0,7776,svchost.exe,S-1-5-5-0-85163,Logon Session
+0,7776,svchost.exe,S-1-2-0,Local (Users with the ability to log in locally)
+0,7776,svchost.exe,S-1-5-32-544,Administrators
+0,9628,WUDFHost.exe,S-1-5-19,NT Authority
+0,9628,WUDFHost.exe,S-1-16-16384,System Mandatory Level
+0,9628,WUDFHost.exe,S-1-1-0,Everyone
+0,9628,WUDFHost.exe,S-1-5-32-545,Users
+0,9628,WUDFHost.exe,S-1-5-6,Service
+0,9628,WUDFHost.exe,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,9628,WUDFHost.exe,S-1-5-11,Authenticated Users
+0,9628,WUDFHost.exe,S-1-5-15,This Organization
+0,9628,WUDFHost.exe,S-1-5-84-0-14480559-0-0-0,-
+0,9628,WUDFHost.exe,S-1-5-84-0-0-0-0-0,Usermode Drivers
+0,9160,TrustedInstall,S-1-5-18,Local System
+0,9160,TrustedInstall,S-1-16-16384,System Mandatory Level
+0,9160,TrustedInstall,S-1-1-0,Everyone
+0,9160,TrustedInstall,S-1-5-32-545,Users
+0,9160,TrustedInstall,S-1-5-6,Service
+0,9160,TrustedInstall,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,9160,TrustedInstall,S-1-5-11,Authenticated Users
+0,9160,TrustedInstall,S-1-5-15,This Organization
+0,9160,TrustedInstall,S-1-5-80-1385144741-1362966867-180516107-799844779-105018228,-
+0,9160,TrustedInstall,S-1-5-5-0-117196,Logon Session
+0,9160,TrustedInstall,S-1-2-0,Local (Users with the ability to log in locally)
+0,9160,TrustedInstall,S-1-5-32-544,Administrators
+0,10084,SystemSettings,S-1-5-21-2326644174-1441296035-3701719736-1001,passmark
+0,10084,SystemSettings,S-1-5-21-2326644174-1441296035-3701719736-513,Domain Users
+0,10084,SystemSettings,S-1-1-0,Everyone
+0,10084,SystemSettings,S-1-5-114,Local Account (Member of Administrators)
+0,10084,SystemSettings,S-1-5-32-544,Administrators
+0,10084,SystemSettings,S-1-5-32-545,Users
+0,10084,SystemSettings,S-1-5-4,Interactive
+0,10084,SystemSettings,S-1-2-1,Console Logon (Users who are logged onto the physical console)
+0,10084,SystemSettings,S-1-5-11,Authenticated Users
+0,10084,SystemSettings,S-1-5-15,This Organization
+0,10084,SystemSettings,S-1-5-113,Local Account
+0,10084,SystemSettings,S-1-5-5-0-10202227,Logon Session
+0,10084,SystemSettings,S-1-2-0,Local (Users with the ability to log in locally)
+0,10084,SystemSettings,S-1-5-64-10,NTLM Authentication
+0,10084,SystemSettings,S-1-5-32-4028125388-2803578072-1053907958-341417128-2434011155-477421480-740873757-3973419746,-
+0,10084,SystemSettings,S-1-5-32-2745667521-2937320506-1424439867-4164262144-2333007343-2599685697-2993844191-2003921822,-
+0,10084,SystemSettings,S-1-5-32-1034403361-4122601751-838272506-684212390-1217345422-475792769-1698384238-1075311541,-
+0,10084,SystemSettings,S-1-16-8192,Medium Mandatory Level
+

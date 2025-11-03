@@ -256,7 +256,7 @@ class EDRMBuilder:
         """
         Save the EDRM load file document to the disk.  The `doc` argument is the DOM object containing the EDRM load
         file XML content.  It is optional, and if not provided, the `build()` method will be called to create it.
-        For most cases, this method should be called without the parameter.
+        For most cases, this method should be called without the `doc` parameter.
 
         This method should be called only after the `output_path` property and `as_nli` flag have been set and all
         desired entries are stored.  The result will be a fully realized EDRM XML Load File in the location specified
