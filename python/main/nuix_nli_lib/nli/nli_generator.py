@@ -44,6 +44,7 @@ class NLIGenerator(object):
         self.__edrm_builder = EDRMBuilder()
         self.__edrm_builder.as_nli = True
 
+
     def add_entry(self, entry: EntryInterface) -> str:
         """
         Wrapper around `edrm.EDRMBuilder.add_entry()` to add a generic entry to the NLI container.  This method will
