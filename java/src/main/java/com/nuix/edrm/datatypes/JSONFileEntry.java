@@ -1,9 +1,9 @@
-package com.nuix.nli.datatypes;
+package com.nuix.edrm.datatypes;
 
-import com.nuix.nli.edrm.EDRMBuilder;
-import com.nuix.nli.edrm.FileEntry;
-import com.nuix.nli.edrm.MappingEntry;
-import com.nuix.nli.nli.CompoundEnty;
+import com.nuix.edrm.EDRMBuilder;
+import com.nuix.edrm.FileEntry;
+import com.nuix.edrm.MappingEntry;
+import com.nuix.nli.CompoundEntry;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class JSONFileEntry extends FileEntry implements CompoundEnty {
+public class JSONFileEntry extends FileEntry implements CompoundEntry {
     private final Path jsonPath;
 
     public JSONFileEntry(String jsonFilePath) { this(jsonFilePath, "application/json", null); }

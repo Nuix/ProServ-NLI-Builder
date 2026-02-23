@@ -1,9 +1,8 @@
-package com.nuix.nli.datatypes;
+package com.nuix.edrm.datatypes;
 
-import com.nuix.nli.edrm.EDRMBuilder;
-import com.nuix.nli.edrm.FileEntry;
-import com.nuix.nli.edrm.MappingEntry;
-import com.nuix.nli.nli.CompoundEnty;
+import com.nuix.edrm.EDRMBuilder;
+import com.nuix.edrm.FileEntry;
+import com.nuix.nli.CompoundEntry;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class CSVEntry extends FileEntry implements CompoundEnty {
+public class CSVEntry extends FileEntry implements CompoundEntry {
     private final List<Map<String, String>> data = new ArrayList<>();
     private final List<String> rowFields = new ArrayList<>();
     private final RowGenerator rowGenerator;

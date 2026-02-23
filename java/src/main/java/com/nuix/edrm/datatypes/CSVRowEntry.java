@@ -1,10 +1,9 @@
-package com.nuix.nli.datatypes;
+package com.nuix.edrm.datatypes;
 
-import com.nuix.nli.edrm.EntryField;
-import com.nuix.nli.edrm.FieldFactory;
-import com.nuix.nli.edrm.MappingEntry;
+import com.nuix.edrm.EntryField;
+import com.nuix.edrm.FieldFactory;
+import com.nuix.edrm.MappingEntry;
 
-import java.time.OffsetDateTime;
 import java.util.Map;
 
 public class CSVRowEntry extends MappingEntry {

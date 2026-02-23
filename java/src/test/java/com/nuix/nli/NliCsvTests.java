@@ -1,8 +1,7 @@
 package com.nuix.nli;
 
-import com.nuix.nli.datatypes.CSVEntry;
-import com.nuix.nli.datatypes.CSVRowEntry;
-import com.nuix.nli.nli.NLIGenerator;
+import com.nuix.edrm.datatypes.CSVEntry;
+import com.nuix.edrm.datatypes.CSVRowEntry;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
@@ -20,9 +19,9 @@ public class NliCsvTests {
         @Override public String getName() {
             // If fields exist, build a composed name, else fallback
             try {
-                String pid = String.valueOf(get("PID").getValue());
-                String process = String.valueOf(get("Process").getValue());
-                String variable = String.valueOf(get("Variable").getValue());
+                String pid = String.valueOf(getField("PID").getValue());
+                String process = String.valueOf(getField("Process").getValue());
+                String variable = String.valueOf(getField("Variable").getValue());
                 return "("+pid+") "+process+" ["+variable+"]";
             } catch (Exception e) {
                 return super.getName();

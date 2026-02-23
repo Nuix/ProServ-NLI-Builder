@@ -1,4 +1,4 @@
-package com.nuix.nli.edrm;
+package com.nuix.edrm;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

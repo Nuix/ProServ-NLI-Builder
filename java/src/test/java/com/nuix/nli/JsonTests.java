@@ -1,7 +1,6 @@
 package com.nuix.nli;
 
-import com.nuix.nli.datatypes.JSONFileEntry;
-import com.nuix.nli.nli.NLIGenerator;
+import com.nuix.edrm.datatypes.JSONFileEntry;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;

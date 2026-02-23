@@ -1,4 +1,4 @@
-package com.nuix.nli.edrm;
+package com.nuix.edrm;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

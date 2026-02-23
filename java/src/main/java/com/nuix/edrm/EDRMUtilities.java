@@ -1,4 +1,4 @@
-package com.nuix.nli.edrm;
+package com.nuix.edrm;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -135,7 +135,7 @@ public class EDRMUtilities {
         );
         String ILLEGAL_UNI_CHARS_REGEX ="[" + ILLEGAL_UNI_CHARS.stream()
                                                                .map(c -> c[0] + "-" + c[1])
-                                                               .reduce("", (a,b) -> a + "," + b) + "]";
+                                                               .collect(Collectors.joining("")) + "]";
         XML_ILLEGAL= Pattern.compile(ILLEGAL_UNI_CHARS_REGEX);
     }
 

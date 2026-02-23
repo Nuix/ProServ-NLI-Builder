@@ -1,9 +1,9 @@
 package com.nuix.nli;
 
-import com.nuix.nli.edrm.DirectoryEntry;
-import com.nuix.nli.edrm.EDRMBuilder;
-import com.nuix.nli.edrm.FileEntry;
-import com.nuix.nli.edrm.MappingEntry;
+import com.nuix.edrm.DirectoryEntry;
+import com.nuix.edrm.EDRMBuilder;
+import com.nuix.edrm.FileEntry;
+import com.nuix.edrm.MappingEntry;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;

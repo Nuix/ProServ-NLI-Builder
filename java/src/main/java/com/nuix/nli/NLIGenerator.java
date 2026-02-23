@@ -1,6 +1,6 @@
-package com.nuix.nli.nli;
+package com.nuix.nli;
 
-import com.nuix.nli.edrm.*;
+import com.nuix.edrm.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -51,7 +51,7 @@ public class NLIGenerator {
     }
 
     public String addEntry(EntryInterface entry) {
-        if (entry instanceof CompoundEnty ce) {
+        if (entry instanceof CompoundEntry ce) {
             return ce.addToBuilder(builder);
         } else {
             return builder.addEntry(entry);

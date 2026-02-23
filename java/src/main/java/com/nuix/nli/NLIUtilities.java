@@ -1,4 +1,4 @@
-package com.nuix.nli.nli;
+package com.nuix.nli;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
