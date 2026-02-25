@@ -70,7 +70,7 @@ public class MappingEntry extends EntryInterface {
         dataCopy.put("name", getBaseName());
         String hashedData = EDRMUtilities.hash_data(dataCopy, "SHA-1");
         putField(FieldFactory.generateField("SHA-1", EntryField.Type.Text, hashedData));
-        putField(FieldFactory.generateField("Item Date", EntryField.Type.DateTime, OffsetDateTime.now()));
+        putField(FieldFactory.generateField("Item Date", EntryField.Type.DateTime, getItemDate()));
     }
 
     public Map<String, Object> getData() {

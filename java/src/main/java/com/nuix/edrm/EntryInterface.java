@@ -43,8 +43,12 @@ public abstract class EntryInterface {
         Element location = document.createElement("Location");
         locationList.appendChild(location);
 
+        String custodianName = EDRMUtilities.EDRM_CONFIG.get("custodian");
+        if (this.fields.containsKey("Custodian")) {
+            custodianName = this.fields.get("Custodian").getValue().toString();
+        }
         Element custodian = document.createElement("Custodian");
-        custodian.appendChild(document.createTextNode(EDRMUtilities.EDRM_CONFIG.get("custodian")));
+        custodian.appendChild(document.createTextNode(custodianName));
         location.appendChild(custodian);
 
         Element description = document.createElement("Description");
