@@ -1,4 +1,4 @@
-# ProServ-NLI-Builder
+# ProServ-NLI-Builder (Python Library)
 
 This is a library for building Nuix Logical Image (NLI) files for ingesting data into Nuix cases.
 
@@ -20,6 +20,10 @@ necessary, add extensions to the formats provided by the tool.
   * [Customizing: Fields on Entries](#customizing-entries)
   * [Customizing: New Types of Entries](#customizing-entries)
   * [CSV Files](#customizing-csv-file-formats)
+* [Building and Publishing](#building-and-publishing)
+  * [Build the Wheel](#build-the-wheel)
+  * [Publish to a Repository](#publish-to-a-repository)
+  * [Installing from pip](#installing-from-pip)
 
 
 # Using the NLI Builder
@@ -36,6 +40,7 @@ INC2|2020-01-12 18:57:25|UserG|2020-03-27 04:05:08| | |2020-03-25 00:06:29| |Use
 INC3|2020-01-08 06:31:25|UserB|2020-02-24 16:16:52| | | | |UserB| | |phone|Software|3 Low|This is a description|4 - Low|On Hold|Overdue
 
 Our goal is to ingest the CSV into Nuix so it can be represented in a meaningful way:
+
 ![Workstation with a Metadata Profile for better view](python/resources/Workbench-Metadata-Profile.png)
 
 See the [incidence.csv](python/resources/incident.csv) file in the Python package's resource folder for the full file.
@@ -564,7 +569,7 @@ class TagRowEntry(CSVRowEntry):
 > correct method to use in this case, as it would allow the name to be corrected by the property, without having to
 > re-write the required transformations.
 
-To use this custom CSVRowEntry, you pass the class to the `row_generator` parameter when creating the CSVEntry, 
+To use this custom CSVRowEntry, you pass the class to the `row_generator` parameter when creating the CSVEntry,
 overriding the default use of the CSVRowEntry class:
 
 ```Python
@@ -577,4 +582,63 @@ nli = NLIGenerator()
 csv_e = CSVEntry(r'C:\data\evidence\source.csv', TagRowEntry)
 nli.add_entry(csv_e)
 nli.save(Path(r'C:\data\evidence\output\sample.nli'))
+```
+
+---
+
+## Building and Publishing
+
+### Prerequisites
+
+Install the build tools into any Python 3.12+ environment:
+
+```Console
+pip install build twine
+```
+
+### Build the Wheel
+
+From the `python/` directory (the folder containing `pyproject.toml`), run:
+
+```Console
+python -m build
+```
+
+This produces two artifacts in `python/dist/`:
+
+- `nuix_nli_lib-<version>-py3-none-any.whl` — Wheel; the preferred format for pip installation
+- `nuix_nli_lib-<version>.tar.gz` — Source distribution (sdist); used as a fallback
+
+The version number is read automatically from `__version__` in `nuix_nli_lib/__init__.py`.
+
+### Publish to a Repository
+
+**PyPI:**
+```Console
+twine upload dist/*
+```
+
+You will be prompted for your PyPI credentials, or you can supply an API token:
+
+```Console
+twine upload --username __token__ --password <your-api-token> dist/*
+```
+
+**Private / internal repository:**
+```Console
+twine upload --repository-url https://<your-registry-url>/simple/ dist/*
+```
+
+### Install from pip
+
+Once published, the package can be installed with:
+
+```Console
+pip install nuix-nli-lib
+```
+
+Or from a private registry:
+
+```Console
+pip install --index-url https://<your-registry-url>/simple/ nuix-nli-lib
 ```

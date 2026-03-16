@@ -18,7 +18,7 @@
         <FieldValues>
           <field_0>filesystem/directory</field_0>
           <field_1>2024-09-17T13:48:04.772+00:00</field_1>
-          <field_2>C:\Work_Innovation\ProServ-NLI-Builder\python\test\resources\certificates</field_2>
+          <field_2>C:\Development\ProServ-NLI-Builder\python\test\resources\certificates</field_2>
           <field_3>2024-09-17T13:56:04.997+00:00</field_3>
           <field_4>2024-09-17T13:48:04.772+00:00</field_4>
           <field_5>2024-09-17T13:48:30.394+00:00</field_5>
@@ -31,7 +31,7 @@
           <Location>
             <Custodian>Unknown</Custodian>
             <Description>Location on Disk</Description>
-            <LocationURI>file:///C:/Work_Innovation/ProServ-NLI-Builder/python/test/resources/certificates</LocationURI>
+            <LocationURI>file:///C:/Development/ProServ-NLI-Builder/python/test/resources/certificates</LocationURI>
           </Location>
         </Locations>
       </Document>

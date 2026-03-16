@@ -64,7 +64,15 @@ class EntryInterface(object):
         :return: The custodian of this entry, if it has one, or use a default if none specified.
         """
         from nuix_nli_lib.edrm import  configs as edrm_configs
-        return self.fields.get('custodian', edrm_configs.custodian)
+
+        if 'custodian' in self.fields:
+            custodian = self.fields['custodian']
+        elif self.parent:
+            custodian = self.parent.custodian
+        else:
+            custodian = edrm_configs['custodian']
+
+        return custodian
 
     @custodian.setter
     def custodian(self, value: str):
