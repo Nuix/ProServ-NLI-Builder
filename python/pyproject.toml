@@ -7,13 +7,13 @@ name = "nuix-nli-lib"
 dynamic = ["version"]
 description = "Library for building Nuix Logical Image (NLI) files for ingesting data into Nuix cases"
 readme = {file = "README.md", content-type = "text/markdown"}
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
+license-files = ["LICEN[CS]E*"]
 authors = [
     {name = "Steven Luke (Nuix LTD)"}
 ]
 requires-python = ">=3.12"
 classifiers = [
-    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
