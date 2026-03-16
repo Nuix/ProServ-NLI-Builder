@@ -255,7 +255,9 @@ def cli():
         "    ##*#***#*##    ##*****#*##                                                                             \n" +
         "                                                                                                           \n" +
         "                                                                                                           \n" +
-        "Nuix Logical Image Builder: the nuix_nli_lib packages and its children are available.  Start with:         \n" +
+        "Nuix Logical Image Builder: the nuix_nli_lib packages and its children are available.                      \n" +
+        "                                                                                                           \n" +
+        "Use CTRL+Z to quit.  Start working with:                                                                   \n" +
         " --------------------------                                                                                \n" +
         " |  nli = NLIGenerator()  |                                                                                \n" +
         " --------------------------                                                                                "
