@@ -1,7 +1,7 @@
 $build_path = Split-Path -Parent $MyInvocation.MyCommand.Path | Split-Path -Parent
 Write-Output $build_path
 $env_dest = "$build_path\dist"
-$env_src = "$build_path\build"
+$env_src = "$build_path\build-py"
 $env_code = "$build_path\main"
 $env_rsrc = "$build_path\resources"
 
