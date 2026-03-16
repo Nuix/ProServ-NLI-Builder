@@ -20,6 +20,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+[project.scripts]
+nli-cli = "nuix_nli_lib:cli"
+
 [tool.setuptools.dynamic]
 version = {attr = "nuix_nli_lib.__version__"}
 

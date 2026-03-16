@@ -213,3 +213,73 @@ def debug_log(message: str, flush: bool = False) -> None:
     """
     if 'debug' in configs and configs['debug']:
         print(message, flush=flush)
+
+
+def cli():
+    import code
+
+    from pathlib import Path
+    from datetime import datetime
+
+    from nuix_nli_lib import edrm
+    from nuix_nli_lib import nli
+    from nuix_nli_lib import data_types
+
+    from nuix_nli_lib.edrm import EntryInterface, FileEntry, DirectoryEntry, MappingEntry, EDRMBuilder, generate_field
+    from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry, JSONValueEntry, JSONArrayEntry, JSONObjectEntry, \
+        JSONFileEntry
+    from nuix_nli_lib.nli import NLIGenerator
+
+    banner = (
+        "                                                                                                           \n" +
+        "                                                                                                           \n" +
+        "                                                                                                           \n" +
+        "     #########      ###**###                                                                               \n" +
+        "   #*#*######**###***######***#                                                                            \n" +
+        " #**##**#****###*####*******####                                                                           \n" +
+        " **##**#**#########*##*#**#**##*#                                                                          \n" +
+        "#**#*#***##*###**#*##**###*#*##*##    ##**#####*****###    ##****        *****#  ##*### ##**#        ##*## \n" +
+        "#*#**#**#   #######*##  ##*#**####   #****************##  #*****#       ##***** #*****# #*****#    ##****#*\n" +
+        " #*#*#*#**#  #**##*#*  ##*##**#*#    #*******#####******# #*****#       #*****# #******  #*****#  #******# \n" +
+        " #####*###### ##***  #*###*#*##*     #******#      ******##*****#       #*****# #******   ##****##*****#   \n" +
+        "   #*##**#***#  ## ###*##*##**#      #*****#       *****#*#*****#       #*****# #******     #********##    \n" +
+        "    #**##**##**   ***##**##**#       #*****#       ##*****#*****#       #*****# #******      ##*****#      \n" +
+        "   ***######**     #####*#*#**#      #*****#       ##*****#*****#       #*****# #******     #********#     \n" +
+        " #**##**##**# ##**#  #*##*###*##     #*****#       ##*****##****##      #*****# #******   ##***********#   \n" +
+        "#*###*##**#  #**##*#   ####**##*#    #*****#       ##***** #*****### ##*#*****# #******  #******# *#****#  \n" +
+        "#*##*#####  #####*#*##  #**##*##*#   #*****#       ##*****  ##**********#*****# #****** ##****#    #*****##\n" +
+        "#*#**##*# #####*#*#*##*  #**#**#*#    #*****       #*****#   ###********#****## #****## ****##       ****##\n" +
+        "**##*###**#*###* #**###**###**####     ###           ###        ##*###    ####    ###    ###          ##*  \n" +
+        " ##*###*####*###**##**#*****#####                                                                          \n" +
+        "  #**####*####**#*#*##*#*###**##                                                                           \n" +
+        "    ##*#***#*##    ##*****#*##                                                                             \n" +
+        "                                                                                                           \n" +
+        "                                                                                                           \n" +
+        "Nuix Logical Image Builder: the nuix_nli_lib packages and its children are available.  Start with:         \n" +
+        " --------------------------                                                                                \n" +
+        " |  nli = NLIGenerator()  |                                                                                \n" +
+        " --------------------------                                                                                "
+        )
+
+    namespace = {
+        "Path": Path,
+        "datetime": datetime,
+        "edrm": edrm,
+        "nli": nli,
+        "data_types": data_types,
+        "EntryInterface": EntryInterface,
+        "FileEntry": FileEntry,
+        "DirectoryEntry": DirectoryEntry,
+        "MappingEntry": MappingEntry,
+        "EDRMBuilder": EDRMBuilder,
+        "generate_field": generate_field,
+        "CSVEntry": CSVEntry,
+        "CSVRowEntry": CSVRowEntry,
+        "JSONValueEntry": JSONValueEntry,
+        "JSONArrayEntry": JSONArrayEntry,
+        "JSONObjectEntry": JSONObjectEntry,
+        "JSONFileEntry": JSONFileEntry,
+        "NLIGenerator": NLIGenerator,
+    }
+
+    code.interact(banner=banner, local=namespace)
