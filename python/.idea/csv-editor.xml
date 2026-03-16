@@ -3,34 +3,6 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="C:\projects\proserv\Koblenz\NuixMemoryAnalysis\results\Quick\windows.getservicesids.GetServiceSIDs.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="C:\projects\proserv\Koblenz\NuixMemoryAnalysis\results\Quick\windows.registry.printkey.PrintKey.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="C:\projects\proserv\nli\CC.Medium.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="C:\projects\xlr8_24_london\telepathy\source_data\crypto481\crypto481_2024_09_24-09_51_archive.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value=";" />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="\test\resources\CC.Medium.csv">
           <value>
             <Attribute>
