@@ -85,7 +85,7 @@ public class EDRMBuilder {
         List<String> family = familyMap.remove(docId);
         if(!family.isEmpty()) {
             Element folderElement = document.createElement("Folder");
-            folderElement.setAttribute("DocId", docId);
+            folderElement.setAttribute("FolderName", docId);
             container.appendChild(folderElement);
             for (String childId : this.familyMap.get(docId)) {
                 addFolder(childId, document, folderElement, familyMap);

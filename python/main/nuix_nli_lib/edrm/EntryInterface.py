@@ -58,6 +58,23 @@ class EntryInterface(object):
         """
         raise NotImplementedError
 
+    @property
+    def custodian(self) -> str:
+        """
+        :return: The custodian of this entry, if it has one, or use a default if none specified.
+        """
+        from nuix_nli_lib.edrm import  configs as edrm_configs
+        return self.fields.get('custodian', edrm_configs.custodian)
+
+    @custodian.setter
+    def custodian(self, value: str):
+        """
+        Set the custodian of this entry.
+        :param value: The custodian to assign to this entry.
+        :return: None
+        """
+        self.fields['custodian'] = value
+
     def set_field_value(self, field_name: str, field_value: Any):
         """
         Set the value of a field in this entry.  This function assumes the field is already defined, and just adjusts
@@ -191,7 +208,7 @@ class EntryInterface(object):
         location_list.appendChild(location)
 
         custodian_element = document.createElement('Custodian')
-        custodian_element.appendChild(document.createTextNode(edrm.configs['custodian']))
+        custodian_element.appendChild(document.createTextNode(self.custodian))
         location.appendChild(custodian_element)
 
         description_element = document.createElement('Description')
