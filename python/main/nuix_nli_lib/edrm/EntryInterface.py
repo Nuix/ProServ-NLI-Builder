@@ -66,7 +66,7 @@ class EntryInterface(object):
         from nuix_nli_lib.edrm import  configs as edrm_configs
 
         if 'custodian' in self.fields:
-            custodian = self.fields['custodian']
+            custodian = self.__row_fields['custodian'].value
         elif self.parent:
             custodian = self.parent.custodian
         else:
@@ -81,7 +81,11 @@ class EntryInterface(object):
         :param value: The custodian to assign to this entry.
         :return: None
         """
-        self.fields['custodian'] = value
+        if 'custodian' in self.fields:
+            self.set_field_value('custodian', value)
+        else:
+            self['custodian'] = EntryField('custodian', 'custodian', EntryField.TYPE_TEXT, value)
+
 
     def set_field_value(self, field_name: str, field_value: Any):
         """
@@ -93,7 +97,7 @@ class EntryInterface(object):
         :raise KeyError: If the there is no field with the provided name
         """
         if field_name in self.fields:
-            self[field_name] = field_value
+            self[field_name].value = field_value
         else:
             raise KeyError(f'Field {field_name} does not exist for this entry.')
 

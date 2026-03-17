@@ -1,7 +1,24 @@
 <svg version="1.1" id="Layer_1" xmlns:x="ns_extend;" xmlns:i="ns_ai;" xmlns:graph="ns_graphs;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 41.4 45" style="enable-background:new 0 0 41.4 45;" xml:space="preserve">
  <style type="text/css">
-  .st0{enable-background:new    ;}
-	.st1{fill:#0056E3;}
+  .st0{enable-background:new;}
+  .st1{fill:#0056E3;}
+  .st4{
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 22.5px;
+    text-anchor: end;
+    fill: #0056E3
+  }
+  .st3 {
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 22.5px;
+    text-anchor: end;
+    fill: white;
+    stroke: white;
+    stroke-width: 1.5px;
+    stroke-linejoin: round;
+  }
  </style>
  <metadata>
   <sfw xmlns="ns_sfw;">
@@ -69,4 +86,6 @@
 		c0.8,0,1.2-0.3,1.9-1.1l6.4-8.3C19.8,25.4,20.2,25.2,20.6,25.2">
   </path>
  </g>
+  <text x="41.4" y="44" class="st3">nli</text>
+  <text x="41.4" y="44" class="st4">nli</text>
 </svg>
