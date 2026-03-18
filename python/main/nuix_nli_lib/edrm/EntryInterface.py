@@ -63,16 +63,10 @@ class EntryInterface(object):
         """
         :return: The custodian of this entry, if it has one, or use a default if none specified.
         """
-        from nuix_nli_lib.edrm import  configs as edrm_configs
-
         if 'custodian' in self.fields:
-            custodian = self.__row_fields['custodian'].value
-        elif self.parent:
-            custodian = self.parent.custodian
+            return self.__row_fields['custodian'].value
         else:
-            custodian = edrm_configs['custodian']
-
-        return custodian
+            return None
 
     @custodian.setter
     def custodian(self, value: str):
@@ -213,6 +207,8 @@ class EntryInterface(object):
         :param for_nli:True if this EDRM load file is targetting an NLI
         :return:
         """
+        from nuix_nli_lib.edrm import configs as edrm_configs
+
         location_list = document.createElement('Locations')
         container.appendChild(location_list)
 
@@ -220,7 +216,16 @@ class EntryInterface(object):
         location_list.appendChild(location)
 
         custodian_element = document.createElement('Custodian')
-        custodian_element.appendChild(document.createTextNode(self.custodian))
+
+        # If this entry has a custodian, use it, otherwise use the parent's custodian or the default.
+        if self.custodian is not None:
+            custodian = self.custodian
+        elif self.parent is not None and entry_map[self.parent] is not None and entry_map[self.parent].custodian is not None:
+            custodian = entry_map[self.parent].custodian
+        else:
+            custodian = edrm_configs['custodian']
+
+        custodian_element.appendChild(document.createTextNode(custodian))
         location.appendChild(custodian_element)
 
         description_element = document.createElement('Description')
