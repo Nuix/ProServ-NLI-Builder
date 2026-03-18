@@ -511,16 +511,16 @@ class JSONFileEntry(FileEntry):
                  json_file_path: str,
                  mimetype: str = 'application/json',
                  parent_id: str = None,
-                 simple_value_generator: Type[JSONValueEntry] = JSONValueEntry,
-                 array_value_generator: Type[JSONArrayEntry] = JSONArrayEntry,
-                 object_value_generator: Type[Any] = JSONObjectEntry):
+                 simple_value_generator: Type[JSONValueEntry]|None = JSONValueEntry,
+                 array_value_generator: Type[JSONArrayEntry]|None = JSONArrayEntry,
+                 object_value_generator: Type[Any]|None = JSONObjectEntry):
         """
         :param json_file_path: Full path, as a String, to the JSON file to be added.
         :param mimetype: Mimetype to assign to the JSON file, defaults to 'application/json'.
         :param parent_id: The ID of this item's parent, or None to make it a Top Level Item.'
-        :param simple_value_generator: Subclass of JSONValueEntry to use as a simple value generator.
-        :param array_value_generator: Subclass of JSONArrayEntry to use as an array value generator.
-        :param object_value_generator: Subclass of JSONObjectEntry to use as an object value generator.
+        :param simple_value_generator: Subclass of JSONValueEntry to use as a simple value generator, or None to use the default.
+        :param array_value_generator: Subclass of JSONArrayEntry to use as an array value generator, or None to use the default.
+        :param object_value_generator: Subclass of JSONObjectEntry to use as an object value generator, or None to use the default.
         """
         super().__init__(json_file_path, mimetype, parent_id)
 
@@ -539,9 +539,9 @@ class JSONFileEntry(FileEntry):
         return f'{self.name}/{existing_path}'
 
     def __add_object(self, builder: EDRMBuilder, name: str, obj: dict, parent_id: str,
-                     object_generator: type["JSONObjectEntry"] | None = None,
-                     array_generator: type["JSONArrayEntry"] | None = None,
-                     value_generator: type["JSONValueEntry"] | None = None) -> JSONObjectEntry:
+                     object_generator: Type[JSONObjectEntry] | None = None,
+                     array_generator: Type[JSONArrayEntry] | None = None,
+                     value_generator: Type[JSONValueEntry] | None = None) -> JSONObjectEntry:
         if object_generator is None:
             object_generator = self.__object_value_generator
         if array_generator is None:
@@ -582,9 +582,9 @@ class JSONFileEntry(FileEntry):
         return object_entry
 
     def __add_array(self, builder: EDRMBuilder, name: str, array: list, parent_id: str,
-                     object_generator: type["JSONObjectEntry"] | None = None,
-                     array_generator: type["JSONArrayEntry"] | None = None,
-                     value_generator: type["JSONValueEntry"] | None = None) -> JSONArrayEntry:
+                     object_generator: Type[JSONObjectEntry] | None = None,
+                     array_generator: Type[JSONArrayEntry] | None = None,
+                     value_generator: Type[JSONValueEntry] | None = None) -> JSONArrayEntry:
         if object_generator is None:
             object_generator = self.__object_value_generator
         if array_generator is None:

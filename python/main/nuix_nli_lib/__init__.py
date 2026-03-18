@@ -190,7 +190,7 @@ override how names are generated, the mimetypes used, or how date-time values ar
 transformation of a JSON file into an NLI, it may be necessary to subclass each of the types several times, and subclass
 the JSONFileEntry to provide the appropriate combination of overriden types as needed.
 """
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 configs = {}
 
