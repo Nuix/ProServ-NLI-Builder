@@ -1,5 +1,6 @@
 import json
-from typing import Any, Type, Union, Callable
+from typing import Any, Type, Union, List, Callable
+from datetime import datetime
 
 from nuix_nli_lib.edrm import FileEntry, MappingEntry, EDRMBuilder
 from nuix_nli_lib.data_types import configs
@@ -33,6 +34,52 @@ JSONObjectEntry
   that an object that only contains nested complex types will have an empty text representation).
 """
 
+def _parse_jsonpath_segments(pattern: str) -> list[str]:
+    """
+    Parse a non-recursive JSONPath pattern (e.g. '$.a.b[*].c') into a list of path segments,
+    normalizing '[*]' array wildcards to '*'.  Assumes the pattern starts with '$.'.
+    """
+    rest = pattern[2:]  # strip '$.'
+    rest = rest.replace('[*]', '.*')
+    return rest.split('.')
+
+
+def _matches_path(pattern: str, path: list[str]) -> bool:
+    """
+    Return True if the JSONPath pattern matches the path stack.
+
+    Supported patterns:
+      $..key        - recursive descent: matches any path whose last segment is 'key'
+      $.key         - root-level key
+      $.parent.key  - exact nested path
+      $.arr[*].key  - 'key' inside any element of array 'arr'
+    """
+    if not pattern.startswith('$'):
+        return False
+    if pattern.startswith('$..'):
+        key = pattern[3:]
+        return len(path) > 0 and path[-1] == key
+    if not pattern.startswith('$.'):
+        return False
+    segments = _parse_jsonpath_segments(pattern)
+    if len(segments) != len(path):
+        return False
+    return all(seg == '*' or seg == p for seg, p in zip(segments, path))
+
+
+def _pattern_specificity(pattern: str) -> int:
+    """
+    Return a specificity score for a JSONPath pattern (higher = more specific).
+    Recursive descent patterns ($..key) score 0; direct-path patterns score the
+    number of literal (non-wildcard) segments.
+    """
+    if pattern.startswith('$..'):
+        return 0
+    if not pattern.startswith('$.'):
+        return -1
+    return sum(1 for s in _parse_jsonpath_segments(pattern) if s != '*')
+
+
 class JSONValueEntry(MappingEntry):
     """
     MappingEntry used for JSON files which represent single values.  This is a basic implementation designed around
@@ -42,7 +89,7 @@ class JSONValueEntry(MappingEntry):
     def __init__(self,
                  mapping_name: str,
                  key_name: str,
-                 value: Union[int, float, str, bool, None],
+                 value: Union[int, float, str, bool, datetime, None],
                  mimetype: str = 'application/x-json-value',
                  parent_id: str = None):
         """
@@ -64,6 +111,34 @@ class JSONValueEntry(MappingEntry):
         return str(self.data[self.__key_name])
 
 
+def get_datetime_value_generator(formats: list[str]) -> Type[JSONValueEntry]:
+    local_formats = list(formats)
+    class JSONDateTimeEntry(JSONValueEntry):
+        def __init__(self,
+                     mapping_name: str,
+                     key_name: str,
+                     value: Union[int, float, str],
+                     mimetype: str = "application/x-datetime",
+                     parent_id: str = None):
+            dt = None
+            v_str = str(value)
+            if isinstance(value, (int, float)):
+                dt = datetime.fromtimestamp(value)
+            else:
+                try:
+                    dt = datetime.fromisoformat(v_str)
+                except ValueError:
+                    for format in local_formats:
+                        try:
+                            dt = datetime.strptime(v_str, format)
+                            break
+                        except ValueError:
+                            pass
+            dt = dt or v_str
+            super().__init__(mapping_name, key_name, dt, mimetype, parent_id)
+    return JSONDateTimeEntry
+
+
 class JSONArrayEntry(MappingEntry):
     """
     MappingEntry implementation used to store a JSON array.  A JSON array can be a mix of simple values, nested arrays,
@@ -78,15 +153,24 @@ class JSONArrayEntry(MappingEntry):
                  mapping_name: str,
                  array: dict[str, Any],
                  mimetype: str = 'application/x-json-array',
+                 child_value_generator: type["JSONValueEntry"] | None = None,
+                 child_array_generator: type["JSONArrayEntry"] | None = None,
+                 child_object_generator: type["JSONObjectEntry"] | None = None,
                  parent_id: str = None):
         """
         :param mapping_name: The name of the item that will be used to represent the value in the Nuix case.
         :param array: The list of values stored in the array.  Can be a mix of simple values, nested lists, and dicts.
         :param mimetype: The mimetype to store the item as, defaulting to 'application/x-json-array'.
+        :param child_value_generator: The class to use for generating child JSONValueEntry objects, or None to use the default.
+        :param child_array_generator: The class to use for generating child JSONArrayEntry objects, or None to use the default.
+        :param child_object_generator: The class to use for generating child JSONObjectEntry objects, or None to use the default.
         :param parent_id: The ID of this item's parent, or None to make it a Top Level Item.
         """
 
         self.__name = mapping_name
+        self.child_array_generator = child_array_generator
+        self.child_object_generator = child_object_generator
+        self.child_value_generator = child_value_generator
         super().__init__(array, mimetype, parent_id)
 
     def get_name(self) -> str:
@@ -165,7 +249,7 @@ class JSONArrayEntry(MappingEntry):
         :return: An instance of JSONObjectEntry to use to generate the child item, or None to use the default
                  JSONObjectEntry.
         """
-        return None
+        return self.child_object_generator
 
     def get_child_array_generator(self, index: str) -> type["JSONArrayEntry"] | None:
         """
@@ -258,7 +342,7 @@ class JSONArrayEntry(MappingEntry):
         :return: An instance of JSONArrayEntry to use to generate the child item, or None to use the default
                  JSONArrayEntry.
         """
-        return None
+        return self.child_array_generator
 
     def get_child_value_generator(self, index: str) -> type["JSONValueEntry"] | None:
         """
@@ -299,7 +383,7 @@ class JSONArrayEntry(MappingEntry):
         :return: An instance of JSONValueEntry to use to generate the child item, or None to use the default
                  JSONValueEntry.
         """
-        return None
+        return self.child_value_generator
 
 
 class JSONObjectEntry(MappingEntry):
@@ -315,14 +399,23 @@ class JSONObjectEntry(MappingEntry):
                  mapping_name: str,
                  obj: dict[str, Any],
                  mimetype: str = 'application/x-json-object',
+                 child_value_generator: type["JSONValueEntry"] | None = None,
+                 child_array_generator: type["JSONArrayEntry"] | None = None,
+                 child_object_generator: type["JSONObjectEntry"] | None = None,
                  parent_id: str = None):
         """
         :param mapping_name: The name of the item that will be used to represent the value in the Nuix case.
         :param obj: The dictionary containing the key:value pairs.  The values can be simple values, lists, or dictionaries
         :param mimetype: The mimetype to store the item as, defaulting to 'application/x-json-object'.
+        :param child_value_generator: The class to use for generating child JSONValueEntry objects, or None to use the default.
+        :param child_array_generator: The class to use for generating child JSONArrayEntry objects, or None to use the default.
+        :param child_object_generator: The class to use for generating child JSONObjectEntry objects, or None to use the default.
         :param parent_id: The ID of this item's parent, or None to make it a Top Level Item.'
         """
         self.__name = mapping_name
+        self.child_array_generator = child_array_generator
+        self.child_object_generator = child_object_generator
+        self.child_value_generator = child_value_generator
         super().__init__(obj, mimetype, parent_id)
 
     def get_name(self) -> str:
@@ -375,7 +468,7 @@ class JSONObjectEntry(MappingEntry):
         :return: An instance of JSONObjectEntry to use to generate the child item, or None to use the default
                  JSONObjectEntry.
         """
-        return None
+        return self.child_object_generator
 
     def get_child_array_generator(self, child_key: str) -> type["JSONArrayEntry"] | None:
         """
@@ -434,13 +527,13 @@ class JSONObjectEntry(MappingEntry):
         <code>
 
         If this method returns None, then the default JSONArrayEntry provided to the JSONEntry during initialization
-        will be used.  The default implementation will return None.
+        will be used.
 
         :param child_key: The name of the key used to identify the type of child object to return an Entry for.
         :return: An instance of JSONArrayEntry to use to generate the child item, or None to use the default
                  JSONArrayEntry.
         """
-        return None
+        return self.child_array_generator
 
     def get_child_value_generator(self, child_key: str) -> type["JSONValueEntry"] | None:
         """
@@ -482,7 +575,7 @@ class JSONObjectEntry(MappingEntry):
         :return: An instance of JSONValueEntry to use to generate the child item, or None to use the default
                  JSONValueEntry.
         """
-        return None
+        return self.child_value_generator
 
 class JSONFileEntry(FileEntry):
     """
@@ -513,7 +606,8 @@ class JSONFileEntry(FileEntry):
                  parent_id: str = None,
                  simple_value_generator: Type[JSONValueEntry]|None = JSONValueEntry,
                  array_value_generator: Type[JSONArrayEntry]|None = JSONArrayEntry,
-                 object_value_generator: Type[Any]|None = JSONObjectEntry):
+                 object_value_generator: Type[Any]|None = JSONObjectEntry,
+                 type_map: dict[str, type] | None = None):
         """
         :param json_file_path: Full path, as a String, to the JSON file to be added.
         :param mimetype: Mimetype to assign to the JSON file, defaults to 'application/json'.
@@ -521,12 +615,29 @@ class JSONFileEntry(FileEntry):
         :param simple_value_generator: Subclass of JSONValueEntry to use as a simple value generator, or None to use the default.
         :param array_value_generator: Subclass of JSONArrayEntry to use as an array value generator, or None to use the default.
         :param object_value_generator: Subclass of JSONObjectEntry to use as an object value generator, or None to use the default.
+        :param type_map: Optional dict mapping JSONPath patterns to entry classes.  Matched classes take precedence over
+                         the class-delegation system.  Supported patterns:
+                           ``$..key``        - any node named 'key' anywhere in the document (recursive descent)
+                           ``$.key``         - root-level key
+                           ``$.parent.key``  - exact nested path
+                           ``$.arr[*].key``  - 'key' inside every element of array 'arr'
+                         When multiple patterns match the same node the most specific (longest literal path) wins.
+                         Values must be subclasses of JSONValueEntry, JSONArrayEntry, or JSONObjectEntry.
         """
         super().__init__(json_file_path, mimetype, parent_id)
 
         self.__simple_value_generator: Type[JSONValueEntry] = simple_value_generator or JSONValueEntry
         self.__array_value_generator: Type[JSONArrayEntry] = array_value_generator or JSONArrayEntry
         self.__object_value_generator: Type[JSONObjectEntry] = object_value_generator or JSONObjectEntry
+
+        _valid_bases = (JSONValueEntry, JSONArrayEntry, JSONObjectEntry)
+        for pattern, cls in (type_map or {}).items():
+            if not (isinstance(cls, type) and issubclass(cls, _valid_bases)):
+                raise TypeError(
+                    f"type_map value for '{pattern}' must be a subclass of JSONValueEntry, "
+                    f"JSONArrayEntry, or JSONObjectEntry; got {cls!r}"
+                )
+        self.__type_map: dict[str, type] = dict(type_map) if type_map else {}
 
         with self.file_path.open(mode="r", encoding=configs['encoding']) as json_file:
             self.__json = json.load(json_file)
@@ -538,10 +649,62 @@ class JSONFileEntry(FileEntry):
     def add_as_parent_path(self, existing_path: str):
         return f'{self.name}/{existing_path}'
 
+    def __resolve_type(self, path: list[str]) -> type | None:
+        """
+        Find the best-matching entry class from type_map for the given traversal path.
+        When multiple patterns match, the most specific one (highest literal-segment count) wins.
+        Returns None when type_map is empty or no pattern matches.
+        """
+        if not self.__type_map:
+            return None
+        best_cls = None
+        best_specificity = -1
+        for pattern, cls in self.__type_map.items():
+            if _matches_path(pattern, path):
+                spec = _pattern_specificity(pattern)
+                if spec > best_specificity:
+                    best_specificity = spec
+                    best_cls = cls
+        return best_cls
+
+    def __child_generators(self, child_path: list[str],
+                            entry_obj_gen: Type[JSONObjectEntry] | None,
+                            entry_arr_gen: Type[JSONArrayEntry] | None,
+                            entry_val_gen: Type[JSONValueEntry] | None,
+                            default_obj_gen: Type[JSONObjectEntry],
+                            default_arr_gen: Type[JSONArrayEntry],
+                            default_val_gen: Type[JSONValueEntry],
+                            ) -> tuple[Type[JSONObjectEntry], Type[JSONArrayEntry], Type[JSONValueEntry]]:
+        """
+        Determine the three generators for a child node.
+
+        Priority (highest first):
+          1. type_map match at child_path
+          2. Per-key getter on the parent entry (entry_*_gen)
+          3. Inherited defaults (default_*_gen)
+        """
+        obj_gen = entry_obj_gen or default_obj_gen
+        arr_gen = entry_arr_gen or default_arr_gen
+        val_gen = entry_val_gen or default_val_gen
+
+        resolved = self.__resolve_type(child_path)
+        if resolved is not None:
+            if issubclass(resolved, JSONObjectEntry):
+                obj_gen = resolved
+            elif issubclass(resolved, JSONArrayEntry):
+                arr_gen = resolved
+            elif issubclass(resolved, JSONValueEntry):
+                val_gen = resolved
+
+        return obj_gen, arr_gen, val_gen
+
     def __add_object(self, builder: EDRMBuilder, name: str, obj: dict, parent_id: str,
                      object_generator: Type[JSONObjectEntry] | None = None,
                      array_generator: Type[JSONArrayEntry] | None = None,
-                     value_generator: Type[JSONValueEntry] | None = None) -> JSONObjectEntry:
+                     value_generator: Type[JSONValueEntry] | None = None,
+                     current_path: list[str] | None = None) -> JSONObjectEntry:
+        if current_path is None:
+            current_path = []
         if object_generator is None:
             object_generator = self.__object_value_generator
         if array_generator is None:
@@ -559,32 +722,54 @@ class JSONFileEntry(FileEntry):
             elif isinstance(value, list):
                 _arrays[key] = value
             else:
-                val_value = value_generator(key, 'Value', value)
+                _, _, key_val_gen = self.__child_generators(
+                    current_path + [key], None, None, None,
+                    object_generator, array_generator, value_generator)
+                val_value = key_val_gen(key, 'Value', value)
                 _contents[key] = val_value['Value'].value
 
         object_entry = object_generator(name, _contents, parent_id=parent_id)
         object_id = object_entry[object_entry.identifier_field].value
 
         for key, value in _objects.items():
+            child_path = current_path + [key]
+            child_obj_gen, child_arr_gen, child_val_gen = self.__child_generators(
+                child_path,
+                object_entry.get_child_object_generator(key),
+                object_entry.get_child_array_generator(key),
+                object_entry.get_child_value_generator(key),
+                object_generator, array_generator, value_generator)
             self.__add_object(builder, key, value, parent_id=object_id,
-                              object_generator=object_entry.get_child_object_generator(key),
-                              array_generator=object_entry.get_child_array_generator(key),
-                              value_generator=object_entry.get_child_value_generator(key))
+                              object_generator=child_obj_gen,
+                              array_generator=child_arr_gen,
+                              value_generator=child_val_gen,
+                              current_path=child_path)
 
         for key, value in _arrays.items():
+            child_path = current_path + [key]
+            child_obj_gen, child_arr_gen, child_val_gen = self.__child_generators(
+                child_path,
+                object_entry.get_child_object_generator(key),
+                object_entry.get_child_array_generator(key),
+                object_entry.get_child_value_generator(key),
+                object_generator, array_generator, value_generator)
             self.__add_array(builder, key, value, parent_id=object_id,
-                             object_generator=object_entry.get_child_object_generator(key),
-                             array_generator=object_entry.get_child_array_generator(key),
-                             value_generator=object_entry.get_child_value_generator(key))
+                             object_generator=child_obj_gen,
+                             array_generator=child_arr_gen,
+                             value_generator=child_val_gen,
+                             current_path=child_path)
 
         builder.add_entry(object_entry)
 
         return object_entry
 
     def __add_array(self, builder: EDRMBuilder, name: str, array: list, parent_id: str,
-                     object_generator: Type[JSONObjectEntry] | None = None,
-                     array_generator: Type[JSONArrayEntry] | None = None,
-                     value_generator: Type[JSONValueEntry] | None = None) -> JSONArrayEntry:
+                    object_generator: Type[JSONObjectEntry] | None = None,
+                    array_generator: Type[JSONArrayEntry] | None = None,
+                    value_generator: Type[JSONValueEntry] | None = None,
+                    current_path: list[str] | None = None) -> JSONArrayEntry:
+        if current_path is None:
+            current_path = []
         if object_generator is None:
             object_generator = self.__object_value_generator
         if array_generator is None:
@@ -602,23 +787,42 @@ class JSONFileEntry(FileEntry):
             elif isinstance(itm, list):
                 _arrays[str(idx)] = itm
             else:
-                itm_value = value_generator(str(idx), 'Value', itm)
+                _, _, key_val_gen = self.__child_generators(
+                    current_path + [str(idx)], None, None, None,
+                    object_generator, array_generator, value_generator)
+                itm_value = key_val_gen(str(idx), 'Value', itm)
                 _contents[str(idx)] = itm_value['Value'].value
 
         array_entry = array_generator(name, _contents, parent_id=parent_id)
         array_id = array_entry[array_entry.identifier_field].value
 
         for obj_name, obj in _objects.items():
+            child_path = current_path + [obj_name]
+            child_obj_gen, child_arr_gen, child_val_gen = self.__child_generators(
+                child_path,
+                array_entry.get_child_object_generator(obj_name),
+                array_entry.get_child_array_generator(obj_name),
+                array_entry.get_child_value_generator(obj_name),
+                object_generator, array_generator, value_generator)
             self.__add_object(builder, obj_name, obj, parent_id=array_id,
-                              object_generator=array_entry.get_child_object_generator(),
-                              array_generator=array_entry.get_child_array_generator(),
-                              value_generator=array_entry.get_child_value_generator())
+                              object_generator=child_obj_gen,
+                              array_generator=child_arr_gen,
+                              value_generator=child_val_gen,
+                              current_path=child_path)
 
         for ary_name, ary in _arrays.items():
+            child_path = current_path + [ary_name]
+            child_obj_gen, child_arr_gen, child_val_gen = self.__child_generators(
+                child_path,
+                array_entry.get_child_object_generator(ary_name),
+                array_entry.get_child_array_generator(ary_name),
+                array_entry.get_child_value_generator(ary_name),
+                object_generator, array_generator, value_generator)
             self.__add_array(builder, ary_name, ary, parent_id=array_id,
-                              object_generator=array_entry.get_child_object_generator(),
-                              array_generator=array_entry.get_child_array_generator(),
-                              value_generator=array_entry.get_child_value_generator())
+                             object_generator=child_obj_gen,
+                             array_generator=child_arr_gen,
+                             value_generator=child_val_gen,
+                             current_path=child_path)
 
         builder.add_entry(array_entry)
 
