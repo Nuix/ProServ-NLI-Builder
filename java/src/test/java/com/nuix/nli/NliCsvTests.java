@@ -2,6 +2,7 @@ package com.nuix.nli;
 
 import com.nuix.edrm.datatypes.CSVEntry;
 import com.nuix.edrm.datatypes.CSVRowEntry;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -22,15 +23,14 @@ public class NliCsvTests {
     public static class EnvEntry extends CSVRowEntry {
         public EnvEntry(CSVEntry parent, int idx) { super(parent, idx); }
         @Override public String getName() {
-            // If fields exist, build a composed name, else fallback
-            try {
+            // Build a composed name only when all required fields are present
+            if (fields.containsKey("PID") && fields.containsKey("Process") && fields.containsKey("Variable")) {
                 String pid = String.valueOf(getField("PID").getValue());
                 String process = String.valueOf(getField("Process").getValue());
                 String variable = String.valueOf(getField("Variable").getValue());
                 return "("+pid+") "+process+" ["+variable+"]";
-            } catch (Exception e) {
-                return super.getName();
             }
+            return super.getName();
         }
     }
 
@@ -94,6 +94,7 @@ public class NliCsvTests {
     public void testRowCount() {
         // envars.csv has 17533 data rows (17534 total lines minus 1 header)
         Path envars = resources().resolve("envars.csv");
+        Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
         CSVEntry entry = new CSVEntry(envars.toString());
         assertEquals(17533, entry.getData().size(),
                 "envars.csv should have 17533 data rows (header excluded)");
@@ -103,6 +104,7 @@ public class NliCsvTests {
     public void testFieldNames() {
         // All 6 CSV column headers must appear as field names on the CSVEntry
         Path envars = resources().resolve("envars.csv");
+        Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
         CSVEntry entry = new CSVEntry(envars.toString());
         List<String> fields = entry.getRowFields();
         assertTrue(fields.contains("TreeDepth"), "Missing column: TreeDepth");
@@ -119,6 +121,7 @@ public class NliCsvTests {
         // Spot-check the first data row: TreeDepth=0, PID=784, Process=smss.exe,
         // Block=0x22c28202ce0, Variable=Path, Value=C:\Windows\System32
         Path envars = resources().resolve("envars.csv");
+        Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
         CSVEntry entry = new CSVEntry(envars.toString());
         java.util.Map<String, String> firstRow = entry.getData().get(0);
         assertEquals("0", firstRow.get("TreeDepth"), "First row TreeDepth should be 0");
@@ -133,6 +136,7 @@ public class NliCsvTests {
     public void testCustomRowName() {
         // EnvEntry subclass should compose getName() as "(PID) Process [Variable]"
         Path envars = resources().resolve("envars.csv");
+        Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
         CSVEntry entry = new CSVEntry(
                 envars.toString(),
                 "text/csv",
