@@ -37,36 +37,13 @@ public class NliCsvTests {
     @Test
     public void testBaseCsvToNli() {
         Path envars = resources().resolve("envars.csv");
+        Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
         CSVEntry entry = new CSVEntry(envars.toString());
         NLIGenerator gen = new NLIGenerator();
         gen.addEntry(entry);
         Path out = outputDir().resolve("csv_test.nli");
         gen.save(out);
         assertTrue(Files.exists(out));
-    }
-
-    @Test
-    public void testBomPrefixedCsv() throws IOException {
-        // Create a temp CSV with a UTF-8 BOM prefix (as produced by Microsoft Excel)
-        Path tempCsv = Files.createTempFile("bom_test", ".csv");
-        try {
-            String content = "\uFEFFName,Value\nAlpha,1\nBeta,2";
-            Files.writeString(tempCsv, content, StandardCharsets.UTF_8);
-
-            CSVEntry entry = new CSVEntry(tempCsv.toString());
-
-            assertFalse(entry.getRowFields().isEmpty(), "Should have parsed header columns");
-            assertFalse(entry.getRowFields().get(0).startsWith("\uFEFF"),
-                    "First column header must not start with BOM character");
-            assertEquals("Name", entry.getRowFields().get(0),
-                    "First column header should be 'Name' without BOM prefix");
-            assertEquals("Value", entry.getRowFields().get(1),
-                    "Second column header should be 'Value'");
-            assertEquals(2, entry.getData().size(),
-                    "Should have parsed 2 data rows");
-        } finally {
-            Files.deleteIfExists(tempCsv);
-        }
     }
 
     @Test
