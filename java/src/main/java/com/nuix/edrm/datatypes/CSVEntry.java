@@ -1,12 +1,13 @@
 package com.nuix.edrm.datatypes;
 
 import com.nuix.edrm.EDRMBuilder;
+import com.nuix.edrm.EDRMUtilities;
 import com.nuix.edrm.FileEntry;
 import com.nuix.nli.CompoundEntry;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,9 +30,15 @@ public class CSVEntry extends FileEntry implements CompoundEntry {
     }
 
     private void load(Path path, char delimiter) {
-        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+        String csvEncoding = EDRMUtilities.EDRM_CONFIG.getOrDefault("csv_encoding", "UTF-8");
+        Charset charset = Charset.forName(csvEncoding);
+        try (BufferedReader reader = Files.newBufferedReader(path, charset)) {
             String header = reader.readLine();
             if (header == null) return;
+            // Strip UTF-8 BOM (\uFEFF) if present as the first character of the header line
+            if (!header.isEmpty() && header.charAt(0) == '\uFEFF') {
+                header = header.substring(1);
+            }
             String[] headers = header.split(String.valueOf(delimiter));
             for (String h : headers) {
                 String t = h.trim();
