@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -82,6 +83,94 @@ public class NliCsvTests {
                     "First column header should be 'Name'");
             assertEquals(2, entry.getData().size(),
                     "Should have parsed 2 data rows");
+        } finally {
+            Files.deleteIfExists(tempCsv);
+        }
+    }
+
+    // SLC-67: Structural CSV content tests
+
+    @Test
+    public void testRowCount() {
+        // envars.csv has 17533 data rows (17534 total lines minus 1 header)
+        Path envars = resources().resolve("envars.csv");
+        CSVEntry entry = new CSVEntry(envars.toString());
+        assertEquals(17533, entry.getData().size(),
+                "envars.csv should have 17533 data rows (header excluded)");
+    }
+
+    @Test
+    public void testFieldNames() {
+        // All 6 CSV column headers must appear as field names on the CSVEntry
+        Path envars = resources().resolve("envars.csv");
+        CSVEntry entry = new CSVEntry(envars.toString());
+        List<String> fields = entry.getRowFields();
+        assertTrue(fields.contains("TreeDepth"), "Missing column: TreeDepth");
+        assertTrue(fields.contains("PID"), "Missing column: PID");
+        assertTrue(fields.contains("Process"), "Missing column: Process");
+        assertTrue(fields.contains("Block"), "Missing column: Block");
+        assertTrue(fields.contains("Variable"), "Missing column: Variable");
+        assertTrue(fields.contains("Value"), "Missing column: Value");
+        assertEquals(6, fields.size(), "Should have exactly 6 column headers");
+    }
+
+    @Test
+    public void testFieldValues() {
+        // Spot-check the first data row: TreeDepth=0, PID=784, Process=smss.exe,
+        // Block=0x22c28202ce0, Variable=Path, Value=C:\Windows\System32
+        Path envars = resources().resolve("envars.csv");
+        CSVEntry entry = new CSVEntry(envars.toString());
+        java.util.Map<String, String> firstRow = entry.getData().get(0);
+        assertEquals("0", firstRow.get("TreeDepth"), "First row TreeDepth should be 0");
+        assertEquals("784", firstRow.get("PID"), "First row PID should be 784");
+        assertEquals("smss.exe", firstRow.get("Process"), "First row Process should be smss.exe");
+        assertEquals("Path", firstRow.get("Variable"), "First row Variable should be Path");
+        assertEquals("C:\\\\Windows\\\\System32", firstRow.get("Value"),
+                "First row Value should be C:\\\\Windows\\\\System32 (literal double-backslash as stored in CSV)");
+    }
+
+    @Test
+    public void testCustomRowName() {
+        // EnvEntry subclass should compose getName() as "(PID) Process [Variable]"
+        Path envars = resources().resolve("envars.csv");
+        CSVEntry entry = new CSVEntry(
+                envars.toString(),
+                "text/csv",
+                null,
+                EnvEntry::new,
+                ','
+        );
+        // First row: PID=784, Process=smss.exe, Variable=Path
+        CSVRowEntry firstRow = new EnvEntry(entry, 0);
+        assertEquals("(784) smss.exe [Path]", firstRow.getName(),
+                "EnvEntry getName() should return '(PID) Process [Variable]' format");
+    }
+
+    @Test
+    public void testBomStripping() throws IOException {
+        // Create a CSV with a UTF-8 BOM prefix; headers must be parsed without the BOM character
+        Path tempCsv = Files.createTempFile("bom_stripping_test", ".csv");
+        try {
+            // Write a BOM followed by CSV content
+            byte[] bom = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+            byte[] body = "ColA,ColB\nval1,val2".getBytes(StandardCharsets.UTF_8);
+            byte[] content = new byte[bom.length + body.length];
+            System.arraycopy(bom, 0, content, 0, bom.length);
+            System.arraycopy(body, 0, content, bom.length, body.length);
+            Files.write(tempCsv, content);
+
+            CSVEntry entry = new CSVEntry(tempCsv.toString());
+
+            List<String> fields = entry.getRowFields();
+            assertFalse(fields.isEmpty(), "Should have parsed header columns from BOM-prefixed CSV");
+            assertFalse(fields.get(0).startsWith("\uFEFF"),
+                    "First column header must not start with BOM character \\uFEFF");
+            assertEquals("ColA", fields.get(0),
+                    "First column header should be 'ColA' without any BOM prefix");
+            assertEquals("ColB", fields.get(1),
+                    "Second column header should be 'ColB'");
+            assertEquals(1, entry.getData().size(),
+                    "Should have parsed exactly 1 data row");
         } finally {
             Files.deleteIfExists(tempCsv);
         }
