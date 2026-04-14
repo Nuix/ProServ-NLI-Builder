@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"C:\\\\Development\\\\Community Code\\\\ProServ-NLI-Builder\\\\python\" && python -m pip show setuptools 2>&1 | head -3 && python -c \"import setuptools; print\\('setuptools', setuptools.__version__\\)\")",
+      "Bash(cd \"C:\\\\Development\\\\Community Code\\\\ProServ-NLI-Builder\\\\python\" && venv/Scripts/python -c \"import setuptools; print\\('setuptools', setuptools.__version__\\)\")",
+      "Bash(cd \"C:\\\\Development\\\\Community Code\\\\ProServ-NLI-Builder\\\\python\" && venv/Scripts/pip list 2>&1 | head -20)",
+      "Bash(cd \"C:\\\\Development\\\\Community Code\\\\ProServ-NLI-Builder\\\\python\" && venv/Scripts/pip.exe list 2>&1 | head -20)",
+      "Bash(cd \"C:\\\\Development\\\\Community Code\\\\ProServ-NLI-Builder\\\\python\" && venv/Scripts/python.exe -m pip list 2>&1 | head -20)"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+﻿TreeDepth,PID,PPID,ImageFileName,Offset(V),Threads,Handles,SessionId,Wow64,CreateTime,ExitTime,File output
+0,4,0,System,0xa809c0cfd040,380,-,N/A,False,2024-03-08 22:50:41.000000 ,N/A,Disabled
+0,1504,1120,csrss.exe,0xa809f3edd080,16,-,0,False,2024-03-08 22:50:52.000000 ,N/A,Disabled
+0,1608,1120,wininit.exe,0xa809ea4430c0,1,-,0,False,2024-03-08 22:50:54.000000 ,N/A,Disabled
+0,1692,1608,services.exe,0xa80a103510c0,8,-,0,False,2024-03-08 22:50:54.000000 ,N/A,Disabled
+0,1712,1608,WerFault.exe,0xa809e69a1080,0,-,0,False,2024-03-08 22:50:54.000000 ,2024-03-08 22:51:02.000000 ,Disabled
+0,1072,1600,winlogon.exe,0xa80a106020c0,5,-,1,False,2024-03-08 22:50:54.000000 ,N/A,Disabled
+0,1120,1072,fontdrvhost.ex,0xa80a1064c080,5,-,1,False,2024-03-08 22:50:54.000000 ,N/A,Disabled
+0,1604,1072,dwm.exe,0xa80a1064a080,29,-,1,False,2024-03-08 22:50:54.000000 ,N/A,Disabled
+0,4752,4,MemCompression,0xa809fe29d100,254,-,N/A,False,2024-03-08 22:50:55.000000 ,N/A,Disabled
+

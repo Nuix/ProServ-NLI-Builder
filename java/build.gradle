@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+//    id 'org.gradle.jvm-env' version '0.1.5' apply false
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.nuix'
+version = '1.3.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version
+        )
+    }
+}
+
+// Fat JAR
+shadowJar {
+    archiveClassifier.set('all')
+}
+
+tasks.register('fatJar') {
+    group = 'build'
+    description = 'Builds an uber JAR with all dependencies.'
+    dependsOn shadowJar
+}

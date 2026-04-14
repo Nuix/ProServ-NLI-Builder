@@ -1,0 +1,40 @@
+{
+  "pollingInterval": 1,
+  "logPath": "logs",
+  "queuePath": "queue",
+  "inProgressPath": "inProgress",
+  "successPath": "success",
+  "failedPath": "failed",
+  "taskFileNameFormat": "(?<jobName>.+?)-(?<jobID>\\d{3,})[.]json",
+  "taskFileNameDescription": "<job name>-<job id>.json",
+  "mail": {
+    "smtpHost": "host",
+    "smtpPort": 1,
+    "smtpAuth": "auth",
+    "smtpSocketFactoryPort": 2,
+    "smtpSocketFactoryClass": "clz",
+    "user": "me",
+    "password": "123",
+    "distroList": ["a@b.c", "b@a.c"]
+  },
+  "nuix": {
+    "workerCount": 8,
+    "workerMemory": 4096,
+    "workerTemp": "temp",
+    "userDataDirs": [
+      {
+        "root": "C:",
+        "path": ["ProgramData","Nuix"]
+      },
+      {
+        "root": "C:",
+        "path": ["Users","sluke01","AppData","Roaming","Nuix"]
+      }
+    ],
+    "licenseSource": "cloud-server",
+    "licenseServerAddress": "https://licence-api.nuix.com",
+    "licenseType": "enterprise-workstation",
+    "licenseUser": "steven.luke@nuix.com",
+    "licensePassword": "Nuhuh"
+  }
+}

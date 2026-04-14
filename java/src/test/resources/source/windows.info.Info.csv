@@ -1,0 +1,22 @@
+TreeDepth,Variable,Value
+0,Kernel Base,0xf80574e00000
+0,DTB,0x1ae000
+0,Symbols,file:///var/cache/rampiva/memanalysis/volatility/symbols/windows/ntkrnlmp.pdb/90F663DCBF0CF4A50D8AFA3102CDCA09-1.json.xz
+0,Is64Bit,True
+0,IsPAE,False
+0,layer_name,0 WindowsIntel32e
+0,memory_layer,1 FileLayer
+0,KdVersionBlock,0xf80575a097d8
+0,Major/Minor,15.22000
+0,MachineType,34404
+0,KeNumberProcessors,20
+0,SystemTime,2024-03-11 12:45:22
+0,NtSystemRoot,"C:\Windows"
+0,NtProductType,NtProductWinNt
+0,NtMajorVersion,10
+0,NtMinorVersion,0
+0,PE MajorOperatingSystemVersion,10
+0,PE MinorOperatingSystemVersion,0
+0,PE Machine,34404
+0,PE TimeDateStamp,Sun Oct  3 00:23:04 2077
+

@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nuix-nli-lib"
+dynamic = ["version"]
+description = "Library for building Nuix Logical Image (NLI) files for ingesting data into Nuix cases"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = "Apache-2.0"
+license-files = ["LICEN[CS]E*"]
+authors = [
+    {name = "Steven Luke (Nuix LTD)"}
+]
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.scripts]
+nli-cli = "nuix_nli_lib:cli"
+
+[tool.setuptools.dynamic]
+version = {attr = "nuix_nli_lib.__version__"}
+
+[tool.setuptools.package-dir]
+"" = "main"
+
+[tool.setuptools.packages.find]
+where = ["main"]
