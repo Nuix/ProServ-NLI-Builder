@@ -226,70 +226,87 @@ public class EdrmTests {
     }
 
     @Test
-    public void testDirectoryParentPath() {
-        Path sampleDir = resources().resolve("certificates");
-        EDRMBuilder builder = newBuilder();
-        builder.setAsNli(true); // NLI mode so LocationURI uses relative path
-
-        DirectoryEntry dir = new DirectoryEntry(sampleDir.toString());
-        String dirId = builder.addEntry(dir);
-
-        // Pick the first cert file in the certificates directory
-        String[] listing = sampleDir.toFile().list();
-        assertNotNull(listing, "Expected certificates directory to be readable");
-        assertTrue(listing.length > 0, "Expected at least one file in certificates directory");
-        Path certFile = sampleDir.resolve(listing[0]);
-        FileEntry child = new FileEntry(certFile.toString(), "application/x-x509-ca-cert", dirId);
-        builder.addEntry(child);
-
-        Document doc = builder.build();
-        String xml = docToString(doc);
-
-        // The LocationURI for the child entry should contain the directory name as a path prefix
-        String dirName = sampleDir.getFileName().toString();
-        assertTrue(xml.contains(dirName),
-                "Expected directory name '" + dirName + "' in LocationURI (relative path), but got:\n" + xml);
-    }
-
-    @Test
-    public void testCustodianDefault() {
-        // Ensure custodian is not overridden
-        String originalCustodian = EDRMUtilities.EDRM_CONFIG.get("custodian");
+    public void testDirectoryParentPath() throws java.io.IOException {
+        // Use a self-contained temp directory so the test has no dependency on fixture files
+        Path tempDir = Files.createTempDirectory("edrm_dir_test");
+        Path tempFile = Files.createTempFile(tempDir, "sample", ".txt");
         try {
-            EDRMUtilities.EDRM_CONFIG.put("custodian", "Unknown");
+            Files.writeString(tempFile, "test content");
+
             EDRMBuilder builder = newBuilder();
-            builder.addEntry(new MappingEntry(Map.of("Name", "Test"), "text/plain"));
+            builder.setAsNli(true); // NLI mode so LocationURI uses relative path
+
+            DirectoryEntry dir = new DirectoryEntry(tempDir.toString());
+            String dirId = builder.addEntry(dir);
+
+            FileEntry child = new FileEntry(tempFile.toString(), "text/plain", dirId);
+            builder.addEntry(child);
+
             Document doc = builder.build();
             String xml = docToString(doc);
 
-            assertTrue(xml.contains("Unknown"),
-                    "Expected custodian 'Unknown' in EDRM XML Location section, but got:\n" + xml);
+            // The LocationURI for the child entry should contain the directory name as a path prefix
+            String dirName = tempDir.getFileName().toString();
+            assertTrue(xml.contains(dirName),
+                    "Expected temp directory name '" + dirName + "' in LocationURI (relative path), but got:\n" + xml);
         } finally {
-            EDRMUtilities.EDRM_CONFIG.put("custodian", originalCustodian);
+            Files.deleteIfExists(tempFile);
+            Files.deleteIfExists(tempDir);
         }
     }
 
-    @Test
-    public void testCustodianOverride() {
-        String originalCustodian = EDRMUtilities.EDRM_CONFIG.get("custodian");
-        try {
-            EDRMUtilities.EDRM_CONFIG.put("custodian", "Alice");
-            EDRMBuilder builder = newBuilder();
-            builder.addEntry(new MappingEntry(Map.of("Name", "Test"), "text/plain"));
-            Document doc = builder.build();
-            String xml = docToString(doc);
+    /** Save and restore all config keys mutated during a test. */
+    private final java.util.Map<String, String> savedConfigKeys = new java.util.LinkedHashMap<>();
 
-            assertTrue(xml.contains("Alice"),
-                    "Expected custodian 'Alice' in EDRM XML Location section, but got:\n" + xml);
-        } finally {
-            EDRMUtilities.EDRM_CONFIG.put("custodian", originalCustodian);
+    private void saveConfig(String... keys) {
+        for (String key : keys) {
+            savedConfigKeys.put(key, EDRMUtilities.EDRM_CONFIG.get(key));
         }
     }
 
     @AfterEach
-    public void resetCustodian() {
-        // Safety net: ensure custodian is always restored to "Unknown" after each test
+    public void restoreConfig() {
+        // Restore every key that was saved by saveConfig() during the test
+        for (java.util.Map.Entry<String, String> entry : savedConfigKeys.entrySet()) {
+            if (entry.getValue() == null) {
+                EDRMUtilities.EDRM_CONFIG.remove(entry.getKey());
+            } else {
+                EDRMUtilities.EDRM_CONFIG.put(entry.getKey(), entry.getValue());
+            }
+        }
+        savedConfigKeys.clear();
+    }
+
+    @Test
+    public void testCustodianDefault() {
+        saveConfig("custodian");
         EDRMUtilities.EDRM_CONFIG.put("custodian", "Unknown");
+        EDRMBuilder builder = newBuilder();
+        builder.addEntry(new MappingEntry(Map.of("Name", "Test"), "text/plain"));
+        Document doc = builder.build();
+
+        // Use XPath to target the specific <Custodian> element in the Location section
+        NodeList custodianNodes = xpath(doc, "//Location/Custodian");
+        assertTrue(custodianNodes.getLength() > 0,
+                "Expected at least one <Custodian> element under <Location>");
+        assertEquals("Unknown", custodianNodes.item(0).getTextContent(),
+                "Expected custodian text content to be 'Unknown'");
+    }
+
+    @Test
+    public void testCustodianOverride() {
+        saveConfig("custodian");
+        EDRMUtilities.EDRM_CONFIG.put("custodian", "Alice");
+        EDRMBuilder builder = newBuilder();
+        builder.addEntry(new MappingEntry(Map.of("Name", "Test"), "text/plain"));
+        Document doc = builder.build();
+
+        // Use XPath to confirm the specific <Custodian> element contains the overridden value
+        NodeList custodianNodes = xpath(doc, "//Location/Custodian");
+        assertTrue(custodianNodes.getLength() > 0,
+                "Expected at least one <Custodian> element under <Location>");
+        assertEquals("Alice", custodianNodes.item(0).getTextContent(),
+                "Expected custodian text content to be 'Alice'");
     }
 
     @Test

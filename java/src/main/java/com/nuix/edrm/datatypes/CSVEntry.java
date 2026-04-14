@@ -8,6 +8,9 @@ import com.nuix.nli.CompoundEntry;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,7 +34,14 @@ public class CSVEntry extends FileEntry implements CompoundEntry {
 
     private void load(Path path, char delimiter) {
         String csvEncoding = EDRMUtilities.EDRM_CONFIG.getOrDefault("csv_encoding", "UTF-8");
-        Charset charset = Charset.forName(csvEncoding);
+        Charset charset;
+        try {
+            charset = Charset.forName(csvEncoding);
+        } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
+            System.err.println("CSVEntry: unrecognised csv_encoding '" + csvEncoding
+                    + "' in edrm.config — falling back to UTF-8. (" + e.getMessage() + ")");
+            charset = StandardCharsets.UTF_8;
+        }
         try (BufferedReader reader = Files.newBufferedReader(path, charset)) {
             String header = reader.readLine();
             if (header == null) return;
