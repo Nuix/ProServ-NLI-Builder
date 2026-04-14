@@ -279,8 +279,12 @@ public class EdrmTests {
 
     @Test
     public void testCustodianDefault() {
+        // Remove the custodian key entirely so the code must fall back to its hardcoded default.
+        // This tests that addLocation() uses getOrDefault("custodian", "Unknown") rather than
+        // reading a value that happens to already equal the default in edrm.config.
         saveConfig("custodian");
-        EDRMUtilities.EDRM_CONFIG.put("custodian", "Unknown");
+        EDRMUtilities.EDRM_CONFIG.remove("custodian");
+
         EDRMBuilder builder = newBuilder();
         builder.addEntry(new MappingEntry(Map.of("Name", "Test"), "text/plain"));
         Document doc = builder.build();
@@ -290,7 +294,7 @@ public class EdrmTests {
         assertTrue(custodianNodes.getLength() > 0,
                 "Expected at least one <Custodian> element under <Location>");
         assertEquals("Unknown", custodianNodes.item(0).getTextContent(),
-                "Expected custodian text content to be 'Unknown'");
+                "Expected fallback custodian value 'Unknown' when key is absent from config");
     }
 
     @Test
