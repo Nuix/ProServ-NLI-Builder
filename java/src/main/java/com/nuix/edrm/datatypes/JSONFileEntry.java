@@ -37,10 +37,10 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
     private final Path jsonPath;
     private final Map<String, EntryField.Type> fieldTypeOverrides = new LinkedHashMap<>();
 
-    // Generator classes (null = use default)
-    private Class<? extends JSONValueEntry>  valueClass  = null;
-    private Class<? extends JSONArrayEntry>  arrayClass  = null;
-    private Class<? extends JSONObjectEntry> objectClass = null;
+    // Generator factories (null = use default)
+    private JsonEntryFactory.ValueGenerator  valueGenerator  = null;
+    private JsonEntryFactory.ArrayGenerator  arrayGenerator  = null;
+    private JsonEntryFactory.ObjectGenerator objectGenerator = null;
 
     // --- Constructors ---
 
@@ -54,13 +54,13 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
     }
 
     public JSONFileEntry(String jsonFilePath, String mimeType, String parentId,
-                         Class<? extends JSONValueEntry>  valueClass,
-                         Class<? extends JSONArrayEntry>  arrayClass,
-                         Class<? extends JSONObjectEntry> objectClass) {
+                         JsonEntryFactory.ValueGenerator  valueGenerator,
+                         JsonEntryFactory.ArrayGenerator  arrayGenerator,
+                         JsonEntryFactory.ObjectGenerator objectGenerator) {
         this(jsonFilePath, mimeType, parentId);
-        this.valueClass  = valueClass;
-        this.arrayClass  = arrayClass;
-        this.objectClass = objectClass;
+        this.valueGenerator  = valueGenerator;
+        this.arrayGenerator  = arrayGenerator;
+        this.objectGenerator = objectGenerator;
     }
 
     // --- Field-type override API ---
@@ -123,9 +123,9 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
             // Check for JSONPath type override
             EntryField.Type overrideType = resolveTypeOverride(pathStack);
 
-            // Use factory so valueClass override is respected
+            // Use factory so valueGenerator override is respected
             JSONValueEntry entry = JsonEntryFactory.createValue(
-                    nodeName, nodeName, value, "application/x-json-value", parentId, valueClass);
+                    nodeName, nodeName, value, "application/x-json-value", parentId, valueGenerator);
 
             // Apply field-type override if present
             if (overrideType != null) {
@@ -137,13 +137,13 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
         } else if (node.isArray()) {
             List<Object> array = jacksonArrayToList(node, pathStack);
             JSONArrayEntry entry = JsonEntryFactory.createArray(
-                    nodeName, array, "application/x-json-array", parentId, arrayClass);
+                    nodeName, array, "application/x-json-array", parentId, arrayGenerator);
             entry.addToBuilder(builder);
 
         } else if (node.isObject()) {
             Map<String, Object> object = jacksonObjectToMap(node, pathStack);
             JSONObjectEntry entry = JsonEntryFactory.createObject(
-                    nodeName, object, "application/x-json-object", parentId, objectClass);
+                    nodeName, object, "application/x-json-object", parentId, objectGenerator);
             entry.addToBuilder(builder);
         }
     }
