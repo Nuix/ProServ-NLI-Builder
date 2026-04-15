@@ -1,5 +1,6 @@
 package com.nuix.nli;
 
+import com.nuix.edrm.EDRMBuilder;
 import com.nuix.edrm.datatypes.CSVEntry;
 import com.nuix.edrm.datatypes.CSVRowEntry;
 import org.junit.jupiter.api.Assumptions;
@@ -106,23 +107,46 @@ public class NliCsvTests {
         assertEquals("smss.exe", firstRow.get("Process"), "First row Process should be smss.exe");
         assertEquals("Path", firstRow.get("Variable"), "First row Variable should be Path");
         assertEquals("C:\\\\Windows\\\\System32", firstRow.get("Value"),
-                "First row Value should be C:\\\\Windows\\\\System32 (literal double-backslash as stored in CSV)");
+                "First row Value should be C:\\\\Windows\\\\System32 (double backslash as stored in CSV)");
     }
 
     @Test
     public void testCustomRowName() {
-        // EnvEntry subclass should compose getName() as "(PID) Process [Variable]"
+        // EnvEntry subclass should compose getName() as "(PID) Process [Variable]".
+        // This test exercises the full RowGenerator path: EnvEntry::new must be invoked
+        // by CSVEntry.addToBuilder(); we verify this by wrapping it in a capturing generator
+        // that records each instance the pipeline creates, then asserting on the first one.
         Path envars = resources().resolve("envars.csv");
         Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
+
+        // Capturing wrapper: delegates to EnvEntry::new and records created instances
+        List<CSVRowEntry> captured = new java.util.ArrayList<>();
+        CSVEntry.RowGenerator capturingGenerator = (parent, idx) -> {
+            EnvEntry e = new EnvEntry(parent, idx);
+            captured.add(e);
+            return e;
+        };
+
         CSVEntry entry = new CSVEntry(
                 envars.toString(),
                 "text/csv",
                 null,
-                EnvEntry::new,
+                capturingGenerator,
                 ','
         );
-        // First row: PID=784, Process=smss.exe, Variable=Path
-        CSVRowEntry firstRow = new EnvEntry(entry, 0);
+
+        // Drive the RowGenerator through the full addToBuilder() pipeline
+        EDRMBuilder builder = new EDRMBuilder();
+        entry.addToBuilder(builder);
+
+        // The generator must have been called for every data row
+        assertEquals(entry.getData().size(), captured.size(),
+                "RowGenerator must be invoked once per data row by addToBuilder()");
+
+        // The first captured instance is an EnvEntry for row 0: PID=784, Process=smss.exe, Variable=Path
+        CSVRowEntry firstRow = captured.get(0);
+        assertTrue(firstRow instanceof EnvEntry,
+                "RowGenerator must produce EnvEntry instances, not plain CSVRowEntry");
         assertEquals("(784) smss.exe [Path]", firstRow.getName(),
                 "EnvEntry getName() should return '(PID) Process [Variable]' format");
     }
