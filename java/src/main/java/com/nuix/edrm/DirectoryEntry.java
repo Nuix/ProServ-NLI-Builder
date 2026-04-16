@@ -21,7 +21,7 @@ public class DirectoryEntry extends FileEntry {
     }
 
     @Override protected void fillHashFields() {
-        setFieldValue("SHA-1", EDRMUtilities.hashDirectory(this.directory, "SHA-1").hashString());
+        putField(FieldFactory.generateField("SHA-1", EntryField.Type.Text, EDRMUtilities.hashDirectory(this.filePath, "SHA-1").hashString()));
     }
 
     public Path getDirectory() { return directory; }
@@ -40,6 +40,6 @@ public class DirectoryEntry extends FileEntry {
     }
 
     @Override protected String calculateMD5() {
-        return EDRMUtilities.hashDirectory(this.directory, "MD5").hashString();
+        return EDRMUtilities.hashDirectory(this.filePath, "MD5").hashString();
     }
 }
