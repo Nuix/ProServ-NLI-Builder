@@ -150,16 +150,20 @@ public class NLIGenerator {
                             Files.copy(fe.getFilePath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
                         }
                     } else if (entry instanceof MappingEntry me) {
-                        Path mappingPath;
                         if (null != me.getText()) {
-                            mappingPath = buildPath.resolve("natives").resolve(me.getField(me.getIdentifierField()).getValue().toString());
-                            mappingPath = mappingPath.normalize().toAbsolutePath();
+                            Path mappingPath = buildPath.resolve("natives")
+                                    .resolve(me.getField(me.getIdentifierField()).getValue().toString())
+                                    .normalize()
+                                    .toAbsolutePath();
                             Files.createDirectories(mappingPath.getParent());
-                            if (IS_WINDOWS) {
-                                mappingPath = Path.of("\\\\?\\" + mappingPath.toString());
+                            // Write via java.io.FileWriter to avoid \\?\ prefix issues with
+                            // NIO Path.of() on Windows while still supporting long paths.
+                            java.nio.charset.Charset charset = java.nio.charset.Charset.forName(
+                                    EDRMUtilities.EDRM_CONFIG.getOrDefault("encoding", "UTF-8"));
+                            try (java.io.Writer w = new java.io.OutputStreamWriter(
+                                    new java.io.FileOutputStream(mappingPath.toFile()), charset)) {
+                                w.write(me.getText());
                             }
-                            Files.writeString(mappingPath, me.getText(),
-                                    java.nio.charset.Charset.forName(EDRMUtilities.EDRM_CONFIG.getOrDefault("encoding", "UTF-8")));
                         }
                     }
                 }

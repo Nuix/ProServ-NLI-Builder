@@ -71,7 +71,7 @@ To accomplish this, we will create a subclass of ``CSVRowEntry`` to provide that
         def identifier_field(self) -> str:
             return 'number'
 
-        def get_name(self) -> str:
+        def get_base_name(self) -> str:
             return f'({self['number'].value}) {self['category'].value}'
 
         @property
@@ -135,7 +135,7 @@ First thing to do would be to create the class, as shown above:
     ...     def identifier_field(self):
     ...         return 'number'
     ...
-    ...     def get_name(self):
+    ...     def get_base_name(self):
     ...         return f'({self['number'].value}) {self['category'].value}'
     ...
     ...     @property
@@ -202,7 +202,7 @@ To show all the steps, as entered into the interpreter::
     ...     def identifier_field(self):
     ...         return 'number'
     ...
-    ...     def get_name(self):
+    ...     def get_base_name(self):
     ...         return f'({self['number'].value}) {self['category'].value}'
     ...
     ...     @property
@@ -550,7 +550,7 @@ name, Item Date and format, and its own text output::
         def identifier_field(self) -> str:
             return 'Tag ID'
 
-        def get_name(self) -> str:
+        def get_base_name(self) -> str:
             return f'({self['Tag ID'].value}) {self['Location'].value}'
 
         @property
