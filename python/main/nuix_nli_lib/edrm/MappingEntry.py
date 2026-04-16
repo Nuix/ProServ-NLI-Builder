@@ -78,9 +78,9 @@ class MappingEntry(EntryInterface):
         Name, and Item Date.
         """
         self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mimetype)
-        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, self.get_base_name())
+        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, self.get_name())
         data_to_hash = copy.deepcopy(self.data)
-        data_to_hash['name'] = self.get_base_name()
+        data_to_hash['name'] = self.get_name()
         self['SHA-1'] = FieldFactory.generate_field('SHA-1',
                                                     EntryField.TYPE_TEXT,
                                                     eutes.hash_data(data_to_hash, hashlib.sha1()))

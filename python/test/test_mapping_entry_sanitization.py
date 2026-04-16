@@ -117,8 +117,9 @@ class TestMappingEntrySanitization(unittest.TestCase):
 
     def test_json_file_entry_produces_sanitized_names(self):
         """JSONFileEntry produces child entries with sanitized names when JSON keys contain special chars."""
-        # Create a temp JSON file with keys containing XML-special characters
-        data = {'key<with>brackets': 'value', 'normal_key': 42}
+        # Use a nested structure so that special-char keys become mapping_name values on child entries.
+        # The key 'object<with>brackets' will be passed as mapping_name to a child JSONObjectEntry.
+        data = {'object<with>brackets': {'nested_key': 'value'}, 'normal_key': 42}
         with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
             json.dump(data, f)
             tmp_path = f.name
@@ -129,13 +130,32 @@ class TestMappingEntrySanitization(unittest.TestCase):
             import tempfile as tf
 
             with tf.TemporaryDirectory() as out_dir:
-                entry = JSONFileEntry(tmp_path)
+                file_entry = JSONFileEntry(tmp_path)
                 builder = EDRMBuilder()
                 builder.as_nli = False
                 builder.output_path = Path(out_dir) / 'test.xml'
-                entry.add_to_builder(builder)
-                # If we get here without exception, the basic path works
-                self.assertIsNotNone(entry)
+                file_entry.add_to_builder(builder)
+
+                # Collect the name of every child entry registered in the builder
+                child_names = [entry.name for entry in builder.entry_map.values()]
+
+                # At least one child entry must exist
+                self.assertGreater(len(child_names), 0,
+                                   "Builder should contain at least one entry after add_to_builder()")
+
+                # No entry name should contain XML-illegal or filename-illegal characters
+                for entry_name in child_names:
+                    self.assertNotIn('<', entry_name,
+                                     f"Entry name {entry_name!r} contains '<' which is not sanitized")
+                    self.assertNotIn('>', entry_name,
+                                     f"Entry name {entry_name!r} contains '>' which is not sanitized")
+                    self.assertNotIn(':', entry_name,
+                                     f"Entry name {entry_name!r} contains ':' which is not sanitized")
+
+                # Confirm the child entry derived from the special-char key has a sanitized name
+                sanitized_names_concat = ' '.join(child_names)
+                self.assertNotIn('object<with>brackets', sanitized_names_concat,
+                                 "Raw unsanitized key 'object<with>brackets' must not appear in any entry name")
         finally:
             Path(tmp_path).unlink(missing_ok=True)
 
