@@ -189,9 +189,31 @@ class TestSQLRowEntry(unittest.TestCase):
         row = SQLRowEntry(self.parent, 0)
         self.assertEqual(row.data, {"id": 1, "name": "Alice", "department": "Engineering"})
 
-    def test_row_fields_sourced_from_parent(self):
+    def test_row_column_names_sourced_from_parent(self):
         row = SQLRowEntry(self.parent, 1)
-        self.assertEqual(row.fields, ["id", "name", "department"])
+        self.assertEqual(row.column_names, ["id", "name", "department"])
+
+    def test_row_fields_includes_edrm_field_names(self):
+        """fields must include the required EDRM EntryField keys (was broken: only returned column names)."""
+        row = SQLRowEntry(self.parent, 0)
+        field_names = list(row.fields)
+        self.assertIn("MIME Type", field_names)
+        self.assertIn("SHA-1", field_names)
+        self.assertIn("Name", field_names)
+        self.assertIn("Item Date", field_names)
+
+    def test_set_custodian_on_row_entry(self):
+        """custodian setter must work on SQLRowEntry (was broken when fields returned column names)."""
+        row = SQLRowEntry(self.parent, 0)
+        row.custodian = "Alice"
+        self.assertEqual(row.custodian, "Alice")
+
+    def test_set_field_value_on_row_entry(self):
+        """set_field_value must not raise KeyError for valid EDRM field names on SQLRowEntry."""
+        row = SQLRowEntry(self.parent, 0)
+        original = row["MIME Type"].value
+        row.set_field_value("MIME Type", "application/octet-stream")
+        self.assertEqual(row["MIME Type"].value, "application/octet-stream")
 
     def test_parent_sql_property(self):
         row = SQLRowEntry(self.parent, 2)

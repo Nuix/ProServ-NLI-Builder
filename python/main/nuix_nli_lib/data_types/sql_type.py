@@ -256,10 +256,12 @@ class SQLRowEntry(MappingEntry):
         )
 
     @property
-    def fields(self) -> list[str]:
+    def column_names(self) -> list[str]:
         """
         :return: The ordered list of column names for this row, sourced from the parent
-            :class:`SQLTypeEntry`.
+            :class:`SQLTypeEntry`.  This is distinct from
+            :attr:`~nuix_nli_lib.edrm.EntryInterface.fields`, which returns the EDRM EntryField
+            key names (e.g. ``'MIME Type'``, ``'SHA-1'``, ``'Name'``, etc.).
         """
         return self.__parent_sql.row_fields
 
