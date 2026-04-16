@@ -177,10 +177,11 @@ def _get_field_key_for_name(edrm_doc: Document, field_name: str) -> str | None:
 class TestCanonicalDocumentCount(unittest.TestCase):
     """Verify that the canonical scenario produces the expected number of Documents."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         _, xml = _build_canonical_edrm()
-        self.doc = _parse_xml(xml)
-        self.documents = _get_documents(self.doc)
+        cls.doc = _parse_xml(xml)
+        cls.documents = _get_documents(cls.doc)
 
     def test_total_document_count(self):
         """
@@ -211,12 +212,13 @@ class TestCanonicalDocumentCount(unittest.TestCase):
 class TestFileEntryStructure(unittest.TestCase):
     """Assertions about the canonical FileEntry (sample_document.txt)."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         _, xml = _build_canonical_edrm()
-        self.doc = _parse_xml(xml)
-        self.documents = _get_documents(self.doc)
+        cls.doc = _parse_xml(xml)
+        cls.documents = _get_documents(cls.doc)
         # The file's DocID is its SHA-1 hash
-        self.file_doc = _doc_by_id(self.documents, _EXPECTED_FILE_SHA1)
+        cls.file_doc = _doc_by_id(cls.documents, _EXPECTED_FILE_SHA1)
 
     def test_file_document_exists(self):
         """The FileEntry must appear in the EDRM output with its SHA-1 as the DocID."""
@@ -257,13 +259,14 @@ class TestFileEntryStructure(unittest.TestCase):
 class TestDirectoryEntryStructure(unittest.TestCase):
     """Assertions about the canonical DirectoryEntry (source_directory/)."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         _, xml = _build_canonical_edrm()
-        self.doc = _parse_xml(xml)
-        self.documents = _get_documents(self.doc)
+        cls.doc = _parse_xml(xml)
+        cls.documents = _get_documents(cls.doc)
         # Locate by MIME type; there is exactly one directory
-        self.dir_doc = next(
-            (d for d in self.documents if d.getAttribute("MimeType") == "filesystem/directory"),
+        cls.dir_doc = next(
+            (d for d in cls.documents if d.getAttribute("MimeType") == "filesystem/directory"),
             None,
         )
 
@@ -297,18 +300,19 @@ class TestDirectoryEntryStructure(unittest.TestCase):
 class TestMappingEntryStructure(unittest.TestCase):
     """Assertions about the canonical MappingEntry (inline dictionary)."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         _, xml = _build_canonical_edrm()
-        self.doc = _parse_xml(xml)
-        self.documents = _get_documents(self.doc)
+        cls.doc = _parse_xml(xml)
+        cls.documents = _get_documents(cls.doc)
         # The mapping is identified by its 'source' field value = "integration-test"
         # and is child of the FileEntry
-        self.mapping_doc = None
-        source_key = _get_field_key_for_name(self.doc, "source")
+        cls.mapping_doc = None
+        source_key = _get_field_key_for_name(cls.doc, "source")
         if source_key:
-            for d in self.documents:
+            for d in cls.documents:
                 if _field_value(d, source_key) == "integration-test":
-                    self.mapping_doc = d
+                    cls.mapping_doc = d
                     break
 
     def test_mapping_document_exists(self):
@@ -349,16 +353,17 @@ class TestMappingEntryStructure(unittest.TestCase):
 class TestCSVEntryStructure(unittest.TestCase):
     """Assertions about the canonical CSV scenario (CSVEntry + CSVRowEntry)."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         _, xml = _build_canonical_edrm()
-        self.doc = _parse_xml(xml)
-        self.documents = _get_documents(self.doc)
-        self.csv_doc = _doc_by_id(self.documents, _EXPECTED_CSV_SHA1)
+        cls.doc = _parse_xml(xml)
+        cls.documents = _get_documents(cls.doc)
+        cls.csv_doc = _doc_by_id(cls.documents, _EXPECTED_CSV_SHA1)
         # CSV rows have DocIDs "1", "2", "3" (the ID column values)
-        self.row_docs = [
-            _doc_by_id(self.documents, "1"),
-            _doc_by_id(self.documents, "2"),
-            _doc_by_id(self.documents, "3"),
+        cls.row_docs = [
+            _doc_by_id(cls.documents, "1"),
+            _doc_by_id(cls.documents, "2"),
+            _doc_by_id(cls.documents, "3"),
         ]
 
     def test_csv_document_exists(self):
@@ -406,17 +411,18 @@ class TestCSVEntryStructure(unittest.TestCase):
 class TestJSONEntryStructure(unittest.TestCase):
     """Assertions about the canonical JSON scenario (JSONFileEntry)."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         _, xml = _build_canonical_edrm()
-        self.doc = _parse_xml(xml)
-        self.documents = _get_documents(self.doc)
-        self.json_file_doc = _doc_by_id(self.documents, _EXPECTED_JSON_SHA1)
+        cls.doc = _parse_xml(xml)
+        cls.documents = _get_documents(cls.doc)
+        cls.json_file_doc = _doc_by_id(cls.documents, _EXPECTED_JSON_SHA1)
         # Locate the top-level JSON Object child (child of the JSONFileEntry)
-        self.json_object_doc = None
-        rels = _get_relationships(self.doc)
+        cls.json_object_doc = None
+        rels = _get_relationships(cls.doc)
         json_object_children = [c for p, c in rels if p == _EXPECTED_JSON_SHA1]
         if json_object_children:
-            self.json_object_doc = _doc_by_id(self.documents, json_object_children[0])
+            cls.json_object_doc = _doc_by_id(cls.documents, json_object_children[0])
 
     def test_json_file_document_exists(self):
         """The JSONFileEntry must appear with its SHA-1 as DocID."""
@@ -484,11 +490,12 @@ class TestJSONEntryStructure(unittest.TestCase):
 class TestRelationshipIntegrity(unittest.TestCase):
     """Cross-cutting assertions about the complete Relationships structure."""
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         _, xml = _build_canonical_edrm()
-        self.doc = _parse_xml(xml)
-        self.documents = _get_documents(self.doc)
-        self.rels = _get_relationships(self.doc)
+        cls.doc = _parse_xml(xml)
+        cls.documents = _get_documents(cls.doc)
+        cls.rels = _get_relationships(cls.doc)
 
     def test_all_child_doc_ids_exist(self):
         """Every ChildDocId in Relationships must correspond to a real Document."""
