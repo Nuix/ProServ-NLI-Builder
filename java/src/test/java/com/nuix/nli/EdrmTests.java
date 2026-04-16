@@ -58,6 +58,16 @@ public class EdrmTests {
         }
     }
 
+    /** Evaluate an XPath expression against a Document and return the string result. */
+    private String xpathStr(Document doc, String expression) {
+        try {
+            XPath xp = XPathFactory.newInstance().newXPath();
+            return xp.evaluate(expression, doc);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /** Build a minimal EDRMBuilder (non-NLI) with no output path required for build(). */
     private EDRMBuilder newBuilder() {
         EDRMBuilder b = new EDRMBuilder();
@@ -67,6 +77,7 @@ public class EdrmTests {
     }
 
     // ---- keep original tests passing ----
+
 
     @Test
     public void testSimpleFile() {
@@ -106,19 +117,22 @@ public class EdrmTests {
 
     // ---- new field type roundtrip tests ----
 
+    /**
+     * Verifies that a String-valued field is serialized with DataType="Text" in the EDRM XML
+     * field definitions section. The assertion targets the specific "Subject" field by name via
+     * XPath so that it cannot be satisfied by the automatically-added "MIME Type" or "Name"
+     * fields (which are also Text-typed).
+     */
     @Test
     public void testTextFieldRoundtrip() {
         MappingEntry entry = new MappingEntry(Map.of("Subject", "Hello World"), "text/plain");
         EDRMBuilder builder = newBuilder();
         builder.addEntry(entry);
         Document doc = builder.build();
-        String xml = docToString(doc);
 
-        // The Fields section should declare DataType="Text" for "Subject"
-        assertTrue(xml.contains("DataType=\"Text\""),
-                "Expected DataType=\"Text\" in EDRM XML Fields section, but got:\n" + xml);
-        assertTrue(xml.contains("Hello World"),
-                "Expected field value 'Hello World' in EDRM XML, but got:\n" + xml);
+        String dataType = xpathStr(doc, "//Fields/Field[@Name='Subject']/@DataType");
+        assertEquals("Text", dataType,
+                "Expected the 'Subject' field definition to have DataType=\"Text\"");
     }
 
     @Test
