@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Iterable, Any, Tuple, Iterator
+from typing import Iterable, Any, Optional, Tuple, Iterator, Union
 from xml.dom.minidom import Element, Document
 
-from nuix_nli_lib.edrm import EntryField
+from nuix_nli_lib.edrm.EntryField import EntryField
 from nuix_nli_lib import edrm
 
 
@@ -13,7 +15,7 @@ class EntryInterface(object):
     methods herein will throw NotImplementedErrors until they are overridden by concrete subclasses.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.__row_fields: dict[str, EntryField] = {}
 
     @property
@@ -45,21 +47,21 @@ class EntryInterface(object):
         raise NotImplementedError
 
     @property
-    def itemdate(self) -> datetime:
+    def itemdate(self) -> Union[datetime, str]:
         """
-        :return: A datetime object representing the official "Item Date" for this entry in the timeline.
+        :return: A datetime object (or string representation) for the official "Item Date" for this entry.
         """
         raise NotImplementedError
 
     @property
-    def parent(self) -> str:
+    def parent(self) -> Optional[str]:
         """
         :return: The unique ID of this entry's parent, if it has one.  None if this is a Top Level Item.
         """
         raise NotImplementedError
 
     @property
-    def custodian(self) -> str:
+    def custodian(self) -> Optional[str]:
         """
         :return: The custodian of this entry, if it has one, or use a default if none specified.
         """
@@ -69,7 +71,7 @@ class EntryInterface(object):
             return None
 
     @custodian.setter
-    def custodian(self, value: str):
+    def custodian(self, value: str) -> None:
         """
         Set the custodian of this entry.
         :param value: The custodian to assign to this entry.
@@ -81,7 +83,7 @@ class EntryInterface(object):
             self['custodian'] = EntryField('custodian', 'custodian', EntryField.TYPE_TEXT, value)
 
 
-    def set_field_value(self, field_name: str, field_value: Any):
+    def set_field_value(self, field_name: str, field_value: Any) -> None:
         """
         Set the value of a field in this entry.  This function assumes the field is already defined, and just adjusts
         the value stored for the field.  Use the item access (obj[field_name] = ...) to assign a new field to the entry.
@@ -95,7 +97,7 @@ class EntryInterface(object):
         else:
             raise KeyError(f'Field {field_name} does not exist for this entry.')
 
-    def serialize_field_definitions(self, document: Document, field_list: Element):
+    def serialize_field_definitions(self, document: Document, field_list: Element) -> None:
         """
         Add this entry's fields to the XML document.
         :param document: XML Document representing the EDRM Load File
@@ -105,7 +107,7 @@ class EntryInterface(object):
         for field_name, field in self:
             field.serialize_definition(document, field_list)
 
-    def serialize_field_values(self, document: Document, value_list: Element):
+    def serialize_field_values(self, document: Document, value_list: Element) -> None:
         """
         Add the values for each field to the XML document.
         :param document: XML Document representing the EDRM Load File
@@ -115,7 +117,7 @@ class EntryInterface(object):
         for field_name, field in self:
             field.serialize_value(document, value_list)
 
-    def add_as_parent_path(self, existing_path: str):
+    def add_as_parent_path(self, existing_path: str) -> str:
         """
         Add this entry to the existing path as the path's parent, if appropriate.  The default is to do nothing,
         assuming this type of entry does not represent a physical location.  Subclasses can override this behavior.
@@ -141,7 +143,7 @@ class EntryInterface(object):
 
         return doc_element
 
-    def add_file(self, document: Document, container: Element, entry_map: dict[str, object], for_nli: bool) -> None:
+    def add_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool) -> None:
         """
         File Elements are responsible for locating an Entry's natives on the source file system (and in the case of an
         NLI file or other container, locating it within that container), while the LocationURI  is responsible for
@@ -164,7 +166,7 @@ class EntryInterface(object):
         """
         raise NotImplementedError
 
-    def add_location_uri(self, document: Document, container: Element, entry_map: dict[str, object], for_nli: bool):
+    def add_location_uri(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool) -> None:
         """
         The Location URI is used to locate the document file or files inside the Case once it is built.  This method
         is responsible for adding the URI to the document.  It is responsible for making the
@@ -181,7 +183,7 @@ class EntryInterface(object):
     def add_location(self,
                      document: Document,
                      container: Element,
-                     entry_map: dict[str, object],
+                     entry_map: dict[str, EntryInterface],
                      for_nli: bool) -> None:
         """
         A Document can have one or more Files associated with it.  The Location elements are responsible for defining
@@ -219,11 +221,13 @@ class EntryInterface(object):
 
         # If this entry has a custodian, use it, otherwise use the parent's custodian or the default.
         if self.custodian is not None:
-            custodian = self.custodian
-        elif self.parent is not None and entry_map[self.parent] is not None and entry_map[self.parent].custodian is not None:
-            custodian = entry_map[self.parent].custodian
+            custodian: str = self.custodian
+        elif (self.parent is not None
+              and entry_map.get(self.parent) is not None
+              and entry_map[self.parent].custodian is not None):
+            custodian = entry_map[self.parent].custodian  # type: ignore[assignment]
         else:
-            custodian = edrm_configs['custodian']
+            custodian = str(edrm_configs['custodian'])
 
         custodian_element.appendChild(document.createTextNode(custodian))
         location.appendChild(custodian_element)
@@ -238,7 +242,7 @@ class EntryInterface(object):
     def serialize_entry(self,
                         document: Document,
                         entry_container: Element,
-                        entry_map: dict[str, object],
+                        entry_map: dict[str, EntryInterface],
                         for_nli: bool = False) -> None:
         """
         This method is responsible for orchestrating the writing the representation of this Entry instance to
@@ -264,7 +268,7 @@ class EntryInterface(object):
         """
         return iter(self.__row_fields.items())
 
-    def __setitem__(self, field_name: str, value: EntryField):
+    def __setitem__(self, field_name: str, value: EntryField) -> None:
         """
         Assign a new, named EntryField to this object.  Use this method to assign new fields, and use the setter
         function (obj.set_field_value(field_name, value)) to assign a value to an existing field.

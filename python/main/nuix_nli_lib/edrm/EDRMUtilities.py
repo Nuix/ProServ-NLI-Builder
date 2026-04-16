@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 import os
 import re
 import sys
 import hashlib
 from datetime import datetime
+from hashlib import _Hash  # type: ignore[attr-defined]
 from pathlib import Path
 from typing import Union, Any
 
@@ -26,8 +29,8 @@ def convert_datetime_to_string(date_time: datetime) -> str:
     :param date_time: The datetime to convert
     :return: A string with the formatted date-time
     """
-    str_rep = date_time.strftime(edrm.configs['date_time_format'])[:-3]
-    tz_rep = date_time.strftime(edrm.configs['time_zone_format'])
+    str_rep = date_time.strftime(str(edrm.configs['date_time_format']))[:-3]
+    tz_rep = date_time.strftime(str(edrm.configs['time_zone_format']))
     return str_rep + tz_rep
 
 
@@ -43,20 +46,20 @@ def convert_timestamp_to_string(timestamp: float) -> str:
     return convert_datetime_to_string(dt)
 
 
-def _hash_file(file: Path, hashfunction: hashlib) -> None:
+def _hash_file(file: Path, hashfunction: _Hash) -> None:
     """
     Intermediate function to update the hash with the contents of the file.
     """
     with file.open('rb') as dump_file:
         while True:
-            data = dump_file.read(edrm.configs['hash_buffer_size'])
+            data = dump_file.read(int(edrm.configs['hash_buffer_size']))  # type: ignore[arg-type, call-overload]
             if not data:
                 break
 
             hashfunction.update(data)
 
 
-def hash_file(file: Path, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:
+def hash_file(file: Path, hashfunction: _Hash, as_string: bool = True) -> Union[str, bytes]:
     """
     Generate a hash for the provided file. This will work on large files by breaking it into smaller chunks.  Use the
     `edrm.configs` object to control how large those chunks are.
@@ -73,14 +76,14 @@ def hash_file(file: Path, hashfunction: hashlib, as_string: bool = True) -> Unio
         return hashfunction.digest()
 
 
-def _hash_data(data: Any, hashfunction: hashlib):
+def _hash_data(data: Any, hashfunction: _Hash) -> None:
     """
     Intermediate function to update a hash function with the contents of some data.
     """
-    hashfunction.update(str(data).encode(edrm.configs['encoding']))
+    hashfunction.update(str(data).encode(str(edrm.configs['encoding'])))
 
 
-def hash_data(data: Any, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:
+def hash_data(data: Any, hashfunction: _Hash, as_string: bool = True) -> Union[str, bytes]:
     """
     Generate a hash for the provided data. This converts data to string prior to hashing it.
     :param data: Data to calculate a hash on
@@ -96,7 +99,7 @@ def hash_data(data: Any, hashfunction: hashlib, as_string: bool = True) -> Union
         return hashfunction.digest()
 
 
-def hash_directory(directory: Path, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:
+def hash_directory(directory: Path, hashfunction: _Hash, as_string: bool = True) -> Union[str, bytes]:
     """
     Hash the contents of a directory.  The contents of the directory includes all the non-empty files, all the files'
     names, calculated recursively through subdirectories.
@@ -117,7 +120,7 @@ def hash_directory(directory: Path, hashfunction: hashlib, as_string: bool = Tru
         return hashfunction.digest()
 
 
-def generate_relative_path(entry: object, entry_map: dict[str, object]) -> str:
+def generate_relative_path(entry: Any, entry_map: dict[str, Any]) -> str:
     """
     Generate a relative path for the provided entry.  The path is calculated by recursively walking up each parent-layer
     and adding the parent's name to the start of the path, stopping when there is no parent.  The path will include
@@ -126,7 +129,7 @@ def generate_relative_path(entry: object, entry_map: dict[str, object]) -> str:
     :param entry_map: A mapping of the entries known for the EDRM file, so parent entries can be located
     :return:  A string containing the relative path to the entry from the root of the container for this EDRM file
     """
-    relative_path = entry.name
+    relative_path: str = entry.name
 
     tmp_current_entry = entry
     while tmp_current_entry.parent is not None:

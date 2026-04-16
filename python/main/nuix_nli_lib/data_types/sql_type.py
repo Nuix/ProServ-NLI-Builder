@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import csv
-from typing import Any, Type
+from typing import Any, Optional, Type
 
 from nuix_nli_lib.edrm.EDRMBuilder import EDRMBuilder
 from nuix_nli_lib.edrm.FileEntry import FileEntry
 from nuix_nli_lib.edrm.MappingEntry import MappingEntry
+from nuix_nli_lib.data_types.csv_file import CSVEntry
 from nuix_nli_lib import data_types
 
 """
@@ -51,7 +54,7 @@ class SQLEntry(FileEntry):
     """
     def __init__(self, file_path: str,
                  mimetype: str = "text/csv",
-                 parent_id: str = None,
+                 parent_id: Optional[str] = None,
                  row_generator: Type[Any] = None):
         """
         :param file_path: Full path to the CSV file.  This will read the file into memory.  Errors will occur if the
@@ -76,7 +79,7 @@ class SQLEntry(FileEntry):
         if not self.file_path.is_file():
             raise IOError(f'File does not exist or is not a file: {self.file_path}')
 
-        with self.file_path.open(mode='r', encoding=data_types.configs['encoding']) as file:
+        with self.file_path.open(mode='r', encoding=str(data_types.configs['encoding'])) as file:
             reader: csv.DictReader = csv.DictReader(file)
             self.__row_fields = list(reader.fieldnames)
             for row in reader:
@@ -112,13 +115,13 @@ class SQLEntry(FileEntry):
         row_gen = self.__row_generator or CSVRowEntry
         builder.add_entry(self)
         for index in range(len(self.data)):
-            builder.add_entry(row_gen(self, index))
+            builder.add_entry(row_gen(self, index))  # type: ignore[arg-type]
 
         return self[self.identifier_field].value
 
 
 class CSVRowEntry(MappingEntry):
-    def __init__(self, parent_csv: CSVEntry, row_index: int, parent_id: str = None):
+    def __init__(self, parent_csv: CSVEntry, row_index: int, parent_id: Optional[str] = None) -> None:
         self.__parent_csv: CSVEntry = parent_csv
         self.__row_index: int = row_index
 

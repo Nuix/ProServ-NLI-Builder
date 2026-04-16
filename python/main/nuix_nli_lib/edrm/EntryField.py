@@ -1,9 +1,25 @@
+from __future__ import annotations
+
 from datetime import datetime
+from enum import StrEnum
 from typing import Any
 
 from xml.dom.minidom import Element, Document, Node
 
 from nuix_nli_lib.edrm import EDRMUtilities as eutes
+
+
+class FieldType(StrEnum):
+    """
+    Enumeration of valid data types for EDRM load file fields.  Using a StrEnum means the values remain
+    string-compatible (no conversion needed) while also being type-checkable at development time.
+    """
+    TEXT = "Text"
+    DATETIME = "DateTime"
+    INTEGER = "LongInteger"
+    LONG_TEXT = "LongText"
+    DECIMAL = "Decimal"
+    BOOLEAN = "Boolean"
 
 
 class EntryField:
@@ -14,14 +30,15 @@ class EntryField:
 
     Use the FieldFactory class to generate these, as the key and key-name pairs must be managed properly.
     """
-    TYPE_TEXT: str = "Text"
-    TYPE_DATETIME: str = "DateTime"
-    TYPE_INTEGER: str = "LongInteger"
-    TYPE_LONG_TEXT: str = "LongText"
-    TYPE_DECIMAL: str = "Decimal"
-    TYPE_BOOLEAN: str = "Boolean"
+    # Class-level string aliases kept for backward compatibility; prefer FieldType enum for new code.
+    TYPE_TEXT: str = FieldType.TEXT
+    TYPE_DATETIME: str = FieldType.DATETIME
+    TYPE_INTEGER: str = FieldType.INTEGER
+    TYPE_LONG_TEXT: str = FieldType.LONG_TEXT
+    TYPE_DECIMAL: str = FieldType.DECIMAL
+    TYPE_BOOLEAN: str = FieldType.BOOLEAN
 
-    def __init__(self, key: str, name: str, field_type: str, default_value: Any = None):
+    def __init__(self, key: str, name: str, field_type: str, default_value: Any = None) -> None:
         """
         Do Not call this method directly.  Use the FieldFactory class to generate these, as the key and key-name
         must be managed properly.
@@ -30,16 +47,16 @@ class EntryField:
                     within the load file, and able to be used to map a Field Name to the XML Node used to store the
                     field.
         :param name: Name of the field as it should be displayed in the final case the load file will fill.
-        :param field_type: One of the EntryField.TYPE_* attributes.
+        :param field_type: One of the EntryField.TYPE_* attributes or a FieldType enum value.
         :param default_value: The value to store in the field if no value is provided.
         """
-        self.__key = key
-        self.__name = name
-        self.__type = field_type
-        self.__value = default_value
+        self.__key: str = key
+        self.__name: str = name
+        self.__type: str = field_type
+        self.__value: Any = default_value
 
     @property
-    def key(self):
+    def key(self) -> str:
         """
         :return: Key used as the name for the XML Node used to store the field's value.  The key must be unique
                  within the load file, and able to be used to map a Field Name to the XML Node used to store the

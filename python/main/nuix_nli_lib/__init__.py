@@ -192,7 +192,7 @@ the JSONFileEntry to provide the appropriate combination of overriden types as n
 """
 __version__ = "1.3.2"
 
-configs = {}
+configs: dict[str, object] = {}
 
 
 def debug_log(message: str, flush: bool = False) -> None:
