@@ -17,7 +17,7 @@ class SanctionsEntry(CSVRowEntry):
 
         self["MIME Type"] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, SanctionsEntry.ROW_MIME_TYPE)
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return self["Name"].value
 
     @property

@@ -7,7 +7,6 @@ from typing import Any, Union
 from xml.dom.minidom import Document, Element
 
 from nuix_nli_lib.edrm import FieldFactory, EntryField, EntryInterface, EDRMUtilities as eutes
-from nuix_nli_lib.edrm.EntryField import FieldType
 from nuix_nli_lib import edrm
 
 
@@ -48,19 +47,19 @@ class MappingEntry(EntryInterface):
         """
         for key, value in self.data.items():
             if isinstance(value, bool):
-                data_type = FieldType.BOOLEAN
+                data_type = EntryField.TYPE_BOOLEAN
                 _value = value
             elif isinstance(value, int):
-                data_type = FieldType.INTEGER
+                data_type = EntryField.TYPE_INTEGER
                 _value = value
             elif isinstance(value, float):
-                data_type = FieldType.DECIMAL
+                data_type = EntryField.TYPE_DECIMAL
                 _value = value
             elif isinstance(value, datetime):
-                data_type = FieldType.DATETIME
+                data_type = EntryField.TYPE_DATETIME
                 _value = value
             else:
-                data_type = FieldType.TEXT
+                data_type = EntryField.TYPE_TEXT
                 _value = str(value)
 
             key_name = key.strip()
@@ -78,14 +77,14 @@ class MappingEntry(EntryInterface):
         Internal method to add the Fields that all Items should have in a Nuix case, such as the mimetype, SHA-1 hash,
         Name, and Item Date.
         """
-        self['MIME Type'] = FieldFactory.generate_field('MIME Type', FieldType.TEXT, mimetype)
-        self['Name'] = FieldFactory.generate_field('Name', FieldType.TEXT, self.name)
+        self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mimetype)
+        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, self.get_name())
         data_to_hash = copy.deepcopy(self.data)
         data_to_hash['name'] = self.get_name()
         self['SHA-1'] = FieldFactory.generate_field('SHA-1',
-                                                    FieldType.TEXT,
+                                                    EntryField.TYPE_TEXT,
                                                     eutes.hash_data(data_to_hash, hashlib.sha1()))
-        self['Item Date'] = FieldFactory.generate_field('Item Date', FieldType.DATETIME, self.itemdate)
+        self['Item Date'] = FieldFactory.generate_field('Item Date', EntryField.TYPE_DATETIME, self.itemdate)
 
     @property
     def data(self) -> dict[str, Any]:
@@ -102,7 +101,7 @@ class MappingEntry(EntryInterface):
         """
         return str(self.data)
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         """
         Attempt to locate a name in the provided dictionary of data.  It does so in three steps:
         1. Look for the `default_rowname_field` as defined in the `edrm.configs` object
@@ -113,6 +112,9 @@ class MappingEntry(EntryInterface):
         the same sequence locating different Name fields.  When possible, this work should be simplified by either
         providing the `default_rowname_field` or by centralizing the lookup so it is most likely to produce the same
         field name for all rows in a mapping sequence (all rows in a CSV file).
+
+        Subclasses should override this method to provide a custom name rather than overriding `get_name()`, so that
+        the XML sanitization applied by `get_name()` is always respected.
         """
         field_names = list(self.data.keys())
         first_field = field_names[0]
@@ -127,17 +129,21 @@ class MappingEntry(EntryInterface):
 
         return str(self.data[name_field])
 
+    def get_name(self) -> str:
+        """
+        Return the sanitized name for this entry.  Applies filename and XML content sanitization to the value
+        returned by `get_base_name()`.  Subclasses should override `get_base_name()` rather than this method so
+        that sanitization is always applied.
+        """
+        return eutes.sanitize_xml_content(eutes.sanitize_filename(self.get_base_name()))
+
     @property
     def name(self) -> str:
         """
         Looks up the name field to use, then provides its value.  As the name field may be arbitrary data, and
         the name may be used as a file name stand-in, the name will be mutated to be safe to use in such a context.
         """
-        name_value = self.get_name()
-        name_value = eutes.sanitize_filename(name_value)
-        name_value = eutes.sanitize_xml_content(name_value)
-
-        return name_value
+        return self.get_name()
 
     @property
     def time_field(self) -> Union[str, None]:
