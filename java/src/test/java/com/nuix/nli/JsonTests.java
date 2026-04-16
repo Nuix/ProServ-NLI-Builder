@@ -11,6 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -156,6 +157,133 @@ public class JsonTests {
             assertEquals(fileId, parentDocId,
                     "ParentDocId in <Relationship> should equal the JSONFileEntry's SHA-1 identifier");
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // Missing tests from SLC-65 acceptance criteria (SLC-80)
+    // -------------------------------------------------------------------------
+
+    /**
+     * testNullValue: JSON file whose entire content is the literal {@code null}.
+     *
+     * <p>The scalar branch in {@link JSONFileEntry#addToBuilder} should produce exactly
+     * one {@link JSONValueEntry} child with {@code getRawValue() == null}. No NPE should
+     * be thrown during parsing or field population.
+     */
+    @Test
+    public void testNullValue() throws Exception {
+        // Write a minimal JSON null document to a temp file in the output dir
+        Path tempJson = outputDir().resolve("null_value.json");
+        outputDir().toFile().mkdirs();
+        Files.writeString(tempJson, "null", StandardCharsets.UTF_8);
+
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(tempJson.toString());
+        String fileId = fileEntry.addToBuilder(builder);
+
+        // Exactly one child: the scalar null represented as a JSONValueEntry
+        Map<String, List<String>> familyMap = builder.getFamilyMap();
+        List<String> children = familyMap.getOrDefault(fileId, List.of());
+        assertEquals(1, children.size(),
+                "A JSON null root should produce exactly one JSONValueEntry child");
+
+        // The child is a JSONValueEntry
+        JSONValueEntry valueEntry = findChildOfType(builder, fileId, JSONValueEntry.class);
+        assertNotNull(valueEntry, "Child of a JSON null root should be a JSONValueEntry");
+
+        // getRawValue() must be null — no NPE during construction or here
+        assertNull(valueEntry.getRawValue(),
+                "JSONValueEntry.getRawValue() should be null for a JSON null root");
+    }
+
+    /**
+     * testCustomRootFactory: Subclass {@link JSONFileEntry} and override
+     * {@link JSONFileEntry#createObjectRoot} to inject a custom {@link JSONObjectEntry}
+     * subclass. Assert that the builder contains the custom subclass instance, not the
+     * default {@link JSONObjectEntry}.
+     */
+    @Test
+    public void testCustomRootFactory() {
+        // A minimal custom subclass that tags itself so it can be identified in the builder
+        class TaggedObjectEntry extends JSONObjectEntry {
+            final String tag;
+            TaggedObjectEntry(Map<String, Object> fields, String parentId) {
+                super(fields, parentId);
+                this.tag = "custom-factory";
+            }
+        }
+
+        // Override createObjectRoot to return a TaggedObjectEntry instead of the default
+        JSONFileEntry customEntry = new JSONFileEntry(resources().resolve("object_mixed.json").toString()) {
+            @Override
+            protected JSONObjectEntry createObjectRoot(Map<String, Object> fields, String parentId) {
+                return new TaggedObjectEntry(fields, parentId);
+            }
+        };
+
+        EDRMBuilder builder = new EDRMBuilder();
+        String fileId = customEntry.addToBuilder(builder);
+
+        // The builder should have registered a TaggedObjectEntry, not a plain JSONObjectEntry
+        TaggedObjectEntry tagged = findChildOfType(builder, fileId, TaggedObjectEntry.class);
+        assertNotNull(tagged,
+                "createObjectRoot override should produce a TaggedObjectEntry in the builder");
+        assertEquals("custom-factory", tagged.tag,
+                "Custom subclass identity should be preserved through the factory method");
+    }
+
+    /**
+     * testDeepNesting: Verify that the EDRM relationship chain contains 3 distinct levels
+     * when a {@link JSONFileEntry} is registered as a child of a root {@link com.nuix.edrm.FileEntry}.
+     *
+     * <p>The chain is: {@code rootFile} → {@code JSONFileEntry} → {@code JSONObjectEntry}.
+     * The test inspects the {@code <Relationship>} elements in the EDRM XML output and
+     * confirms that the ChildDocId of the first relationship is the ParentDocId of the second,
+     * forming an unambiguous 3-node parent chain (level 1 → level 2 → level 3).
+     */
+    @Test
+    public void testDeepNesting() {
+        // Build a 3-level hierarchy:
+        //   Level 1: root FileEntry (a plain file acting as the top-level parent)
+        //   Level 2: JSONFileEntry registered as a child of the root file
+        //   Level 3: JSONObjectEntry created automatically by addToBuilder (child of JSONFileEntry)
+        Path jsonPath = resources().resolve("object_mixed.json");
+        EDRMBuilder builder = new EDRMBuilder();
+        builder.setAsNli(false);
+
+        // Level 1: add the JSON file itself as a plain FileEntry (no parent)
+        String rootId = builder.addFile(jsonPath.toString(), "application/json");
+
+        // Level 2: add a JSONFileEntry pointing at object_mixed.json, parented to rootId
+        JSONFileEntry fileEntry = new JSONFileEntry(jsonPath.toString(), "application/json", rootId);
+        String fileId = fileEntry.addToBuilder(builder);
+
+        // Level 3: JSONObjectEntry is added automatically by addToBuilder as a child of fileId
+        JSONObjectEntry objectEntry = findChildOfType(builder, fileId, JSONObjectEntry.class);
+        assertNotNull(objectEntry, "JSONObjectEntry child must be present for an object JSON root");
+        String objectId = objectEntry.getField(objectEntry.getIdentifierField()).getValue().toString();
+
+        // Build and inspect the EDRM XML <Relationships> section
+        Document doc = builder.build();
+        NodeList relationships = doc.getElementsByTagName("Relationship");
+        assertTrue(relationships.getLength() >= 2,
+                "A 3-level chain requires at least 2 <Relationship> elements");
+
+        // Verify both links of the 3-level chain are present in the XML
+        boolean foundRootToFile   = false;
+        boolean foundFileToObject = false;
+        for (int i = 0; i < relationships.getLength(); i++) {
+            Element rel = (Element) relationships.item(i);
+            String parent = rel.getAttribute("ParentDocId");
+            String child  = rel.getAttribute("ChildDocId");
+            if (rootId.equals(parent)  && fileId.equals(child))   foundRootToFile   = true;
+            if (fileId.equals(parent)  && objectId.equals(child)) foundFileToObject = true;
+        }
+
+        assertTrue(foundRootToFile,
+                "Expected a Relationship from root FileEntry (level 1) to JSONFileEntry (level 2)");
+        assertTrue(foundFileToObject,
+                "Expected a Relationship from JSONFileEntry (level 2) to JSONObjectEntry (level 3)");
     }
 
     // -------------------------------------------------------------------------

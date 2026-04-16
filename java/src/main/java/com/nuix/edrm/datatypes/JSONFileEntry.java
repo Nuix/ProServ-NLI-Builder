@@ -9,6 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -54,6 +56,20 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
     }
 
     /**
+     * Factory method that creates the {@link JSONObjectEntry} child for a JSON object root.
+     *
+     * <p>Subclasses may override this method to return a custom {@link JSONObjectEntry}
+     * subclass, enabling the custom-root-factory pattern without changing parsing logic.
+     *
+     * @param fields   flat map of key-value pairs parsed from the root JSON object
+     * @param parentId the identifier of this {@link JSONFileEntry} in the builder
+     * @return a new (or custom) {@link JSONObjectEntry} to register as the root child
+     */
+    protected JSONObjectEntry createObjectRoot(Map<String, Object> fields, String parentId) {
+        return new JSONObjectEntry(fields, parentId);
+    }
+
+    /**
      * Parses {@code content} and registers child entries under {@code parentId}.
      */
     private void parseAndAddChildren(EDRMBuilder builder, String content, String parentId) {
@@ -61,7 +77,7 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
             // Root is a JSON object
             JSONObject obj = new JSONObject(content);
             Map<String, Object> fields = jsonObjectToMap(obj);
-            builder.addEntry(new JSONObjectEntry(fields, parentId));
+            builder.addEntry(createObjectRoot(fields, parentId));
 
         } else if (content.startsWith("[")) {
             // Root is a JSON array — one JSONValueEntry per element
@@ -95,7 +111,14 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
                     // Nested structure: store as its JSON string representation
                     map.put(key, val.toString());
                 } else {
-                    // Scalar: Integer, Long, Double, Boolean, or String from org.json
+                    // Normalise numeric types: org.json may return BigDecimal or BigInteger
+                    // (especially in newer versions). Convert them to Double/Long so that
+                    // MappingEntry.fillInitialFields assigns the correct EntryField.Type.
+                    if (val instanceof BigDecimal bd) {
+                        val = bd.doubleValue();
+                    } else if (val instanceof BigInteger bi) {
+                        val = bi.longValue();
+                    }
                     map.put(key, val);
                 }
             }
