@@ -1,7 +1,10 @@
 package com.nuix.nli;
 
+import com.nuix.edrm.EDRMBuilder;
 import com.nuix.edrm.EntryField;
+import com.nuix.edrm.EntryInterface;
 import com.nuix.edrm.datatypes.JSONFileEntry;
+import com.nuix.edrm.datatypes.JSONObjectEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -16,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -277,5 +282,170 @@ public class JsonTests {
         String dataType = xpathText(doc, "//Field[@DataType='LongInteger']/@DataType");
         assertEquals("LongInteger", dataType,
                 "Expected a LongInteger-typed field after nested fieldTypeOverride coercion");
+    }
+
+    // -----------------------------------------------------------------------
+    // SLC-68: JSON structural content tests using EDRMBuilder directly
+    // -----------------------------------------------------------------------
+
+    /**
+     * SLC-68 Test 1: testObjectFieldCount — load object_mixed.json (4 scalar fields) via
+     * EDRMBuilder directly and assert the JSONObjectEntry child carries exactly the expected
+     * number of fields (4 payload + 4 generic added by MappingEntry = 8 total).
+     */
+    @Test
+    public void testObjectFieldCount() throws Exception {
+        // object_mixed.json has 4 keys: "key 1" (Text), "key 2" (LongInteger),
+        // "key 3" (Decimal), "key 4" (Boolean)
+        Path json = resources().resolve("object_mixed.json");
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        // There should be exactly 2 entries: the JSONFileEntry and its JSONObjectEntry child.
+        assertEquals(2, entryMap.size(),
+                "Expected 2 entries (file + object child) in the builder");
+
+        // The second entry (the "JSON Object" child) is a JSONObjectEntry.
+        EntryInterface objectEntry = entryMap.values().stream()
+                .filter(e -> e instanceof JSONObjectEntry)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("No JSONObjectEntry found in builder"));
+
+        // Count via getFields() — includes payload fields + 4 generic (MIME Type, Name, SHA-1, Item Date).
+        // object_mixed.json has 4 payload fields → 4 + 4 = 8 total.
+        int fieldCount = 0;
+        for (String ignored : objectEntry.getFields()) fieldCount++;
+        assertEquals(8, fieldCount,
+                "Expected 8 fields on JSONObjectEntry (4 payload + 4 generic), got " + fieldCount);
+    }
+
+    /**
+     * SLC-68 Test 2: testArrayChildCount — load list_mixed.json (4 scalar elements) via
+     * EDRMBuilder directly and assert the JSONArrayEntry carries the correct number of entries.
+     */
+    @Test
+    public void testArrayChildCount() throws Exception {
+        // list_mixed.json has 4 elements: "value 1" (Text), 2 (LongInteger), 3.01 (Decimal),
+        // false (Boolean) — all scalars, so no complex children.
+        Path json = resources().resolve("list_mixed.json");
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        // 2 entries: JSONFileEntry + JSONArrayEntry child
+        assertEquals(2, entryMap.size(),
+                "Expected 2 entries (file + array child) in the builder");
+
+        // familyMap: the file entry's ID should have exactly one child.
+        Map<String, List<String>> familyMap = builder.getFamilyMap();
+        String fileId = fileEntry.getField(fileEntry.getIdentifierField()).getValue().toString();
+        List<String> children = familyMap.getOrDefault(fileId, List.of());
+        assertEquals(1, children.size(),
+                "Expected exactly 1 child (the array entry) under the file entry");
+    }
+
+    /**
+     * SLC-68 Test 3: testNestedObjectCreatesChild — load JSON with a nested object via
+     * EDRMBuilder and assert the outer JSONObjectEntry has exactly one child in familyMap.
+     */
+    @Test
+    public void testNestedObjectCreatesChild() throws Exception {
+        // {"outer": {"inner": 1}} → file → outer object → inner object (3 entries)
+        Path json = writeTempJson("nested_obj_slc68.json", "{\"outer\": {\"inner\": 1}}");
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        assertEquals(3, entryMap.size(),
+                "Expected 3 entries (file + outer object + inner object), got " + entryMap.size());
+
+        // Find the outer JSONObjectEntry (direct child of the file entry).
+        String fileId = fileEntry.getField(fileEntry.getIdentifierField()).getValue().toString();
+        Map<String, List<String>> familyMap = builder.getFamilyMap();
+
+        List<String> fileChildren = familyMap.getOrDefault(fileId, List.of());
+        assertEquals(1, fileChildren.size(),
+                "File entry should have exactly 1 child (the outer object)");
+
+        String outerObjectId = fileChildren.get(0);
+        List<String> outerChildren = familyMap.getOrDefault(outerObjectId, List.of());
+        assertEquals(1, outerChildren.size(),
+                "Outer object should have exactly 1 child (the inner object)");
+    }
+
+    /**
+     * SLC-68 Test 4: testScalarTypes — load JSON with string, integer, and boolean scalar fields
+     * via EDRMBuilder and assert each field carries the correct EntryField.Type in the EDRM XML.
+     */
+    @Test
+    public void testScalarTypes() throws Exception {
+        // {"label":"hello","count":42,"active":true}
+        Path json = writeTempJson("scalar_types_slc68.json",
+                "{\"label\":\"hello\",\"count\":42,\"active\":true}");
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        builder.setAsNli(false);
+        Path outXml = outputDir().resolve("scalar_types_slc68.xml");
+        builder.setOutputPath(outXml);
+        builder.save();
+        assertTrue(Files.exists(outXml), "EDRM XML output should exist");
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(outXml.toFile());
+
+        // "label" → Text
+        String textType = xpathText(doc, "//Field[@Name='label']/@DataType");
+        assertEquals("Text", textType, "\"label\" field should have DataType=Text");
+
+        // "count" → LongInteger
+        String intType = xpathText(doc, "//Field[@Name='count']/@DataType");
+        assertEquals("LongInteger", intType, "\"count\" field should have DataType=LongInteger");
+
+        // "active" → Boolean
+        String boolType = xpathText(doc, "//Field[@Name='active']/@DataType");
+        assertEquals("Boolean", boolType, "\"active\" field should have DataType=Boolean");
+    }
+
+    /**
+     * SLC-68 Test 5: testParentIdPropagation — assert child entries report the JSONFileEntry's
+     * identifier as their ParentDocId in the EDRM XML {@code <Relationships>} section.
+     */
+    @Test
+    public void testParentIdPropagation() throws Exception {
+        // {"x": 1} → file entry + object child; the object's parent must be the file's DocID.
+        Path json = writeTempJson("parent_id_slc68.json", "{\"x\": 1}");
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        builder.setAsNli(false);
+        Path outXml = outputDir().resolve("parent_id_slc68.xml");
+        builder.setOutputPath(outXml);
+        builder.save();
+        assertTrue(Files.exists(outXml), "EDRM XML output should exist");
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(outXml.toFile());
+
+        // The file entry's DocID
+        String fileId = fileEntry.getField(fileEntry.getIdentifierField()).getValue().toString();
+
+        // At least one Relationship element must exist.
+        int relCount = xpathCount(doc, "//Relationship");
+        assertTrue(relCount >= 1, "Expected at least one Relationship element, got " + relCount);
+
+        // All Relationship elements with this file as parent must have ParentDocId == fileId.
+        String parentDocId = xpathText(doc,
+                "//Relationship[@ParentDocId='" + fileId + "']/@ParentDocId");
+        assertEquals(fileId, parentDocId,
+                "Child entries should reference the file entry's DocID as ParentDocId");
     }
 }
