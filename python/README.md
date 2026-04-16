@@ -66,7 +66,7 @@ class IncidentEntry(CSVRowEntry):
     def identifier_field(self) -> str:
         return 'number'
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return f'({self['number'].value}) {self['category'].value}'
 
     @property
@@ -133,7 +133,7 @@ First thing to do would be to create the class, as shown above:
 ...     def identifier_field(self):
 ...         return 'number'
 ...
-...     def get_name(self):
+...     def get_base_name(self):
 ...         return f'({self['number'].value}) {self['category'].value}'
 ...
 ...     @property
@@ -206,7 +206,7 @@ Nuix Logical Image Builder: the nuix_nli_lib packages and its children are avail
 ...     def identifier_field(self):
 ...         return 'number'
 ...
-...     def get_name(self):
+...     def get_base_name(self):
 ...         return f'({self['number'].value}) {self['category'].value}'
 ...
 ...     @property
@@ -547,7 +547,7 @@ class TagRowEntry(CSVRowEntry):
     def identifier_field(self) -> str:
         return 'Tag ID'
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return f'({self['Tag ID'].value}) {self['Location'].value}'
 
     @property
