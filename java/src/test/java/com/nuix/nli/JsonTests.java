@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JsonTests {
@@ -152,5 +153,67 @@ public class JsonTests {
         Path out = outputDir().resolve("list_mixed.nli");
         nli.save(out);
         assertTrue(Files.exists(out));
+    }
+
+    // --- malformed JSON detection (SLC-153) ---
+
+    /**
+     * A file containing a bare, unquoted identifier (e.g. {@code foo}) is not
+     * valid JSON.  {@code JSONFileEntry} must throw a {@link RuntimeException}
+     * with a message that includes the file path so the caller can diagnose the
+     * problem.
+     */
+    @Test
+    public void testBareIdentifierThrowsWithFileContext() throws Exception {
+        Path tmp = Files.createTempFile("slc153-test-bare-", ".json");
+        try {
+            Files.writeString(tmp, "foo");
+            JSONFileEntry entry = new JSONFileEntry(tmp.toString());
+            NLIGenerator nli = new NLIGenerator();
+            RuntimeException ex = assertThrows(RuntimeException.class, () -> nli.addEntry(entry));
+            assertTrue(ex.getMessage().contains(tmp.toString()),
+                    "Error message should contain the file path; got: " + ex.getMessage());
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
+    }
+
+    /**
+     * A file containing truncated JSON (a partial object) is not valid JSON.
+     * {@code JSONFileEntry} must throw a {@link RuntimeException} with a message
+     * that includes the file path.
+     */
+    @Test
+    public void testTruncatedObjectThrowsWithFileContext() throws Exception {
+        Path tmp = Files.createTempFile("slc153-test-truncated-", ".json");
+        try {
+            Files.writeString(tmp, "{\"a\":1");
+            JSONFileEntry entry = new JSONFileEntry(tmp.toString());
+            NLIGenerator nli = new NLIGenerator();
+            RuntimeException ex = assertThrows(RuntimeException.class, () -> nli.addEntry(entry));
+            assertTrue(ex.getMessage().contains(tmp.toString()),
+                    "Error message should contain the file path; got: " + ex.getMessage());
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
+    }
+
+    /**
+     * An empty file is not valid JSON.  {@code JSONFileEntry} must throw a
+     * {@link RuntimeException} with a message that includes the file path.
+     */
+    @Test
+    public void testEmptyFileThrowsWithFileContext() throws Exception {
+        Path tmp = Files.createTempFile("slc153-test-empty-", ".json");
+        try {
+            Files.writeString(tmp, "");
+            JSONFileEntry entry = new JSONFileEntry(tmp.toString());
+            NLIGenerator nli = new NLIGenerator();
+            RuntimeException ex = assertThrows(RuntimeException.class, () -> nli.addEntry(entry));
+            assertTrue(ex.getMessage().contains(tmp.toString()),
+                    "Error message should contain the file path; got: " + ex.getMessage());
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
     }
 }
