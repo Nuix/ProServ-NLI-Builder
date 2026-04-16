@@ -1,17 +1,32 @@
 package com.nuix.nli;
 
+import com.nuix.edrm.EDRMBuilder;
+import com.nuix.edrm.EntryField;
+import com.nuix.edrm.EntryInterface;
 import com.nuix.edrm.datatypes.JSONFileEntry;
+import com.nuix.edrm.datatypes.JSONObjectEntry;
+import com.nuix.edrm.datatypes.JSONValueEntry;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JsonTests {
     private Path resources() { return Paths.get("..", "python", "test", "resources").toAbsolutePath().normalize(); }
     private Path outputDir() { return Paths.get("build", "test-output", "json").toAbsolutePath().normalize(); }
+
+    // -------------------------------------------------------------------------
+    // Existing smoke test
+    // -------------------------------------------------------------------------
 
     @Test
     public void testSimpleStr() {
@@ -23,5 +38,158 @@ public class JsonTests {
         Path out = outputDir().resolve("simple_str.nli");
         nli.save(out);
         assertTrue(Files.exists(out));
+    }
+
+    // -------------------------------------------------------------------------
+    // Structural content tests (SLC-68)
+    // -------------------------------------------------------------------------
+
+    /**
+     * testObjectFieldCount: Load object_mixed.json (4 top-level keys).
+     * Assert the JSONObjectEntry child exposes exactly 4 data fields.
+     */
+    @Test
+    public void testObjectFieldCount() {
+        Path json = resources().resolve("object_mixed.json");
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        String fileId = fileEntry.addToBuilder(builder);
+
+        // Find the JSONObjectEntry child
+        JSONObjectEntry objectEntry = findChildOfType(builder, fileId, JSONObjectEntry.class);
+        assertNotNull(objectEntry, "Expected a JSONObjectEntry child for a JSON object file");
+
+        // object_mixed.json has 4 keys: "key 1", "key 2", "key 3", "key 4"
+        assertEquals(4, objectEntry.getDataFieldCount(),
+                "JSONObjectEntry should expose 4 data fields matching the JSON object keys");
+    }
+
+    /**
+     * testArrayChildCount: Load list_mixed.json (4 array elements).
+     * Assert the builder contains exactly 4 JSONValueEntry children.
+     */
+    @Test
+    public void testArrayChildCount() {
+        Path json = resources().resolve("list_mixed.json");
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        String fileId = fileEntry.addToBuilder(builder);
+
+        List<JSONValueEntry> valueEntries = findChildrenOfType(builder, fileId, JSONValueEntry.class);
+        // list_mixed.json: ["value 1", 2, 3.01, false]
+        assertEquals(4, valueEntries.size(),
+                "JSONValueEntry children should equal the number of array elements (4)");
+    }
+
+    /**
+     * testNestedObjectCreatesChild: Load object_complex.json (a JSON object with nested sub-objects).
+     * Assert the parent JSONFileEntry has exactly one child entry (JSONObjectEntry) in the familyMap.
+     * Nested sub-objects are inlined as string fields within the single child entry rather than
+     * creating additional deeply-nested entries.
+     */
+    @Test
+    public void testNestedObjectCreatesChild() {
+        Path json = resources().resolve("object_complex.json");
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        String fileId = fileEntry.addToBuilder(builder);
+
+        Map<String, List<String>> familyMap = builder.getFamilyMap();
+        List<String> children = familyMap.getOrDefault(fileId, List.of());
+        assertEquals(1, children.size(),
+                "A JSON object file (including those with nested sub-objects) should produce exactly one JSONObjectEntry child in the family map");
+
+        // Verify the child is a JSONObjectEntry
+        JSONObjectEntry objectEntry = findChildOfType(builder, fileId, JSONObjectEntry.class);
+        assertNotNull(objectEntry, "The single child should be a JSONObjectEntry");
+    }
+
+    /**
+     * testScalarTypes: Load object_mixed.json (string, int, float, bool values).
+     * Assert each field in the JSONObjectEntry has the correct EntryField.Type.
+     */
+    @Test
+    public void testScalarTypes() {
+        Path json = resources().resolve("object_mixed.json");
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        String fileId = fileEntry.addToBuilder(builder);
+
+        JSONObjectEntry objectEntry = findChildOfType(builder, fileId, JSONObjectEntry.class);
+        assertNotNull(objectEntry, "Expected a JSONObjectEntry child");
+
+        // object_mixed.json: "key 1"->string, "key 2"->int, "key 3"->float, "key 4"->bool
+        assertEquals(EntryField.Type.Text, objectEntry.getField("key 1").getDataType(),
+                "String value should map to EntryField.Type.Text");
+        assertEquals(EntryField.Type.LongInteger, objectEntry.getField("key 2").getDataType(),
+                "Integer value should map to EntryField.Type.LongInteger");
+        assertEquals(EntryField.Type.Decimal, objectEntry.getField("key 3").getDataType(),
+                "Float value should map to EntryField.Type.Decimal");
+        assertEquals(EntryField.Type.Boolean, objectEntry.getField("key 4").getDataType(),
+                "Boolean value should map to EntryField.Type.Boolean");
+    }
+
+    /**
+     * testParentIdPropagation: Build EDRM XML from simple_str.json.
+     * Assert every Relationship element in the XML has ParentDocId equal to
+     * the JSONFileEntry's identifier (SHA-1).
+     */
+    @Test
+    public void testParentIdPropagation() {
+        Path json = resources().resolve("simple_str.json");
+        EDRMBuilder builder = new EDRMBuilder();
+        builder.setAsNli(false);
+
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        String fileId = fileEntry.addToBuilder(builder);
+
+        // Build the EDRM XML and inspect the <Relationships> section
+        Document doc = builder.build();
+        NodeList relationships = doc.getElementsByTagName("Relationship");
+
+        assertTrue(relationships.getLength() > 0,
+                "Expected at least one Relationship element in the EDRM XML");
+
+        for (int i = 0; i < relationships.getLength(); i++) {
+            Element rel = (Element) relationships.item(i);
+            String parentDocId = rel.getAttribute("ParentDocId");
+            assertEquals(fileId, parentDocId,
+                    "ParentDocId in <Relationship> should equal the JSONFileEntry's SHA-1 identifier");
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    /** Finds the first child of {@code parentId} whose entry is an instance of {@code type}. */
+    @SuppressWarnings("unchecked")
+    private <T extends EntryInterface> T findChildOfType(EDRMBuilder builder, String parentId, Class<T> type) {
+        Map<String, List<String>> familyMap = builder.getFamilyMap();
+        List<String> children = familyMap.getOrDefault(parentId, List.of());
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        for (String childId : children) {
+            EntryInterface entry = entryMap.get(childId);
+            if (type.isInstance(entry)) {
+                return (T) entry;
+            }
+        }
+        return null;
+    }
+
+    /** Finds all children of {@code parentId} whose entries are instances of {@code type}. */
+    @SuppressWarnings("unchecked")
+    private <T extends EntryInterface> List<T> findChildrenOfType(EDRMBuilder builder, String parentId, Class<T> type) {
+        Map<String, List<String>> familyMap = builder.getFamilyMap();
+        List<String> children = familyMap.getOrDefault(parentId, List.of());
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        List<T> result = new ArrayList<>();
+        for (String childId : children) {
+            EntryInterface entry = entryMap.get(childId);
+            if (type.isInstance(entry)) {
+                result.add((T) entry);
+            }
+        }
+        return result;
     }
 }
