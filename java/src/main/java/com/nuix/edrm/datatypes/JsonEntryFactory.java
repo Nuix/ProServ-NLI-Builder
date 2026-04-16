@@ -23,7 +23,8 @@ class JsonEntryFactory {
         if (generatorClass != null) {
             try {
                 Constructor<? extends JSONValueEntry> ctor =
-                        generatorClass.getConstructor(String.class, String.class, Object.class, String.class, String.class);
+                        generatorClass.getDeclaredConstructor(String.class, String.class, Object.class, String.class, String.class);
+                ctor.setAccessible(true);
                 return ctor.newInstance(mappingName, keyName, value, mimeType, parentId);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("Failed to instantiate custom JSONValueEntry subclass: " + generatorClass.getName(), e);
@@ -43,7 +44,8 @@ class JsonEntryFactory {
         if (generatorClass != null) {
             try {
                 Constructor<? extends JSONArrayEntry> ctor =
-                        generatorClass.getConstructor(String.class, List.class, String.class, String.class);
+                        generatorClass.getDeclaredConstructor(String.class, List.class, String.class, String.class);
+                ctor.setAccessible(true);
                 return ctor.newInstance(name, array, mimeType, parentId);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("Failed to instantiate custom JSONArrayEntry subclass: " + generatorClass.getName(), e);
@@ -63,7 +65,8 @@ class JsonEntryFactory {
         if (generatorClass != null) {
             try {
                 Constructor<? extends JSONObjectEntry> ctor =
-                        generatorClass.getConstructor(String.class, Map.class, String.class, String.class);
+                        generatorClass.getDeclaredConstructor(String.class, Map.class, String.class, String.class);
+                ctor.setAccessible(true);
                 return ctor.newInstance(name, object, mimeType, parentId);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("Failed to instantiate custom JSONObjectEntry subclass: " + generatorClass.getName(), e);
