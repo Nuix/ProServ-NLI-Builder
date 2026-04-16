@@ -1,7 +1,7 @@
 import copy
 import hashlib
 import urllib
-from datetime import datetime
+from datetime import datetime, timezone
 from operator import contains
 from typing import Any, Union
 from xml.dom.minidom import Document, Element
@@ -186,12 +186,12 @@ class MappingEntry(EntryInterface):
         time_field = self.time_field
 
         if time_field is None:
-            return datetime.now()
+            return datetime.now(tz=timezone.utc)
         else:
             date_time = self.data.get(time_field)
 
             if date_time is None:
-                return datetime.now()
+                return datetime.now(tz=timezone.utc)
 
             if isinstance(date_time, datetime):
                 return date_time

@@ -1,6 +1,6 @@
 import hashlib
 import urllib.parse
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from xml.dom.minidom import Document, Element
 
@@ -54,7 +54,7 @@ class FileEntry(EntryInterface):
 
     def fill_basic_fields(self, mime_type: str):
         self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mime_type)
-        self.__item_date = datetime.fromtimestamp(self.file_path.stat().st_ctime)
+        self.__item_date = datetime.fromtimestamp(self.file_path.stat().st_ctime, tz=timezone.utc)
         self['Item Date'] = FieldFactory.generate_field('Item Date',
                                                         EntryField.TYPE_DATETIME,
                                                         eutes.convert_datetime_to_string(self.__item_date))
