@@ -103,7 +103,7 @@ class JSONValueEntry(MappingEntry):
         self.__key_name = key_name
         super().__init__({key_name: value}, mimetype, parent_id)
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return self.__name
 
     @property
@@ -173,7 +173,7 @@ class JSONArrayEntry(MappingEntry):
         self.child_value_generator = child_value_generator
         super().__init__(array, mimetype, parent_id)
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return self.__name
 
     def add_as_parent_path(self, existing_path: str):
@@ -418,7 +418,7 @@ class JSONObjectEntry(MappingEntry):
         self.child_value_generator = child_value_generator
         super().__init__(obj, mimetype, parent_id)
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return self.__name
 
     def add_as_parent_path(self, existing_path: str):
