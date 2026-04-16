@@ -16,7 +16,7 @@ class TelepathyEntry(CSVRowEntry):
         # self["MIME Type"] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, TelepathyEntry.ROW_MIME_TYPE)
         # self["From"] = FieldFactory.generate_field('From', EntryField.TYPE_TEXT, parent_csv.data[row_index]["Display_name"])
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return f'({self["Timestamp"].value}) {self["Display_name"].value}'
 
     @property
