@@ -128,7 +128,7 @@ class ProcessEntry(CSVRowEntry):
     def identifier_field(self) -> str:
         return 'PID'
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return f'({self['PID'].value}) {self['ImageFileName'].value}'
 
     @property
