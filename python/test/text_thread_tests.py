@@ -18,7 +18,7 @@ class TextEntry(CSVRowEntry):
 
         self["MIME Type"] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, TextEntry.ROW_MIME_TYPE)
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return f'({self["Date Sent"].value}) {self["From"].value}'
 
     @property

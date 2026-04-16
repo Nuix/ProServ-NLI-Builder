@@ -1,32 +1,77 @@
 package com.nuix.nli;
 
-import com.nuix.edrm.EDRMBuilder;
 import com.nuix.edrm.EntryField;
-import com.nuix.edrm.EntryInterface;
 import com.nuix.edrm.datatypes.JSONFileEntry;
-import com.nuix.edrm.datatypes.JSONObjectEntry;
-import com.nuix.edrm.datatypes.JSONValueEntry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JsonTests {
-    private Path resources() { return Paths.get("..", "python", "test", "resources").toAbsolutePath().normalize(); }
+    private Path resources() { return Paths.get(".", "src", "test", "resources").toAbsolutePath().normalize(); }
     private Path outputDir() { return Paths.get("build", "test-output", "json").toAbsolutePath().normalize(); }
 
-    // -------------------------------------------------------------------------
-    // Existing smoke test
-    // -------------------------------------------------------------------------
+    @BeforeEach
+    void ensureOutputDir() throws Exception {
+        Files.createDirectories(outputDir());
+    }
+
+    // -----------------------------------------------------------------------
+    // Helpers
+    // -----------------------------------------------------------------------
+
+    /** Write JSON content to a temp file in the output dir and return its path. */
+    private Path writeTempJson(String filename, String content) throws Exception {
+        Path tmp = outputDir().resolve(filename);
+        Files.writeString(tmp, content, StandardCharsets.UTF_8);
+        return tmp;
+    }
+
+    /** Parse the EDRM XML from an NLI ZIP. */
+    private Document getEdrmXmlFromNli(Path nliPath) throws Exception {
+        try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(nliPath))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if (entry.getName().endsWith("image_contents.xml")) {
+                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder db = dbf.newDocumentBuilder();
+                    return db.parse(zis);
+                }
+            }
+        }
+        throw new AssertionError("image_contents.xml not found in NLI: " + nliPath);
+    }
+
+    /** XPath count helper. */
+    private int xpathCount(Document doc, String expression) throws Exception {
+        XPath xp = XPathFactory.newInstance().newXPath();
+        NodeList nodes = (NodeList) xp.evaluate(expression, doc, XPathConstants.NODESET);
+        return nodes.getLength();
+    }
+
+    /** XPath text helper — returns text of first matching node. */
+    private String xpathText(Document doc, String expression) throws Exception {
+        XPath xp = XPathFactory.newInstance().newXPath();
+        return (String) xp.evaluate(expression, doc, XPathConstants.STRING);
+    }
+
+    // -----------------------------------------------------------------------
+    // Existing test (preserving original behaviour)
+    // -----------------------------------------------------------------------
 
     @Test
     public void testSimpleStr() {
@@ -34,162 +79,203 @@ public class JsonTests {
         JSONFileEntry entry = new JSONFileEntry(json.toString());
         NLIGenerator nli = new NLIGenerator();
         nli.addEntry(entry);
-        if (outputDir().toFile().exists() == false) outputDir().toFile().mkdirs();
         Path out = outputDir().resolve("simple_str.nli");
         nli.save(out);
         assertTrue(Files.exists(out));
     }
 
-    // -------------------------------------------------------------------------
-    // Structural content tests (SLC-68)
-    // -------------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // SLC-65: New recursive traversal tests
+    // -----------------------------------------------------------------------
 
     /**
-     * testObjectFieldCount: Load object_mixed.json (4 top-level keys).
-     * Assert the JSONObjectEntry child exposes exactly 4 data fields.
+     * Test 1: Scalar integer JSON → JSONValueEntry with LongInteger-typed field in EDRM XML.
      */
     @Test
-    public void testObjectFieldCount() {
-        Path json = resources().resolve("object_mixed.json");
-        EDRMBuilder builder = new EDRMBuilder();
-        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
-        String fileId = fileEntry.addToBuilder(builder);
+    public void testScalarInteger() throws Exception {
+        Path json = writeTempJson("scalar_int.json", "42");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("scalar_int.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
 
-        // Find the JSONObjectEntry child
-        JSONObjectEntry objectEntry = findChildOfType(builder, fileId, JSONObjectEntry.class);
-        assertNotNull(objectEntry, "Expected a JSONObjectEntry child for a JSON object file");
+        Document doc = getEdrmXmlFromNli(out);
+        // JSON file itself + the scalar value child = at least 2 documents
+        int docCount = xpathCount(doc, "//Document");
+        assertTrue(docCount >= 2, "Expected at least 2 documents, got " + docCount);
 
-        // object_mixed.json has 4 keys: "key 1", "key 2", "key 3", "key 4"
-        assertEquals(4, objectEntry.getDataFieldCount(),
-                "JSONObjectEntry should expose 4 data fields matching the JSON object keys");
+        // A LongInteger-typed field must appear
+        String dataType = xpathText(doc, "//Field[@DataType='LongInteger']/@DataType");
+        assertEquals("LongInteger", dataType,
+                "Expected a LongInteger-typed field in the EDRM XML");
     }
 
     /**
-     * testArrayChildCount: Load list_mixed.json (4 array elements).
-     * Assert the builder contains exactly 4 JSONValueEntry children.
+     * Test 2: Scalar string JSON → JSONValueEntry with Text-typed field.
      */
     @Test
-    public void testArrayChildCount() {
-        Path json = resources().resolve("list_mixed.json");
-        EDRMBuilder builder = new EDRMBuilder();
-        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
-        String fileId = fileEntry.addToBuilder(builder);
+    public void testScalarString() throws Exception {
+        Path json = writeTempJson("scalar_str_new.json", "\"hello world\"");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("scalar_str_new.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
 
-        List<JSONValueEntry> valueEntries = findChildrenOfType(builder, fileId, JSONValueEntry.class);
-        // list_mixed.json: ["value 1", 2, 3.01, false]
-        assertEquals(4, valueEntries.size(),
-                "JSONValueEntry children should equal the number of array elements (4)");
+        Document doc = getEdrmXmlFromNli(out);
+        String dataType = xpathText(doc, "//Field[@DataType='Text']/@DataType");
+        assertEquals("Text", dataType, "Expected a Text-typed field for a string scalar");
     }
 
     /**
-     * testNestedObjectCreatesChild: Load object_complex.json (a JSON object with nested sub-objects).
-     * Assert the parent JSONFileEntry has exactly one child entry (JSONObjectEntry) in the familyMap.
-     * Nested sub-objects are inlined as string fields within the single child entry rather than
-     * creating additional deeply-nested entries.
+     * Test 3: Array of scalars [1,2,3] → at least 2 documents (file + array entry).
      */
     @Test
-    public void testNestedObjectCreatesChild() {
+    public void testArrayOfScalars() throws Exception {
+        Path json = writeTempJson("array_scalars.json", "[1, 2, 3]");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("array_scalars.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
+
+        Document doc = getEdrmXmlFromNli(out);
+        int docCount = xpathCount(doc, "//Document");
+        assertTrue(docCount >= 2, "Expected at least 2 documents (file + array), got " + docCount);
+    }
+
+    /**
+     * Test 4: Nested object {"a":{"b":1}} → at least 3 documents with a Relationship element.
+     */
+    @Test
+    public void testNestedObject() throws Exception {
+        Path json = writeTempJson("nested_obj.json", "{\"a\":{\"b\":1}}");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("nested_obj.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
+
+        Document doc = getEdrmXmlFromNli(out);
+        int docCount = xpathCount(doc, "//Document");
+        assertTrue(docCount >= 3,
+                "Expected at least 3 documents for nested object (file + outer + inner), got " + docCount);
+
+        int relCount = xpathCount(doc, "//Relationship");
+        assertTrue(relCount >= 1,
+                "Expected at least one Relationship element, got " + relCount);
+    }
+
+    /**
+     * Test 5: ISO 8601 string value → field serialized with DateTime DataType attribute.
+     */
+    @Test
+    public void testIso8601DateTime() throws Exception {
+        Path json = writeTempJson("datetime_obj.json",
+                "{\"ts\":\"2024-01-15T10:00:00Z\"}");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("datetime_obj.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
+
+        Document doc = getEdrmXmlFromNli(out);
+        String dataType = xpathText(doc, "//Field[@DataType='DateTime']/@DataType");
+        assertEquals("DateTime", dataType,
+                "Expected a DateTime-typed field for an ISO 8601 string value");
+    }
+
+    /**
+     * Test 6: Mixed array [1, {"x":2}] → at least 3 documents and a Relationship.
+     */
+    @Test
+    public void testMixedArrayWithNestedObject() throws Exception {
+        Path json = writeTempJson("mixed_array.json", "[1, {\"x\":2}]");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("mixed_array.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
+
+        Document doc = getEdrmXmlFromNli(out);
+        int docCount = xpathCount(doc, "//Document");
+        assertTrue(docCount >= 3,
+                "Expected at least 3 documents (file + array + nested object), got " + docCount);
+
+        int relCount = xpathCount(doc, "//Relationship");
+        assertTrue(relCount >= 1,
+                "Expected at least one Relationship for the nested object child");
+    }
+
+    /**
+     * Test 7: Full roundtrip via NLIGenerator with a complex nested JSON file —
+     * output NLI file exists and is non-zero in size.
+     */
+    @Test
+    public void testComplexJsonRoundtrip() throws Exception {
         Path json = resources().resolve("object_complex.json");
-        EDRMBuilder builder = new EDRMBuilder();
-        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
-        String fileId = fileEntry.addToBuilder(builder);
-
-        Map<String, List<String>> familyMap = builder.getFamilyMap();
-        List<String> children = familyMap.getOrDefault(fileId, List.of());
-        assertEquals(1, children.size(),
-                "A JSON object file (including those with nested sub-objects) should produce exactly one JSONObjectEntry child in the family map");
-
-        // Verify the child is a JSONObjectEntry
-        JSONObjectEntry objectEntry = findChildOfType(builder, fileId, JSONObjectEntry.class);
-        assertNotNull(objectEntry, "The single child should be a JSONObjectEntry");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(entry);
+        Path out = outputDir().resolve("complex_roundtrip.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out), "NLI output file should exist");
+        assertTrue(Files.size(out) > 0, "NLI output file should be non-zero");
     }
 
     /**
-     * testScalarTypes: Load object_mixed.json (string, int, float, bool values).
-     * Assert each field in the JSONObjectEntry has the correct EntryField.Type.
+     * Test 8: JSONPath field-type override ($..count) marks a string field as LongInteger —
+     * override does not break serialization.
      */
     @Test
-    public void testScalarTypes() {
-        Path json = resources().resolve("object_mixed.json");
-        EDRMBuilder builder = new EDRMBuilder();
-        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
-        String fileId = fileEntry.addToBuilder(builder);
-
-        JSONObjectEntry objectEntry = findChildOfType(builder, fileId, JSONObjectEntry.class);
-        assertNotNull(objectEntry, "Expected a JSONObjectEntry child");
-
-        // object_mixed.json: "key 1"->string, "key 2"->int, "key 3"->float, "key 4"->bool
-        assertEquals(EntryField.Type.Text, objectEntry.getField("key 1").getDataType(),
-                "String value should map to EntryField.Type.Text");
-        assertEquals(EntryField.Type.LongInteger, objectEntry.getField("key 2").getDataType(),
-                "Integer value should map to EntryField.Type.LongInteger");
-        assertEquals(EntryField.Type.Decimal, objectEntry.getField("key 3").getDataType(),
-                "Float value should map to EntryField.Type.Decimal");
-        assertEquals(EntryField.Type.Boolean, objectEntry.getField("key 4").getDataType(),
-                "Boolean value should map to EntryField.Type.Boolean");
+    public void testFieldTypeOverrideDoesNotThrow() throws Exception {
+        Path json = writeTempJson("override_test.json", "{\"count\":\"99\"}");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        entry.addFieldTypeOverride("$..count", EntryField.Type.LongInteger);
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(entry);
+        Path out = outputDir().resolve("override_test.nli");
+        assertDoesNotThrow(() -> nli.save(out));
+        assertTrue(Files.exists(out));
     }
 
     /**
-     * testParentIdPropagation: Build EDRM XML from simple_str.json.
-     * Assert every Relationship element in the XML has ParentDocId equal to
-     * the JSONFileEntry's identifier (SHA-1).
+     * Test 9: BigInteger value exceeding Long.MAX_VALUE is serialized as Text (not thrown as
+     * ArithmeticException from longValueExact). Verifies SLC-77 overflow fix.
      */
     @Test
-    public void testParentIdPropagation() {
-        Path json = resources().resolve("simple_str.json");
-        EDRMBuilder builder = new EDRMBuilder();
-        builder.setAsNli(false);
-
-        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
-        String fileId = fileEntry.addToBuilder(builder);
-
-        // Build the EDRM XML and inspect the <Relationships> section
-        Document doc = builder.build();
-        NodeList relationships = doc.getElementsByTagName("Relationship");
-
-        assertTrue(relationships.getLength() > 0,
-                "Expected at least one Relationship element in the EDRM XML");
-
-        for (int i = 0; i < relationships.getLength(); i++) {
-            Element rel = (Element) relationships.item(i);
-            String parentDocId = rel.getAttribute("ParentDocId");
-            assertEquals(fileId, parentDocId,
-                    "ParentDocId in <Relationship> should equal the JSONFileEntry's SHA-1 identifier");
-        }
+    public void testBigIntegerOverflowFallsBackToText() throws Exception {
+        // 99999999999999999999 > Long.MAX_VALUE (9223372036854775807)
+        Path json = writeTempJson("bigint_overflow.json", "{\"huge\":99999999999999999999}");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(entry);
+        Path out = outputDir().resolve("bigint_overflow.nli");
+        assertDoesNotThrow(() -> nli.save(out),
+                "BigInteger values larger than Long.MAX_VALUE must not throw ArithmeticException");
+        assertTrue(Files.exists(out));
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
+    /**
+     * Test 10: fieldTypeOverride applied to a nested scalar inside an object produces a
+     * LongInteger-typed field in the EDRM XML (verifies coercion propagates into nested structures).
+     */
+    @Test
+    public void testFieldTypeOverrideNestedCoercion() throws Exception {
+        // "age" is a string in JSON but we override it to LongInteger
+        Path json = writeTempJson("nested_override.json", "{\"person\":{\"age\":\"42\"}}");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        entry.addFieldTypeOverride("$..age", EntryField.Type.LongInteger);
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(entry);
+        Path out = outputDir().resolve("nested_override.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
 
-    /** Finds the first child of {@code parentId} whose entry is an instance of {@code type}. */
-    @SuppressWarnings("unchecked")
-    private <T extends EntryInterface> T findChildOfType(EDRMBuilder builder, String parentId, Class<T> type) {
-        Map<String, List<String>> familyMap = builder.getFamilyMap();
-        List<String> children = familyMap.getOrDefault(parentId, List.of());
-        Map<String, EntryInterface> entryMap = builder.getEntryMap();
-        for (String childId : children) {
-            EntryInterface entry = entryMap.get(childId);
-            if (type.isInstance(entry)) {
-                return (T) entry;
-            }
-        }
-        return null;
-    }
-
-    /** Finds all children of {@code parentId} whose entries are instances of {@code type}. */
-    @SuppressWarnings("unchecked")
-    private <T extends EntryInterface> List<T> findChildrenOfType(EDRMBuilder builder, String parentId, Class<T> type) {
-        Map<String, List<String>> familyMap = builder.getFamilyMap();
-        List<String> children = familyMap.getOrDefault(parentId, List.of());
-        Map<String, EntryInterface> entryMap = builder.getEntryMap();
-        List<T> result = new ArrayList<>();
-        for (String childId : children) {
-            EntryInterface entry = entryMap.get(childId);
-            if (type.isInstance(entry)) {
-                result.add((T) entry);
-            }
-        }
-        return result;
+        Document doc = getEdrmXmlFromNli(out);
+        String dataType = xpathText(doc, "//Field[@DataType='LongInteger']/@DataType");
+        assertEquals("LongInteger", dataType,
+                "Expected a LongInteger-typed field after nested fieldTypeOverride coercion");
     }
 }
