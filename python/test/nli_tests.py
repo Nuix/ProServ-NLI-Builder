@@ -10,7 +10,7 @@ class EnvEntry(CSVRowEntry):
     def __init__(self, parent_csv: CSVEntry, row_index: int):
         super().__init__(parent_csv, row_index)
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return f'({self['PID'].value}) {self['Process'].value} [{self['Variable'].value}]'
 
     @property
@@ -26,7 +26,7 @@ class CCEntry(CSVRowEntry):
     def identifier_field(self) -> str:
         return 'Complaint ID'
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return f'({self['Complaint ID'].value}) {self['Company'].value}'
 
     @property
@@ -47,7 +47,7 @@ class PsListSimple(CSVRowEntry):
     def itemdate(self):
         return datetime.strptime(self['CreateTime'].value, '%Y-%m-%d %H:%M:%S.%f ')
 
-    def get_name(self):
+    def get_base_name(self):
         return f'({self['PID'].value}) {self['ImageFileName'].value}'
 
     @ property
