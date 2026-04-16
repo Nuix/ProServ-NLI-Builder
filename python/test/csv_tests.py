@@ -30,10 +30,10 @@ class ProcessEntry(CSVRowEntry):
         """
         return 'PID'
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         """
-        Not strictly necessary, but this shows the name can be constructed any way you want.  Reminder to use the
-        `get_name` method to override name generation as the calculated value may need to be corrected in various ways
+        Not strictly necessary, but this shows the name can be constructed any way you want.  Override `get_base_name`
+        rather than `get_name` so that the parent's XML and filename sanitization in `get_name` is still applied.
         """
         return f'({self['PID'].value}) {self['ImageFileName'].value}'
 
@@ -74,7 +74,7 @@ class EnvEntry(CSVRowEntry):
     def __init__(self, parent_csv: CSVEntry, row_index: int):
         super().__init__(parent_csv, row_index)
 
-    def get_name(self) -> str:
+    def get_base_name(self) -> str:
         return f'({self['PID'].value}) {self['Process'].value} [{self['Variable'].value}]'
 
     @property

@@ -13,8 +13,8 @@
     "smtpAuth": "auth",
     "smtpSocketFactoryPort": 2,
     "smtpSocketFactoryClass": "clz",
-    "user": "test-user",
-    "password": "PLACEHOLDER",
+    "user": "me",
+    "password": "REDACTED",
     "distroList": ["a@b.c", "b@a.c"]
   },
   "nuix": {
@@ -28,13 +28,13 @@
       },
       {
         "root": "C:",
-        "path": ["Users","sluke01","AppData","Roaming","Nuix"]
+        "path": ["Users","testuser","AppData","Roaming","Nuix"]
       }
     ],
     "licenseSource": "cloud-server",
     "licenseServerAddress": "https://licence-api.nuix.com",
     "licenseType": "enterprise-workstation",
     "licenseUser": "test@example.com",
-    "licensePassword": "PLACEHOLDER"
+    "licensePassword": "REDACTED"
   }
 }
