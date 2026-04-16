@@ -1,0 +1,11 @@
+{
+  "project": "NLI Integration Test",
+  "version": "1.0",
+  "active": true,
+  "priority": 1,
+  "tags": ["integration", "canonical", "test"],
+  "metadata": {
+    "author": "Nuix Test Suite",
+    "created": "2026-01-01"
+  }
+}

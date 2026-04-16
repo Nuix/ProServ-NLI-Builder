@@ -1,0 +1,4 @@
+ID,Name,Category,Value,Description
+1,Alpha Record,TypeA,100,First canonical record for integration testing
+2,Beta Record,TypeB,200,Second canonical record for integration testing
+3,Gamma Record,TypeA,150,Third canonical record with same category as first
