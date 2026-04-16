@@ -1,5 +1,5 @@
 from nuix_nli_lib.edrm.EDRMUtilities import *
-from nuix_nli_lib.edrm.EntryField import EntryField
+from nuix_nli_lib.edrm.EntryField import EntryField, FieldType
 from nuix_nli_lib.edrm.FieldFactory import *
 from nuix_nli_lib.edrm.EntryInterface import EntryInterface
 from nuix_nli_lib.edrm.FileEntry import FileEntry

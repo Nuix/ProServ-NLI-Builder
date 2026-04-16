@@ -1,9 +1,26 @@
 from datetime import datetime
-from typing import Any
+from enum import StrEnum
+from typing import Any, Union
 
 from xml.dom.minidom import Element, Document, Node
 
 from nuix_nli_lib.edrm import EDRMUtilities as eutes
+
+
+class FieldType(StrEnum):
+    """
+    Enumeration of valid EDRM field data types.  Using ``FieldType`` values instead of raw strings catches typos at
+    development time rather than when Nuix rejects the resulting NLI at import.
+
+    Because ``FieldType`` extends ``StrEnum``, every member compares equal to its string value, so existing code that
+    passes the constants to XML serialisation or string comparisons continues to work without modification.
+    """
+    TEXT = "Text"
+    DATETIME = "DateTime"
+    INTEGER = "LongInteger"
+    LONG_TEXT = "LongText"
+    DECIMAL = "Decimal"
+    BOOLEAN = "Boolean"
 
 
 class EntryField:
@@ -14,14 +31,18 @@ class EntryField:
 
     Use the FieldFactory class to generate these, as the key and key-name pairs must be managed properly.
     """
-    TYPE_TEXT: str = "Text"
-    TYPE_DATETIME: str = "DateTime"
-    TYPE_INTEGER: str = "LongInteger"
-    TYPE_LONG_TEXT: str = "LongText"
-    TYPE_DECIMAL: str = "Decimal"
-    TYPE_BOOLEAN: str = "Boolean"
+    # FieldType enum — the canonical way to specify a field's data type.
+    FieldType = FieldType
 
-    def __init__(self, key: str, name: str, field_type: str, default_value: Any = None):
+    # Deprecated string aliases kept for backwards compatibility.  New code should use FieldType members directly.
+    TYPE_TEXT: str = FieldType.TEXT
+    TYPE_DATETIME: str = FieldType.DATETIME
+    TYPE_INTEGER: str = FieldType.INTEGER
+    TYPE_LONG_TEXT: str = FieldType.LONG_TEXT
+    TYPE_DECIMAL: str = FieldType.DECIMAL
+    TYPE_BOOLEAN: str = FieldType.BOOLEAN
+
+    def __init__(self, key: str, name: str, field_type: Union[FieldType, str], default_value: Any = None):
         """
         Do Not call this method directly.  Use the FieldFactory class to generate these, as the key and key-name
         must be managed properly.
@@ -30,7 +51,7 @@ class EntryField:
                     within the load file, and able to be used to map a Field Name to the XML Node used to store the
                     field.
         :param name: Name of the field as it should be displayed in the final case the load file will fill.
-        :param field_type: One of the EntryField.TYPE_* attributes.
+        :param field_type: A ``FieldType`` enum member (preferred) or one of the legacy ``EntryField.TYPE_*`` strings.
         :param default_value: The value to store in the field if no value is provided.
         """
         self.__key = key
@@ -55,9 +76,9 @@ class EntryField:
         return self.__name
 
     @property
-    def data_type(self) -> str:
+    def data_type(self) -> Union[FieldType, str]:
         """
-        :return: Type of data this field will store.  It should be one of the EntryField.TYPE_* attributes.
+        :return: Type of data this field will store.  It will be a ``FieldType`` member or a compatible string.
         """
         return self.__type
 

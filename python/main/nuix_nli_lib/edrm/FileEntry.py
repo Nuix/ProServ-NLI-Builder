@@ -5,6 +5,7 @@ from pathlib import Path
 from xml.dom.minidom import Document, Element
 
 from nuix_nli_lib.edrm import FieldFactory, EntryField, EntryInterface, EDRMUtilities as eutes
+from nuix_nli_lib.edrm.EntryField import FieldType
 
 
 class FileEntry(EntryInterface):
@@ -53,41 +54,41 @@ class FileEntry(EntryInterface):
         self.fill_basic_fields(mime_type)
 
     def fill_basic_fields(self, mime_type: str):
-        self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mime_type)
+        self['MIME Type'] = FieldFactory.generate_field('MIME Type', FieldType.TEXT, mime_type)
         self.__item_date = datetime.fromtimestamp(self.file_path.stat().st_ctime)
         self['Item Date'] = FieldFactory.generate_field('Item Date',
-                                                        EntryField.TYPE_DATETIME,
+                                                        FieldType.DATETIME,
                                                         eutes.convert_datetime_to_string(self.__item_date))
         self['Path Name'] = FieldFactory.generate_field('Path Name',
-                                                        EntryField.TYPE_TEXT,
+                                                        FieldType.TEXT,
                                                         str(self.file_path.resolve().absolute()))
         self['File Accessed'] = FieldFactory.generate_field('File Accessed',
-                                                            EntryField.TYPE_DATETIME,
+                                                            FieldType.DATETIME,
                                                             eutes.convert_timestamp_to_string(
                                                                 self.file_path.stat().st_atime))
         self['File Created'] = FieldFactory.generate_field('File Created',
-                                                           EntryField.TYPE_DATETIME,
+                                                           FieldType.DATETIME,
                                                            eutes.convert_timestamp_to_string(
                                                                getattr(self.file_path.stat(),
                                                                        'st_birthtime',
                                                                        self.file_path.stat().st_ctime)))
         self['File Modified'] = FieldFactory.generate_field('File Modified',
-                                                            EntryField.TYPE_DATETIME,
+                                                            FieldType.DATETIME,
                                                             eutes.convert_timestamp_to_string(
                                                                 self.file_path.stat().st_mtime))
         self['File Owner'] = FieldFactory.generate_field('File Owner',
-                                                         EntryField.TYPE_TEXT,
+                                                         FieldType.TEXT,
                                                          getattr(self.file_path.stat(), 'st_creator', 'Undefined'))
-        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, str(self.file_path.name))
+        self['Name'] = FieldFactory.generate_field('Name', FieldType.TEXT, str(self.file_path.name))
 
         self.fill_hash_fields()
 
-        self['File Size'] = FieldFactory.generate_field('File Size', EntryField.TYPE_INTEGER,
+        self['File Size'] = FieldFactory.generate_field('File Size', FieldType.INTEGER,
                                                         str(self.file_path.stat().st_size))
 
     def fill_hash_fields(self):
         self['SHA-1'] = FieldFactory.generate_field('SHA-1',
-                                                    EntryField.TYPE_TEXT,
+                                                    FieldType.TEXT,
                                                     eutes.hash_file(self.file_path, hashlib.sha1()))
 
     @property
