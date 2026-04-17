@@ -392,10 +392,13 @@ public class EdrmTests {
     }
 
     /**
-     * Verifies that XML special characters ({@code <}, {@code >}, {@code &}, {@code "}, {@code '})
-     * in a field value are properly XML-escaped in the serialized output. The DOM
-     * {@code createTextNode} path (used by {@link com.nuix.edrm.EntryField#serializeValue}) escapes
-     * these automatically, so the raw string representation should never appear in the XML bytes.
+     * Verifies that XML special characters ({@code <}, {@code >}, {@code &}) in a field value are
+     * properly XML-escaped in the serialized output. The DOM {@code createTextNode} path (used by
+     * {@link com.nuix.edrm.EntryField#serializeValue}) escapes these automatically, so the raw
+     * string representation should never appear in the XML bytes.
+     *
+     * <p>Note: {@code "} and {@code '} are not asserted here because the DOM serializer does not
+     * escape them in text nodes (only in attribute values), so they pass through unmodified.
      */
     @Test
     public void testXmlSpecialCharsInFieldValue() {
@@ -437,5 +440,17 @@ public class EdrmTests {
         assertEquals(1, statusFields.getLength(),
                 "Expected 'Status' field definition to appear exactly once in <Fields> even when "
                 + "two entries carry the same field name, but found " + statusFields.getLength());
+
+        // Both entries' field values must still be present in the <Documents> section.
+        // The key-based element name is resolved from the <Fields> definition to avoid
+        // coupling the test to internal key-generation order (field_1, field_2, …).
+        String statusKey = xpathStr(doc, "//Fields/Field[@Name='Status']/@Key");
+        NodeList activeVals = xpath(doc, "//Documents/Document/FieldValues/" + statusKey + "[text()='active']");
+        assertEquals(1, activeVals.getLength(),
+                "Expected one Document with Status='active' in <FieldValues>, but found " + activeVals.getLength());
+
+        NodeList inactiveVals = xpath(doc, "//Documents/Document/FieldValues/" + statusKey + "[text()='inactive']");
+        assertEquals(1, inactiveVals.getLength(),
+                "Expected one Document with Status='inactive' in <FieldValues>, but found " + inactiveVals.getLength());
     }
 }
