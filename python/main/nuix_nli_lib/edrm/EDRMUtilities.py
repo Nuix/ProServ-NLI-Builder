@@ -4,7 +4,7 @@ import sys
 import hashlib
 from datetime import datetime
 from pathlib import Path
-from typing import Union, Any
+from typing import Literal, Union, Any, overload
 
 from nuix_nli_lib import edrm
 
@@ -56,6 +56,12 @@ def _hash_file(file: Path, hashfunction: hashlib) -> None:
             hashfunction.update(data)
 
 
+@overload
+def hash_file(file: Path, hashfunction: hashlib, as_string: Literal[True]) -> str: ...
+@overload
+def hash_file(file: Path, hashfunction: hashlib, as_string: Literal[False]) -> bytes: ...
+@overload
+def hash_file(file: Path, hashfunction: hashlib, as_string: bool = ...) -> Union[str, bytes]: ...
 def hash_file(file: Path, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:
     """
     Generate a hash for the provided file. This will work on large files by breaking it into smaller chunks.  Use the
@@ -80,6 +86,12 @@ def _hash_data(data: Any, hashfunction: hashlib):
     hashfunction.update(str(data).encode(edrm.configs['encoding']))
 
 
+@overload
+def hash_data(data: Any, hashfunction: hashlib, as_string: Literal[True]) -> str: ...
+@overload
+def hash_data(data: Any, hashfunction: hashlib, as_string: Literal[False]) -> bytes: ...
+@overload
+def hash_data(data: Any, hashfunction: hashlib, as_string: bool = ...) -> Union[str, bytes]: ...
 def hash_data(data: Any, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:
     """
     Generate a hash for the provided data. This converts data to string prior to hashing it.
@@ -96,6 +108,12 @@ def hash_data(data: Any, hashfunction: hashlib, as_string: bool = True) -> Union
         return hashfunction.digest()
 
 
+@overload
+def hash_directory(directory: Path, hashfunction: hashlib, as_string: Literal[True]) -> str: ...
+@overload
+def hash_directory(directory: Path, hashfunction: hashlib, as_string: Literal[False]) -> bytes: ...
+@overload
+def hash_directory(directory: Path, hashfunction: hashlib, as_string: bool = ...) -> Union[str, bytes]: ...
 def hash_directory(directory: Path, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:
     """
     Hash the contents of a directory.  The contents of the directory includes all the non-empty files, all the files'
