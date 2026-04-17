@@ -1,12 +1,54 @@
+import warnings
 from datetime import datetime
-from typing import Any
+from enum import StrEnum
+from typing import Any, Union
 
 from xml.dom.minidom import Element, Document, Node
 
 from nuix_nli_lib.edrm import EDRMUtilities as eutes
 
 
-class EntryField:
+class FieldType(StrEnum):
+    """
+    Enumeration of valid EDRM field data types.  Using ``FieldType`` values instead of raw strings catches typos at
+    development time rather than when Nuix rejects the resulting NLI at import.
+
+    Because ``FieldType`` extends ``StrEnum``, every member compares equal to its string value, so existing code that
+    passes the constants to XML serialisation or string comparisons continues to work without modification.
+    """
+    TEXT = "Text"
+    DATETIME = "DateTime"
+    INTEGER = "LongInteger"
+    LONG_TEXT = "LongText"
+    DECIMAL = "Decimal"
+    BOOLEAN = "Boolean"
+
+
+class _EntryFieldMeta(type):
+    """Metaclass that fires a DeprecationWarning when the legacy TYPE_* class attributes are accessed."""
+
+    _DEPRECATED_ALIASES = {
+        'TYPE_TEXT': FieldType.TEXT,
+        'TYPE_DATETIME': FieldType.DATETIME,
+        'TYPE_INTEGER': FieldType.INTEGER,
+        'TYPE_LONG_TEXT': FieldType.LONG_TEXT,
+        'TYPE_DECIMAL': FieldType.DECIMAL,
+        'TYPE_BOOLEAN': FieldType.BOOLEAN,
+    }
+
+    def __getattr__(cls, name: str):
+        if name in _EntryFieldMeta._DEPRECATED_ALIASES:
+            canonical = name.removeprefix('TYPE_')
+            warnings.warn(
+                f"EntryField.{name} is deprecated; use FieldType.{canonical} directly",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return _EntryFieldMeta._DEPRECATED_ALIASES[name]
+        raise AttributeError(f"type object '{cls.__name__}' has no attribute '{name}'")
+
+
+class EntryField(metaclass=_EntryFieldMeta):
     """
     Field for the EDRM XML File Entry.  A field is a single value stored on an Entry in the load file.  It consists
     of a Name, Type, and Value.  It also has a Key used to store the field in XML (it acts as the name of the XML Node
@@ -14,14 +56,14 @@ class EntryField:
 
     Use the FieldFactory class to generate these, as the key and key-name pairs must be managed properly.
     """
-    TYPE_TEXT: str = "Text"
-    TYPE_DATETIME: str = "DateTime"
-    TYPE_INTEGER: str = "LongInteger"
-    TYPE_LONG_TEXT: str = "LongText"
-    TYPE_DECIMAL: str = "Decimal"
-    TYPE_BOOLEAN: str = "Boolean"
+    # FieldType enum — the canonical way to specify a field's data type.
+    FieldType = FieldType
 
-    def __init__(self, key: str, name: str, field_type: str, default_value: Any = None):
+    # Deprecated string aliases kept for backwards compatibility.  New code should use FieldType members directly.
+    # Accessing these attributes emits a DeprecationWarning at runtime via the _EntryFieldMeta metaclass.
+    # TYPE_TEXT, TYPE_DATETIME, TYPE_INTEGER, TYPE_LONG_TEXT, TYPE_DECIMAL, TYPE_BOOLEAN
+
+    def __init__(self, key: str, name: str, field_type: Union[FieldType, str], default_value: Any = None):
         """
         Do Not call this method directly.  Use the FieldFactory class to generate these, as the key and key-name
         must be managed properly.
@@ -30,9 +72,18 @@ class EntryField:
                     within the load file, and able to be used to map a Field Name to the XML Node used to store the
                     field.
         :param name: Name of the field as it should be displayed in the final case the load file will fill.
-        :param field_type: One of the EntryField.TYPE_* attributes.
+        :param field_type: A ``FieldType`` enum member (preferred) or one of the legacy ``EntryField.TYPE_*`` strings.
+                           Passing a plain ``str`` instead of a ``FieldType`` member is deprecated; pass a
+                           ``FieldType`` member directly.
         :param default_value: The value to store in the field if no value is provided.
         """
+        if not isinstance(field_type, FieldType):
+            warnings.warn(
+                f"Passing a plain str ({field_type!r}) as field_type is deprecated; "
+                f"use a FieldType member directly (e.g. FieldType('{field_type}'))",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         self.__key = key
         self.__name = name
         self.__type = field_type
@@ -55,11 +106,17 @@ class EntryField:
         return self.__name
 
     @property
-    def data_type(self) -> str:
+    def data_type(self) -> FieldType:
         """
-        :return: Type of data this field will store.  It should be one of the EntryField.TYPE_* attributes.
+        :return: Type of data this field will store as a ``FieldType`` member.
+
+        .. note::
+            In rare cases where ``EntryField`` was constructed directly with a plain ``str`` argument (a deprecated
+            usage), this property may return a ``str`` rather than a ``FieldType`` member.  Callers should always
+            construct ``EntryField`` via ``FieldFactory`` and pass a ``FieldType`` member to ensure the return type
+            contract is upheld.
         """
-        return self.__type
+        return self.__type  # type: ignore[return-value]  # plain-str path is deprecated; see __init__
 
     @property
     def value(self) -> Any:

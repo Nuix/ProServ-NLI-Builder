@@ -4,13 +4,14 @@ configs = {
 
 from nuix_nli_lib.data_types.csv_file import CSVEntry, CSVRowEntry
 from nuix_nli_lib.data_types.json_file import JSONValueEntry, JSONArrayEntry, JSONObjectEntry, JSONFileEntry
+from nuix_nli_lib.data_types.sql_type import SQLTypeEntry, SQLRowEntry
 
 """
-When this module is complete, it will represent a set of special data types that can be used alongside the EDRM builder
-framework to ease the use of complex data types.  The planned types are:
+This module provides a set of special data types that can be used alongside the EDRM builder framework
+to ease ingestion of complex data sources.  The implemented types are:
 
-1. A Generic CSV format (implemented in data_types.csv_file
-2. A Generic JSON format
-3. A Generic Database format
-4. A Slightly less generic SQLite Database format
+1. A Generic CSV format (data_types.csv_file): CSVEntry, CSVRowEntry
+2. A Generic JSON format (data_types.json_file): JSONValueEntry, JSONArrayEntry, JSONObjectEntry, JSONFileEntry
+3. A SQL / database format (data_types.sql_type): SQLTypeEntry, SQLRowEntry
+   - Uses Python's built-in sqlite3 by default; any DB-API 2.0 driver can be substituted
 """
