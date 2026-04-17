@@ -47,7 +47,10 @@ public class NliCsvTests {
 
     @Test
     public void testBomPrefixedCsv() throws IOException {
-        // Create a temp CSV with a UTF-8 BOM prefix (as produced by Microsoft Excel)
+        // BOM written as a Java \uFEFF string literal (the path that Files.writeString takes).
+        // This exercises the char-level branch of the BOM-strip logic in CSVEntry.load().
+        // Compare with testBomStripping which writes the raw 3-byte EF BB BF sequence
+        // and additionally verifies that parsed data rows match a no-BOM equivalent.
         Path tempCsv = Files.createTempFile("bom_test", ".csv");
         try {
             String content = "\uFEFFName,Value\nAlpha,1\nBeta,2";
@@ -144,20 +147,30 @@ public class NliCsvTests {
 
     @Test
     public void testBomStripping() throws IOException {
-        // Create a CSV with a UTF-8 BOM prefix; headers must be parsed without the BOM character
-        Path tempCsv = Files.createTempFile("bom_stripping_test", ".csv");
+        // BOM written as raw bytes (EF BB BF) — the byte-level path, as produced by editors and
+        // tools that emit real UTF-8 BOM markers. This exercises that CSVEntry strips the BOM
+        // regardless of how it arrives on disk, and verifies that the parsed data is identical
+        // to the same CSV without a BOM (row count and first-row values must agree).
+        Path bomCsv   = Files.createTempFile("bom_stripping_test", ".csv");
+        Path plainCsv = Files.createTempFile("plain_equiv_test",    ".csv");
         try {
-            // Write a BOM followed by CSV content
-            byte[] bom = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-            byte[] body = "ColA,ColB\nval1,val2".getBytes(StandardCharsets.UTF_8);
-            byte[] content = new byte[bom.length + body.length];
-            System.arraycopy(bom, 0, content, 0, bom.length);
-            System.arraycopy(body, 0, content, bom.length, body.length);
-            Files.write(tempCsv, content);
+            String csvBody = "ColA,ColB\nval1,val2";
 
-            CSVEntry entry = new CSVEntry(tempCsv.toString());
+            // Write BOM + body as raw bytes
+            byte[] bom  = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+            byte[] body = csvBody.getBytes(StandardCharsets.UTF_8);
+            byte[] bomContent = new byte[bom.length + body.length];
+            System.arraycopy(bom, 0, bomContent, 0, bom.length);
+            System.arraycopy(body, 0, bomContent, bom.length, body.length);
+            Files.write(bomCsv, bomContent);
 
-            List<String> fields = entry.getRowFields();
+            // Write the same content without a BOM for comparison
+            Files.writeString(plainCsv, csvBody, StandardCharsets.UTF_8);
+
+            CSVEntry bomEntry   = new CSVEntry(bomCsv.toString());
+            CSVEntry plainEntry = new CSVEntry(plainCsv.toString());
+
+            List<String> fields = bomEntry.getRowFields();
             assertFalse(fields.isEmpty(), "Should have parsed header columns from BOM-prefixed CSV");
             assertFalse(fields.get(0).startsWith("\uFEFF"),
                     "First column header must not start with BOM character \\uFEFF");
@@ -165,10 +178,17 @@ public class NliCsvTests {
                     "First column header should be 'ColA' without any BOM prefix");
             assertEquals("ColB", fields.get(1),
                     "Second column header should be 'ColB'");
-            assertEquals(1, entry.getData().size(),
+            assertEquals(1, bomEntry.getData().size(),
                     "Should have parsed exactly 1 data row");
+
+            // BOM-prefixed and plain files must produce the same parsed result
+            assertEquals(plainEntry.getRowFields(), bomEntry.getRowFields(),
+                    "BOM-prefixed CSV headers must equal headers from the identical no-BOM CSV");
+            assertEquals(plainEntry.getData(), bomEntry.getData(),
+                    "BOM-prefixed CSV data rows must equal data rows from the identical no-BOM CSV");
         } finally {
-            Files.deleteIfExists(tempCsv);
+            Files.deleteIfExists(bomCsv);
+            Files.deleteIfExists(plainCsv);
         }
     }
 }
