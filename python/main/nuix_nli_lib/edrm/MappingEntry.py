@@ -208,7 +208,7 @@ class MappingEntry(EntryInterface):
                 return datetime.now(tz=timezone.utc)
 
             if isinstance(date_time, datetime):
-                return date_time
+                return date_time if date_time.tzinfo is not None else date_time.replace(tzinfo=timezone.utc)
 
             if isinstance(date_time, str):
                 try:

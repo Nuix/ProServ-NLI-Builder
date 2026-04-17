@@ -127,10 +127,14 @@ def get_datetime_value_generator(formats: list[str]) -> Type[JSONValueEntry]:
             else:
                 try:
                     dt = datetime.fromisoformat(v_str)
+                    if dt.tzinfo is None:
+                        dt = dt.replace(tzinfo=timezone.utc)
                 except ValueError:
                     for format in local_formats:
                         try:
                             dt = datetime.strptime(v_str, format)
+                            if dt.tzinfo is None:
+                                dt = dt.replace(tzinfo=timezone.utc)
                             break
                         except ValueError:
                             pass

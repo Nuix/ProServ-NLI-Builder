@@ -1,7 +1,7 @@
 import hashlib
 import platform
 import tempfile
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import shutil
 from typing import Any
@@ -91,7 +91,7 @@ class NLIGenerator(object):
 
         datetime_element: Element = metadata_file.createElement('property')
         datetime_element.setAttribute("key", "creation-datetime")
-        datetime_element.setAttribute("value", datetime.now().strftime('%Y/%m/%d %H:%M:%S.%f')[:-3] + " UTC")
+        datetime_element.setAttribute("value", datetime.now(tz=timezone.utc).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3] + " UTC")
         property_list.appendChild(datetime_element)
 
         sw_element: Element = metadata_file.createElement('property')
