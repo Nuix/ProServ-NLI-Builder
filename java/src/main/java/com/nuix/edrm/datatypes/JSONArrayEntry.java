@@ -113,9 +113,9 @@ public class JSONArrayEntry extends MappingEntry {
 
     // --- Overridable generator hooks ---
 
-    /** Return a custom subclass to use for array children, or null for the default. */
-    protected Class<? extends JSONArrayEntry> getChildArrayGenerator(String index) { return null; }
+    /** Return a factory for array children, or null for the default. */
+    protected JsonEntryFactory.ArrayGenerator getChildArrayGenerator(String index) { return null; }
 
-    /** Return a custom subclass to use for object children, or null for the default. */
-    protected Class<? extends JSONObjectEntry> getChildObjectGenerator(String index) { return null; }
+    /** Return a factory for object children, or null for the default. */
+    protected JsonEntryFactory.ObjectGenerator getChildObjectGenerator(String index) { return null; }
 }
