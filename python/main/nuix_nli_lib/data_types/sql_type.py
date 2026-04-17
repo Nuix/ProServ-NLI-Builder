@@ -29,6 +29,7 @@ the CSVRowEnty class and provide it as the row_generator when constucting the CS
 as a basic example, and test.csv_tests.ProcessEntry for a more complete example.
 
 <code>
+from nuix_nli_lib.edrm.EDRMBuilder import EDRMBuilder
 from data_types import CSVEntry, CSVRowEntry
 class MyRowEntry(CSVRowEntry):
   # my implementation here...
