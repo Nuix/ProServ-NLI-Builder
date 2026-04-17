@@ -133,13 +133,9 @@ public class NliCsvTests {
     public void testCustomRowName() {
         // EnvEntry subclass should compose getName() as "(PID) Process [Variable]"
         Path envars = resources().resolve("envars.csv");
-        CSVEntry entry = new CSVEntry(
-                envars.toString(),
-                "text/csv",
-                null,
-                EnvEntry::new,
-                ','
-        );
+        // Use the single-argument constructor; the row generator is not exercised in this test
+        // (EnvEntry is constructed directly below for the assertion).
+        CSVEntry entry = new CSVEntry(envars.toString());
         // First row: PID=784, Process=smss.exe, Variable=Path
         CSVRowEntry firstRow = new EnvEntry(entry, 0);
         assertEquals("(784) smss.exe [Path]", firstRow.getName(),
