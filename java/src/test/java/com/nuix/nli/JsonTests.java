@@ -298,7 +298,7 @@ public class JsonTests {
                 "Expected a LongInteger-typed field after nested fieldTypeOverride coercion");
     }
 
-    // --- malformed JSONPath pattern validation (SLC-256) ---
+    // --- malformed JSONPath pattern validation (SLC-256) and null type guard (SLC-259) ---
 
     /**
      * SLC-256: A pattern of the form {@code $..foo.bar} (recursive-descent with a dotted key)
@@ -315,6 +315,22 @@ public class JsonTests {
                 () -> entry.addFieldTypeOverride("$..foo.bar", EntryField.Type.LongInteger),
                 "addFieldTypeOverride must reject '$..foo.bar' — dotted keys after '$..'" +
                 " can never match a real field name and would register a silent no-op");
+    }
+
+    /**
+     * SLC-259: Passing {@code null} as the {@code type} parameter to
+     * {@link JSONFileEntry#addFieldTypeOverride} must throw {@link IllegalArgumentException}.
+     *
+     * <p>Without the null-check, a null type is silently stored and
+     * {@code resolveTypeOverride} returns null, which is indistinguishable from
+     * "no override registered" — a silent no-op.
+     */
+    @Test
+    public void testNullTypeInAddFieldTypeOverrideThrows() {
+        JSONFileEntry entry = new JSONFileEntry("/dev/null");
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.addFieldTypeOverride("$..key", null),
+                "addFieldTypeOverride must reject a null type parameter");
     }
 
     // --- null root JSON (SLC-175) ---

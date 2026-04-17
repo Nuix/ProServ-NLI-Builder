@@ -113,9 +113,13 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
      * Register a JSONPath → DataType override. Applied at traversal time when the path of a
      * scalar node matches the pattern.
      *
-     * @throws IllegalArgumentException if the pattern is malformed (see {@link #validateJsonPathPattern})
+     * @throws IllegalArgumentException if the pattern is malformed (see {@link #validateJsonPathPattern}),
+     *                                  or if {@code type} is null
      */
     public void addFieldTypeOverride(String jsonPathPattern, EntryField.Type type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Field type must not be null.");
+        }
         validateJsonPathPattern(jsonPathPattern);
         fieldTypeOverrides.put(jsonPathPattern, type);
     }
