@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Iterable, Any, Tuple, Iterator
+from typing import Iterable, Any, Optional, Tuple, Iterator
 from xml.dom.minidom import Element, Document
 
 from nuix_nli_lib.edrm import EntryField
@@ -59,9 +59,9 @@ class EntryInterface(object):
         raise NotImplementedError
 
     @property
-    def custodian(self) -> str:
+    def custodian(self) -> Optional[str]:
         """
-        :return: The custodian of this entry, if it has one, or use a default if none specified.
+        :return: The custodian of this entry, or None if no custodian has been set.
         """
         if 'custodian' in self.fields:
             return self.__row_fields['custodian'].value
@@ -225,7 +225,7 @@ class EntryInterface(object):
         else:
             custodian = edrm_configs['custodian']
 
-        custodian_element.appendChild(document.createTextNode(custodian))
+        custodian_element.appendChild(document.createTextNode(custodian or ""))
         location.appendChild(custodian_element)
 
         description_element = document.createElement('Description')
