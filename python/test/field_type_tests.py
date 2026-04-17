@@ -37,6 +37,7 @@ class TestFieldTypeMembership(unittest.TestCase):
         self.assertEqual(len(self.FieldType), 6)
 
     def test_member_iteration_order(self):
+        """FieldType iterates in declared definition order: TEXT, DATETIME, INTEGER, LONG_TEXT, DECIMAL, BOOLEAN."""
         expected = [
             self.FieldType.TEXT,
             self.FieldType.DATETIME,
