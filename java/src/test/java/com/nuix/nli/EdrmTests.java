@@ -192,8 +192,10 @@ public class EdrmTests {
 
         assertTrue(xml.contains("DataType=\"Decimal\""),
                 "Expected DataType=\"Decimal\" in EDRM XML Fields section, but got:\n" + xml);
-        assertTrue(xml.contains("3.14"),
-                "Expected value containing '3.14' in EDRM XML field values, but got:\n" + xml);
+        // EntryField serializes Double via String.format("%.4f", d), so 3.14 → "3.1400".
+        // Assert the exact serialized value, not a substring that could pass by coincidence.
+        assertTrue(xml.contains("3.1400"),
+                "Expected exact serialized value '3.1400' in EDRM XML field values, but got:\n" + xml);
     }
 
     @Test
