@@ -111,6 +111,18 @@ class TestEDRM(unittest.TestCase):
         map_id = builder.add_mapping(self.sample_mapping, "application/x-database-table-row", parent_id=file_id)
         builder.save()
 
+    def test_fill_hash_fields_sha1_value_is_str(self):
+        """Type-contract test: fill_hash_fields() must store a str in the SHA-1 field.
+
+        cast(str, ...) is a zero-cost no-op that does not enforce the type at runtime.
+        If hash_file() ever regresses to returning bytes by default, cast() will
+        silently pass a bytes object to FieldFactory.generate_field() with no error
+        at the cast site. This test makes the str contract explicit and will surface
+        such a regression immediately.
+        """
+        file_entry = FileEntry(self.sample_file, "plain/text")
+        self.assertIsInstance(file_entry['SHA-1'].value, str)
+
     def test_calculate_md5_returns_str(self):
         """Type-contract test: calculate_md5() must return a str, not bytes.
 
