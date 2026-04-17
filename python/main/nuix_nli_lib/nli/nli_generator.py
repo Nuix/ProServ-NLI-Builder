@@ -6,7 +6,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 import shutil
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, cast
 from xml.dom.minidom import getDOMImplementation, Document, Element
 
 from nuix_nli_lib import edrm, debug_log, configs as nli_configs
@@ -189,9 +189,11 @@ class NLIGenerator(object):
                                                          hashlib.sha1(),
                                                          as_string=False)
             metadata_hash_path = metadata_path / 'image_contents.sha1_hash'
-            assert isinstance(metadata_hash, bytes)
+            # cast() narrows Union[str, bytes] → bytes for the type checker without using
+            # assert isinstance(), which is stripped by Python's -O optimisation flag.
+            # hash_file() is called with as_string=False, so the return is always bytes.
             with metadata_hash_path.open(mode='wb') as metadata_hash_file:
-                metadata_hash_file.write(metadata_hash)
+                metadata_hash_file.write(cast(bytes, metadata_hash))
 
             # Zip the contents
             temp_nli_path = temp_path / f'{file_path.stem}'
