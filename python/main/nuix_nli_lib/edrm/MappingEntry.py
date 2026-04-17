@@ -1,7 +1,7 @@
 import copy
 import hashlib
 import urllib
-from datetime import datetime
+from datetime import datetime, timezone
 from operator import contains
 from typing import Any, Union
 from xml.dom.minidom import Document, Element
@@ -115,6 +115,13 @@ class MappingEntry(EntryInterface):
 
         Subclasses should override this method to provide a custom name rather than overriding `get_name()`, so that
         the XML sanitization applied by `get_name()` is always respected.
+
+        **Initialization-order contract for subclasses:** This method is called by ``MappingEntry.__init__`` (via
+        ``__fill_generic_fields``) before ``super().__init__()`` returns.  Subclass implementations must therefore
+        be safe to invoke at that point — typically meaning any state they depend on must be set *before* calling
+        ``super().__init__()``.  The far more common Python pattern of calling ``super().__init__()`` first and then
+        setting instance variables will result in an ``AttributeError`` or a silently incorrect Name field because
+        the subclass attributes will not yet exist when ``get_base_name()`` is first called.
         """
         field_names = list(self.data.keys())
         first_field = field_names[0]
@@ -193,12 +200,12 @@ class MappingEntry(EntryInterface):
         time_field = self.time_field
 
         if time_field is None:
-            return datetime.now()
+            return datetime.now(tz=timezone.utc)
         else:
             date_time = self.data.get(time_field)
 
             if date_time is None:
-                return datetime.now()
+                return datetime.now(tz=timezone.utc)
 
             if isinstance(date_time, datetime):
                 return date_time
