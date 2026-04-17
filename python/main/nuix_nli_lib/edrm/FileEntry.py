@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from xml.dom.minidom import Document, Element
 
-from nuix_nli_lib.edrm import FieldFactory, EntryField, EntryInterface, EDRMUtilities as eutes
+from nuix_nli_lib.edrm import FieldFactory, EntryInterface, EDRMUtilities as eutes
 from nuix_nli_lib.edrm.EntryField import FieldType
 
 
@@ -54,7 +54,7 @@ class FileEntry(EntryInterface):
         self.fill_basic_fields(mime_type)
 
     def fill_basic_fields(self, mime_type: str):
-        self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mime_type)
+        self['MIME Type'] = FieldFactory.generate_field('MIME Type', FieldType.TEXT, mime_type)
         self.__item_date = datetime.fromtimestamp(self.file_path.stat().st_ctime, tz=timezone.utc)
         self['Item Date'] = FieldFactory.generate_field('Item Date',
                                                         FieldType.DATETIME,
