@@ -298,7 +298,13 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
     static boolean matchesPath(String pattern, List<String> path) {
         if (pattern == null || !pattern.startsWith("$")) return false;
 
-        // Recursive descent: $..key matches any path whose last segment == key
+        // Recursive descent: $..key intentionally matches ANY path whose last segment equals key,
+        // regardless of depth. This means "$..name" matches "$.name", "$.person.name",
+        // "$.arr[0].name", etc. — it does NOT require a full recursive walk of the tree;
+        // only the final path segment is compared. This is correct behaviour: the semantics
+        // of $.. in this codebase are "find this key anywhere in the document", which is
+        // fully captured by checking the last segment. Do NOT change this to a full recursive
+        // traversal — that would alter the matching semantics.
         if (pattern.startsWith("$..")) {
             String key = pattern.substring(3);
             return !path.isEmpty() && path.get(path.size() - 1).equals(key);
