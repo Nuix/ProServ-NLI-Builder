@@ -147,6 +147,15 @@ public class EdrmTests {
         String dataType = xpathStr(doc, "//Fields/Field[@Name='Subject']/@DataType");
         assertEquals("Text", dataType,
                 "Expected the 'Subject' field definition to have DataType=\"Text\"");
+
+        // Also verify the serialized field value — a DataType-only assertion cannot catch
+        // bugs in EntryField.serializeValue() that produce wrong or missing values.
+        // FieldValues elements are keyed by the internal field key (e.g. "field_N"), not by
+        // the human-readable field name. Retrieve the key from the Field definition first.
+        String subjectKey = xpathStr(doc, "//Fields/Field[@Name='Subject']/@Key");
+        String value = xpathStr(doc, "//Documents/Document/FieldValues/" + subjectKey);
+        assertEquals("Hello World", value,
+                "Expected 'Subject' field value to be serialized as 'Hello World'");
     }
 
     @Test
