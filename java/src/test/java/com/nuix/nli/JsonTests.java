@@ -455,13 +455,16 @@ public class JsonTests {
     }
 
     /**
-     * SLC-241: Verify that {@code JsonEntryFactory.createObject()} can reflectively instantiate
-     * {@link TaggedObjectEntry} when it is passed as the {@code objectClass} to
-     * {@link JSONFileEntry}'s constructor. If the constructor were package-private the factory
-     * would throw a {@link NoSuchMethodException} wrapped in a {@link RuntimeException}.
+     * SLC-241 + SLC-243: Verify that {@code JsonEntryFactory.createObject()} can reflectively
+     * instantiate {@link TaggedObjectEntry} and that the resulting entry is correctly initialized
+     * — i.e. that field values from the JSON content are present in the EDRM XML output.
+     *
+     * <p>If the constructor were package-private the factory would throw a
+     * {@link NoSuchMethodException} wrapped in a {@link RuntimeException}.
      */
     @Test
     public void testCustomRootFactory() throws Exception {
+        // JSON has two scalar fields: "label" (Text) and "count" (LongInteger)
         Path json = writeTempJson("custom_root_factory.json", "{\"label\":\"hello\",\"count\":7}");
         JSONFileEntry entry = new JSONFileEntry(
                 json.toString(),
@@ -481,10 +484,21 @@ public class JsonTests {
         nli.save(out);
         assertTrue(Files.exists(out), "NLI output file should exist: " + out);
 
-        // Verify the custom entry contributed at least a root + the two scalar children
         Document doc = getEdrmXmlFromNli(out);
+
+        // Verify the custom entry contributed at least a root + the two scalar children
         int docCount = xpathCount(doc, "//Document");
         assertTrue(docCount >= 2,
                 "Expected at least 2 Documents (file entry + custom root object), got " + docCount);
+
+        // SLC-243: Verify field values from the JSON content appear in the EDRM output,
+        // confirming the custom TaggedObjectEntry is correctly initialized, not just instantiated.
+        String labelValue = xpathText(doc, "//FieldValues/*[parent::FieldValues and contains(text(),'hello')]");
+        assertFalse(labelValue.isEmpty(),
+                "Expected the 'label' field value 'hello' to appear in a FieldValues element");
+
+        String countValue = xpathText(doc, "//FieldValues/*[parent::FieldValues and text()='7']");
+        assertFalse(countValue.isEmpty(),
+                "Expected the 'count' field value '7' to appear in a FieldValues element");
     }
 }
