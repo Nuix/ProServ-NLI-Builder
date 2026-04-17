@@ -27,6 +27,8 @@ class SanctionsEntry(CSVRowEntry):
 
     @property
     def time_field(self) -> str:
+        # This test stub always returns a valid field name; the None case from the
+        # abstract contract (Optional[str]) does not apply here.
         return "Date of Sanction"
 
     @property
