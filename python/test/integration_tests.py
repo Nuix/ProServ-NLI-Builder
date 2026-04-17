@@ -185,6 +185,11 @@ class TestCanonicalDocumentCount(unittest.TestCase):
         cls.doc = _parse_xml(xml)
         cls.documents = _get_documents(cls.doc)
 
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+
     def test_total_document_count(self):
         """
         Expected breakdown:
@@ -221,6 +226,12 @@ class TestFileEntryStructure(unittest.TestCase):
         cls.documents = _get_documents(cls.doc)
         # The file's DocID is its SHA-1 hash
         cls.file_doc = _doc_by_id(cls.documents, _EXPECTED_FILE_SHA1)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.file_doc = None
 
     def test_file_document_exists(self):
         """The FileEntry must appear in the EDRM output with its SHA-1 as the DocID."""
@@ -272,6 +283,12 @@ class TestDirectoryEntryStructure(unittest.TestCase):
             None,
         )
 
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.dir_doc = None
+
     def test_directory_document_exists(self):
         """A DirectoryEntry must appear with MimeType=filesystem/directory."""
         self.assertIsNotNone(self.dir_doc, "DirectoryEntry not found in EDRM output")
@@ -316,6 +333,12 @@ class TestMappingEntryStructure(unittest.TestCase):
                 if _field_value(d, source_key) == "integration-test":
                     cls.mapping_doc = d
                     break
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.mapping_doc = None
 
     def test_mapping_document_exists(self):
         """The MappingEntry with source='integration-test' must exist."""
@@ -367,6 +390,13 @@ class TestCSVEntryStructure(unittest.TestCase):
             _doc_by_id(cls.documents, "2"),
             _doc_by_id(cls.documents, "3"),
         ]
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.csv_doc = None
+        cls.row_docs = None
 
     def test_csv_document_exists(self):
         """The CSVEntry must appear in the EDRM output."""
@@ -425,6 +455,13 @@ class TestJSONEntryStructure(unittest.TestCase):
         json_object_children = [c for p, c in rels if p == _EXPECTED_JSON_SHA1]
         if json_object_children:
             cls.json_object_doc = _doc_by_id(cls.documents, json_object_children[0])
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.json_file_doc = None
+        cls.json_object_doc = None
 
     def test_json_file_document_exists(self):
         """The JSONFileEntry must appear with its SHA-1 as DocID."""
@@ -498,6 +535,12 @@ class TestRelationshipIntegrity(unittest.TestCase):
         cls.doc = _parse_xml(xml)
         cls.documents = _get_documents(cls.doc)
         cls.rels = _get_relationships(cls.doc)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.rels = None
 
     def test_all_child_doc_ids_exist(self):
         """Every ChildDocId in Relationships must correspond to a real Document."""
