@@ -31,6 +31,10 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EdrmTests {
+    // XPathFactory construction performs service-loader discovery on every call.
+    // Promote to a shared static instance so all helper invocations reuse it.
+    private static final XPathFactory XPATH_FACTORY = XPathFactory.newInstance();
+
     private Path resources() { return Paths.get(".", "src", "test", "resources").toAbsolutePath().normalize(); }
     private Path outputDir() { return Paths.get("build", "test-output").toAbsolutePath().normalize(); }
 
@@ -51,7 +55,7 @@ public class EdrmTests {
     /** Evaluate an XPath expression returning a NodeList against a Document. */
     private NodeList xpath(Document doc, String expression) {
         try {
-            XPath xp = XPathFactory.newInstance().newXPath();
+            XPath xp = XPATH_FACTORY.newXPath();
             return (NodeList) xp.evaluate(expression, doc, XPathConstants.NODESET);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -61,7 +65,7 @@ public class EdrmTests {
     /** Evaluate an XPath expression against a Document and return the string result. */
     private String xpathStr(Document doc, String expression) {
         try {
-            XPath xp = XPathFactory.newInstance().newXPath();
+            XPath xp = XPATH_FACTORY.newXPath();
             return xp.evaluate(expression, doc);
         } catch (Exception e) {
             throw new RuntimeException(e);
