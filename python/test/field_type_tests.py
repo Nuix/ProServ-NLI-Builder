@@ -214,6 +214,38 @@ class TestEntryFieldPlainStrDeprecation(unittest.TestCase):
         self.assertIn("'Text'", str(ctx.warning))
         self.assertIn('deprecated', str(ctx.warning))
 
+    def test_deprecation_warning_uses_member_access_syntax(self):
+        """The warning message must use FieldType.MEMBER syntax, not FieldType('value').
+
+        FieldType('SomeCustomType') raises ValueError, so suggesting it would mislead
+        callers who pass non-canonical strings. The message must direct users to member
+        access (e.g. FieldType.TEXT) which is always safe.
+        """
+        with self.assertWarns(DeprecationWarning) as ctx:
+            self.EntryField('key', 'Name', 'Text')
+        warning_text = str(ctx.warning)
+        # Must NOT suggest FieldType('value') call syntax
+        self.assertNotIn("FieldType('", warning_text,
+                         "Warning must not suggest FieldType('value') syntax — "
+                         "this raises ValueError for non-canonical strings")
+        # Must reference member access syntax (e.g. FieldType.TEXT)
+        self.assertIn("FieldType.", warning_text,
+                      "Warning must reference FieldType member access syntax (e.g. FieldType.TEXT)")
+
+    def test_deprecation_warning_non_canonical_string(self):
+        """A non-canonical string must still produce a warning that doesn't mislead the caller.
+
+        Following FieldType('SomeCustomType') would raise ValueError — the warning
+        should guide users to the enum definition instead.
+        """
+        with self.assertWarns(DeprecationWarning) as ctx:
+            self.EntryField('key', 'Name', 'SomeCustomType')
+        warning_text = str(ctx.warning)
+        self.assertIn('deprecated', warning_text)
+        self.assertNotIn("FieldType('SomeCustomType')", warning_text,
+                         "Warning must not suggest FieldType(non_canonical_string) — "
+                         "this would raise ValueError")
+
     def test_fieldtype_member_does_not_emit_warning(self):
         from nuix_nli_lib.edrm import FieldType
         import warnings
