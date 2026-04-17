@@ -114,12 +114,27 @@ class TestFieldTypeInvalidValueRejection(unittest.TestCase):
 
 
 class TestFieldTypeDeprecatedAliases(unittest.TestCase):
-    """Deprecated EntryField.TYPE_* aliases refer to the same FieldType members."""
+    """Deprecated EntryField.TYPE_* aliases refer to the same FieldType members.
+
+    Warnings are suppressed here because the emission behaviour is verified
+    separately by TestFieldTypeDeprecatedAliasWarnings.  Suppressing prevents
+    unverified warnings from leaking into the pytest summary and polluting the
+    output with noise that could mask genuinely unexpected warnings.
+    """
 
     def setUp(self):
+        import warnings
         from nuix_nli_lib.edrm import FieldType, EntryField
         self.FieldType = FieldType
         self.EntryField = EntryField
+        # Suppress DeprecationWarning for the duration of each test so that
+        # accessing TYPE_* only tests the return value, not the warning.
+        self._warning_catcher = warnings.catch_warnings()
+        self._warning_catcher.__enter__()
+        warnings.simplefilter('ignore', DeprecationWarning)
+
+    def tearDown(self):
+        self._warning_catcher.__exit__(None, None, None)
 
     def test_type_text_is_fieldtype_text(self):
         self.assertIs(self.EntryField.TYPE_TEXT, self.FieldType.TEXT)
