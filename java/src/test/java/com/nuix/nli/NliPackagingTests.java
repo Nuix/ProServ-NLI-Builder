@@ -93,17 +93,15 @@ class NliPackagingTests {
         Path nliPath = tempDir.resolve("output.nli");
         generator.save(nliPath);
 
-        Set<String> entries = listNliEntries(nliPath);
-        assertTrue(
-            entries.contains("._metadata/image_contents.sha1_hash"),
-            "NLI ZIP should contain '._metadata/image_contents.sha1_hash', found: " + entries
-        );
+        // Read both sidecar files directly — readNliEntry throws IOException("Entry not found
+        // in NLI ZIP: ...") if either is absent, giving a clear failure signal without a
+        // separate presence-only assertTrue that duplicates the check.
+        byte[] xmlBytes = readNliEntry(nliPath, "._metadata/image_contents.xml");
+        byte[] storedHash = readNliEntry(nliPath, "._metadata/image_contents.sha1_hash");
 
         // Verify the sha1_hash bytes match the SHA-1 of image_contents.xml.
         // SHA-1 is mandated by the JCA spec for every Java SE implementation, so
         // NoSuchAlgorithmException is declared but can never fire in practice.
-        byte[] xmlBytes = readNliEntry(nliPath, "._metadata/image_contents.xml");
-        byte[] storedHash = readNliEntry(nliPath, "._metadata/image_contents.sha1_hash");
 
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
         byte[] expectedHash = sha1.digest(xmlBytes);
