@@ -132,6 +132,15 @@ class NliPackagingTests {
             entries.contains(expectedEntryName),
             "NLI ZIP should contain native file '" + expectedEntryName + "', found: " + entries
         );
+
+        // Verify round-trip fidelity: the packager must copy the file data intact, not just name it correctly.
+        byte[] expectedBytes = Files.readAllBytes(sampleFile);
+        byte[] actualBytes = readNliEntry(nliPath, expectedEntryName);
+        assertArrayEquals(
+            expectedBytes,
+            actualBytes,
+            "Native file content in ZIP should match the source file byte-for-byte"
+        );
     }
 
     @Test
