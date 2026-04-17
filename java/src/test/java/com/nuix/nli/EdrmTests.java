@@ -17,6 +17,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -53,24 +54,33 @@ public class EdrmTests {
         }
     }
 
-    /** Evaluate an XPath expression returning a NodeList against a Document. */
-    private NodeList xpath(Document doc, String expression) {
+    /**
+     * Shared XPath evaluation delegate. Creates a new XPath instance from the cached factory
+     * (XPath instances are not thread-safe, so one per call is correct) and evaluates the
+     * expression against the provided document with the specified return type.
+     *
+     * @param doc        the DOM Document to evaluate against
+     * @param expression the XPath expression string
+     * @param returnType one of {@link XPathConstants#NODESET}, {@link XPathConstants#STRING}, etc.
+     * @return the evaluation result cast to the type implied by {@code returnType}
+     */
+    private Object evaluate(Document doc, String expression, QName returnType) {
         try {
             XPath xp = XPATH_FACTORY.newXPath();
-            return (NodeList) xp.evaluate(expression, doc, XPathConstants.NODESET);
+            return xp.evaluate(expression, doc, returnType);
         } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /** Evaluate an XPath expression returning a NodeList against a Document. */
+    private NodeList xpath(Document doc, String expression) {
+        return (NodeList) evaluate(doc, expression, XPathConstants.NODESET);
+    }
+
     /** Evaluate an XPath expression against a Document and return the string result. */
     private String xpathStr(Document doc, String expression) {
-        try {
-            XPath xp = XPATH_FACTORY.newXPath();
-            return xp.evaluate(expression, doc);
-        } catch (XPathExpressionException e) {
-            throw new RuntimeException(e);
-        }
+        return (String) evaluate(doc, expression, XPathConstants.STRING);
     }
 
     /** Build a minimal EDRMBuilder (non-NLI) with a per-call temp file as the output path.
@@ -153,8 +163,28 @@ public class EdrmTests {
         // FieldValues elements are keyed by the internal field key (e.g. "field_N"), not by
         // the human-readable field name. Retrieve the key from the Field definition first.
         String subjectKey = xpathStr(doc, "//Fields/Field[@Name='Subject']/@Key");
-        String value = xpathStr(doc, "//Documents/Document/FieldValues/" + subjectKey);
-        assertEquals("Hello World", value,
+        assertFalse(subjectKey.isEmpty(), "Expected a non-empty Key attribute on the 'Subject' field definition");
+
+        // SLC-226: Guard that the key is a valid XML element name token before concatenating
+        // it into an XPath expression. If FieldFactory ever produces unsafe keys (leading digit,
+        // colon, bracket, etc.) the XPath would silently return empty rather than failing here.
+        assertTrue(subjectKey.matches("[a-zA-Z_][\\w]*"),
+                "FieldFactory key '" + subjectKey + "' is not a valid XML element name — " +
+                "XPath concatenation below will produce a malformed expression");
+
+        // SLC-224: Assert the single-entry assumption explicitly so that any future test change
+        // that adds a second entry will get a clear diagnostic rather than a silent wrong result.
+        NodeList valueBlocks = xpath(doc, "//FieldValues");
+        assertEquals(1, valueBlocks.getLength(),
+                "Expected exactly one <FieldValues> block for a single-entry document, got " + valueBlocks.getLength());
+
+        // SLC-223: Resolve the field value element via DOM API rather than XPath string concat.
+        // This avoids the structural dependency on the key being a valid XPath element name token.
+        org.w3c.dom.Element fieldValuesEl = (org.w3c.dom.Element) valueBlocks.item(0);
+        org.w3c.dom.NodeList keyNodes = fieldValuesEl.getElementsByTagName(subjectKey);
+        assertEquals(1, keyNodes.getLength(),
+                "Expected exactly one <" + subjectKey + "> element inside <FieldValues>");
+        assertEquals("Hello World", keyNodes.item(0).getTextContent(),
                 "Expected 'Subject' field value to be serialized as 'Hello World'");
     }
 
