@@ -139,5 +139,53 @@ class TestFieldTypeDeprecatedAliases(unittest.TestCase):
         self.assertIs(self.EntryField.TYPE_BOOLEAN, self.FieldType.BOOLEAN)
 
 
+class TestFieldTypeDeprecatedAliasWarnings(unittest.TestCase):
+    """Accessing EntryField.TYPE_* aliases emits a DeprecationWarning at runtime."""
+
+    def setUp(self):
+        from nuix_nli_lib.edrm import EntryField
+        self.EntryField = EntryField
+
+    def test_type_text_emits_deprecation_warning(self):
+        with self.assertWarns(DeprecationWarning) as ctx:
+            _ = self.EntryField.TYPE_TEXT
+        self.assertIn('TYPE_TEXT', str(ctx.warning))
+        self.assertIn('FieldType.TEXT', str(ctx.warning))
+
+    def test_type_datetime_emits_deprecation_warning(self):
+        with self.assertWarns(DeprecationWarning) as ctx:
+            _ = self.EntryField.TYPE_DATETIME
+        self.assertIn('TYPE_DATETIME', str(ctx.warning))
+        self.assertIn('FieldType.DATETIME', str(ctx.warning))
+
+    def test_type_integer_emits_deprecation_warning(self):
+        with self.assertWarns(DeprecationWarning) as ctx:
+            _ = self.EntryField.TYPE_INTEGER
+        self.assertIn('TYPE_INTEGER', str(ctx.warning))
+        self.assertIn('FieldType.INTEGER', str(ctx.warning))
+
+    def test_type_long_text_emits_deprecation_warning(self):
+        with self.assertWarns(DeprecationWarning) as ctx:
+            _ = self.EntryField.TYPE_LONG_TEXT
+        self.assertIn('TYPE_LONG_TEXT', str(ctx.warning))
+        self.assertIn('FieldType.LONG_TEXT', str(ctx.warning))
+
+    def test_type_decimal_emits_deprecation_warning(self):
+        with self.assertWarns(DeprecationWarning) as ctx:
+            _ = self.EntryField.TYPE_DECIMAL
+        self.assertIn('TYPE_DECIMAL', str(ctx.warning))
+        self.assertIn('FieldType.DECIMAL', str(ctx.warning))
+
+    def test_type_boolean_emits_deprecation_warning(self):
+        with self.assertWarns(DeprecationWarning) as ctx:
+            _ = self.EntryField.TYPE_BOOLEAN
+        self.assertIn('TYPE_BOOLEAN', str(ctx.warning))
+        self.assertIn('FieldType.BOOLEAN', str(ctx.warning))
+
+    def test_unknown_attribute_raises_attribute_error(self):
+        with self.assertRaises(AttributeError):
+            _ = self.EntryField.TYPE_NONEXISTENT
+
+
 if __name__ == '__main__':
     unittest.main()

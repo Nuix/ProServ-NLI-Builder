@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime
 from enum import StrEnum
 from typing import Any, Union
@@ -23,7 +24,31 @@ class FieldType(StrEnum):
     BOOLEAN = "Boolean"
 
 
-class EntryField:
+class _EntryFieldMeta(type):
+    """Metaclass that fires a DeprecationWarning when the legacy TYPE_* class attributes are accessed."""
+
+    _DEPRECATED_ALIASES = {
+        'TYPE_TEXT': FieldType.TEXT,
+        'TYPE_DATETIME': FieldType.DATETIME,
+        'TYPE_INTEGER': FieldType.INTEGER,
+        'TYPE_LONG_TEXT': FieldType.LONG_TEXT,
+        'TYPE_DECIMAL': FieldType.DECIMAL,
+        'TYPE_BOOLEAN': FieldType.BOOLEAN,
+    }
+
+    def __getattr__(cls, name: str):
+        if name in _EntryFieldMeta._DEPRECATED_ALIASES:
+            canonical = name.removeprefix('TYPE_')
+            warnings.warn(
+                f"EntryField.{name} is deprecated; use FieldType.{canonical} directly",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return _EntryFieldMeta._DEPRECATED_ALIASES[name]
+        raise AttributeError(f"type object '{cls.__name__}' has no attribute '{name}'")
+
+
+class EntryField(metaclass=_EntryFieldMeta):
     """
     Field for the EDRM XML File Entry.  A field is a single value stored on an Entry in the load file.  It consists
     of a Name, Type, and Value.  It also has a Key used to store the field in XML (it acts as the name of the XML Node
@@ -35,12 +60,8 @@ class EntryField:
     FieldType = FieldType
 
     # Deprecated string aliases kept for backwards compatibility.  New code should use FieldType members directly.
-    TYPE_TEXT: str = FieldType.TEXT
-    TYPE_DATETIME: str = FieldType.DATETIME
-    TYPE_INTEGER: str = FieldType.INTEGER
-    TYPE_LONG_TEXT: str = FieldType.LONG_TEXT
-    TYPE_DECIMAL: str = FieldType.DECIMAL
-    TYPE_BOOLEAN: str = FieldType.BOOLEAN
+    # Accessing these attributes emits a DeprecationWarning at runtime via the _EntryFieldMeta metaclass.
+    # TYPE_TEXT, TYPE_DATETIME, TYPE_INTEGER, TYPE_LONG_TEXT, TYPE_DECIMAL, TYPE_BOOLEAN
 
     def __init__(self, key: str, name: str, field_type: Union[FieldType, str], default_value: Any = None):
         """
