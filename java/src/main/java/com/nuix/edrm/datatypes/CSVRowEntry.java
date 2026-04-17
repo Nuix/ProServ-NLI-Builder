@@ -37,6 +37,4 @@ public class CSVRowEntry extends MappingEntry {
     }
 
     @Override public String addAsParentPath(String existingPath) { return getName() + "/" + existingPath; }
-
-    @Override public String getIdentifierField() { return "Id"; }
 }

@@ -10,8 +10,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from nuix_nli_lib.edrm import MappingEntry
-from nuix_nli_lib.data_types.json_file import JSONArrayEntry, JSONObjectEntry, JSONValueEntry
+from nuix_nli_lib.edrm import MappingEntry, EDRMBuilder
+from nuix_nli_lib.data_types.json_file import JSONArrayEntry, JSONObjectEntry, JSONValueEntry, JSONFileEntry
 
 
 class TestMappingEntrySanitization(unittest.TestCase):
@@ -24,11 +24,15 @@ class TestMappingEntrySanitization(unittest.TestCase):
         # get_base_name returns the raw value
         self.assertEqual(entry.get_base_name(), 'hello<world>')
 
-    def test_get_name_sanitizes_xml_chars(self):
-        """get_name() applies XML sanitization to the value from get_base_name()."""
+    def test_get_name_sanitizes_filename_illegal_chars(self):
+        """get_name() removes filename-illegal characters (< and >) via sanitize_filename().
+
+        Note: sanitize_xml_content() does *not* remove < or > — those are handled by
+        sanitize_filename().  The test name and docstring reflect the actual sanitization chain.
+        """
         mapping = {'Name': 'hello<world>'}
         entry = MappingEntry(mapping, 'text/plain')
-        # get_name sanitizes XML illegal characters
+        # get_name removes filename-illegal characters including < and >
         result = entry.get_name()
         self.assertNotIn('<', result)
         self.assertNotIn('>', result)
@@ -43,10 +47,13 @@ class TestMappingEntrySanitization(unittest.TestCase):
         """A MappingEntry subclass that overrides get_base_name() still gets sanitization via get_name()."""
         class SpecialEntry(MappingEntry):
             def get_base_name(self) -> str:
+                # The & is intentionally kept in the input. Neither sanitize_filename() nor
+                # sanitize_xml_content() strips &; minidom escapes it to &amp; during XML
+                # serialisation, so no pre-sanitization is needed or applied here.
                 return 'item<with>special&chars'
 
         entry = SpecialEntry({'key': 'value'}, 'text/plain')
-        # get_name() should sanitize the value from get_base_name()
+        # get_name() removes filename-illegal characters (< and >) from get_base_name()
         result = entry.get_name()
         self.assertNotIn('<', result)
         self.assertNotIn('>', result)
@@ -125,11 +132,7 @@ class TestMappingEntrySanitization(unittest.TestCase):
             tmp_path = f.name
 
         try:
-            from nuix_nli_lib.data_types.json_file import JSONFileEntry
-            from nuix_nli_lib.edrm import EDRMBuilder
-            import tempfile as tf
-
-            with tf.TemporaryDirectory() as out_dir:
+            with tempfile.TemporaryDirectory() as out_dir:
                 file_entry = JSONFileEntry(tmp_path)
                 builder = EDRMBuilder()
                 builder.as_nli = False

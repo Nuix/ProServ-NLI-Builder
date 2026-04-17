@@ -11,30 +11,11 @@
     <Field Name="Name" DataType="Text" Key="field_7"/>
     <Field Name="SHA-1" DataType="Text" Key="field_8"/>
     <Field Name="File Size" DataType="LongInteger" Key="field_9"/>
+    <Field Name="a" DataType="LongInteger" Key="field_10"/>
+    <Field Name="b" DataType="LongInteger" Key="field_11"/>
   </Fields>
   <Batch>
     <Documents>
-      <Document DocID="6099f593c998f7c53f48b7e3e6328d9348a8253d" DocType="File" MimeType="filesystem/directory">
-        <FieldValues>
-          <field_0>filesystem/directory</field_0>
-          <field_1>2026-04-17T00:29:04.916+00:00</field_1>
-          <field_2>/workspace/code/worktrees/SLC-295/python/test/resources/certificates</field_2>
-          <field_3>2026-04-17T00:29:59.968+00:00</field_3>
-          <field_4>2026-04-17T00:29:04.916+00:00</field_4>
-          <field_5>2026-04-17T00:29:04.916+00:00</field_5>
-          <field_6>Undefined</field_6>
-          <field_7>certificates</field_7>
-          <field_8>6099f593c998f7c53f48b7e3e6328d9348a8253d</field_8>
-          <field_9>20480</field_9>
-        </FieldValues>
-        <Locations>
-          <Location>
-            <Custodian>Unknown</Custodian>
-            <Description>Location on Disk</Description>
-            <LocationURI>file:///workspace/code/worktrees/SLC-295/python/test/resources/certificates</LocationURI>
-          </Location>
-        </Locations>
-      </Document>
       <Document DocID="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77" DocType="File" MimeType="application/powershell_script">
         <FieldValues>
           <field_0>application/powershell_script</field_0>
@@ -50,24 +31,46 @@
         </FieldValues>
         <Files>
           <File FileType="Native">
-            <ExternalFile FilePath="/workspace/code/worktrees/SLC-295/python/test/resources/top-level-MD5-digests.txt" FileName="top-level-MD5-digests.txt" Hash="5a1e1bd3dca76006b419ffd448285ce9" HashType="MD5"/>
+            <ExternalFile FilePath="" FileName="top-level-MD5-digests.txt" Hash="5a1e1bd3dca76006b419ffd448285ce9" HashType="MD5"/>
           </File>
         </Files>
         <Locations>
           <Location>
             <Custodian>Unknown</Custodian>
-            <Description>Location on Disk</Description>
-            <LocationURI>file:///workspace/code/worktrees/SLC-295/python/test/resources/top-level-MD5-digests.txt</LocationURI>
+            <Description>Location within Nuix case file</Description>
+            <LocationURI>top-level-MD5-digests.txt</LocationURI>
+          </Location>
+        </Locations>
+      </Document>
+      <Document DocID="e2de4c7e60090cff1103cfb43bda818546a66ee8" DocType="File" MimeType="application/x-database-table-row">
+        <FieldValues>
+          <field_10>1</field_10>
+          <field_11>2</field_11>
+          <field_0>application/x-database-table-row</field_0>
+          <field_7>1</field_7>
+          <field_8>e2de4c7e60090cff1103cfb43bda818546a66ee8</field_8>
+          <field_1>2026-04-17T00:52:24.665+00:00</field_1>
+        </FieldValues>
+        <Files>
+          <File FileType="Native">
+            <ExternalFile FilePath="natives" FileName="e2de4c7e60090cff1103cfb43bda818546a66ee8" Hash="71171b605da0f16a3040c0df0a8be074" HashType="MD5"/>
+          </File>
+        </Files>
+        <Locations>
+          <Location>
+            <Custodian>Unknown</Custodian>
+            <Description>Location within Nuix case file</Description>
+            <LocationURI>1</LocationURI>
           </Location>
         </Locations>
       </Document>
     </Documents>
     <Relationships>
-      <Relationship Type="Container" ParentDocId="6099f593c998f7c53f48b7e3e6328d9348a8253d" ChildDocId="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77"/>
+      <Relationship Type="Container" ParentDocId="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77" ChildDocId="e2de4c7e60090cff1103cfb43bda818546a66ee8"/>
     </Relationships>
     <Folders>
-      <Folder FolderName="6099f593c998f7c53f48b7e3e6328d9348a8253d">
-        <Document DocId="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77"/>
+      <Folder FolderName="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77">
+        <Document DocId="e2de4c7e60090cff1103cfb43bda818546a66ee8"/>
       </Folder>
     </Folders>
   </Batch>

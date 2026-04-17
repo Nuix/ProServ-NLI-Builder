@@ -16,18 +16,18 @@
   </Fields>
   <Batch>
     <Documents>
-      <Document DocID="c9a2cbeb2ff4b83487682abbb26149b39e189674" DocType="File" MimeType="filesystem/directory">
+      <Document DocID="6099f593c998f7c53f48b7e3e6328d9348a8253d" DocType="File" MimeType="filesystem/directory">
         <FieldValues>
           <field_0>filesystem/directory</field_0>
-          <field_1>2024-09-17T13:48:04.772+00:00</field_1>
-          <field_2>C:\Development\ProServ-NLI-Builder\python\test\resources\certificates</field_2>
-          <field_3>2024-09-17T13:58:37.171+00:00</field_3>
-          <field_4>2024-09-17T13:48:04.772+00:00</field_4>
-          <field_5>2024-09-17T13:48:30.394+00:00</field_5>
+          <field_1>2026-04-17T00:29:04.916+00:00</field_1>
+          <field_2>/workspace/code/worktrees/SLC-295/python/test/resources/certificates</field_2>
+          <field_3>2026-04-17T00:29:59.968+00:00</field_3>
+          <field_4>2026-04-17T00:29:04.916+00:00</field_4>
+          <field_5>2026-04-17T00:29:04.916+00:00</field_5>
           <field_6>Undefined</field_6>
           <field_7>certificates</field_7>
-          <field_8>c9a2cbeb2ff4b83487682abbb26149b39e189674</field_8>
-          <field_9>81920</field_9>
+          <field_8>6099f593c998f7c53f48b7e3e6328d9348a8253d</field_8>
+          <field_9>20480</field_9>
         </FieldValues>
         <Locations>
           <Location>
@@ -37,22 +37,22 @@
           </Location>
         </Locations>
       </Document>
-      <Document DocID="5a330413b3c999b7dbb769212ac73672de38b2ae" DocType="File" MimeType="application/powershell_script">
+      <Document DocID="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77" DocType="File" MimeType="application/powershell_script">
         <FieldValues>
           <field_0>application/powershell_script</field_0>
-          <field_1>2024-09-17T13:52:02.316+00:00</field_1>
-          <field_2>C:\Development\ProServ-NLI-Builder\python\test\resources\top-level-MD5-digests.txt</field_2>
-          <field_3>2024-09-17T13:58:36.441+00:00</field_3>
-          <field_4>2024-09-17T13:52:02.316+00:00</field_4>
-          <field_5>2024-03-21T20:18:32.230+00:00</field_5>
+          <field_1>2026-04-17T00:29:04.948+00:00</field_1>
+          <field_2>/workspace/code/worktrees/SLC-295/python/test/resources/top-level-MD5-digests.txt</field_2>
+          <field_3>2026-04-17T00:29:59.968+00:00</field_3>
+          <field_4>2026-04-17T00:29:04.948+00:00</field_4>
+          <field_5>2026-04-17T00:29:04.948+00:00</field_5>
           <field_6>Undefined</field_6>
           <field_7>top-level-MD5-digests.txt</field_7>
-          <field_8>5a330413b3c999b7dbb769212ac73672de38b2ae</field_8>
-          <field_9>34</field_9>
+          <field_8>d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77</field_8>
+          <field_9>33</field_9>
         </FieldValues>
         <Files>
           <File FileType="Native">
-            <ExternalFile FilePath="certificates" FileName="top-level-MD5-digests.txt" Hash="62ba06323ed4befe45b1ad796fb6551c" HashType="MD5"/>
+            <ExternalFile FilePath="natives" FileName="top-level-MD5-digests.txt" Hash="5a1e1bd3dca76006b419ffd448285ce9" HashType="MD5"/>
           </File>
         </Files>
         <Locations>
@@ -70,7 +70,7 @@
           <field_0>application/x-database-table-row</field_0>
           <field_7>1</field_7>
           <field_8>e2de4c7e60090cff1103cfb43bda818546a66ee8</field_8>
-          <field_1>2024-09-17T13:58:51.683+00:00</field_1>
+          <field_1>2026-04-17T00:52:24.663+00:00</field_1>
         </FieldValues>
         <Files>
           <File FileType="Native">
@@ -87,13 +87,13 @@
       </Document>
     </Documents>
     <Relationships>
-      <Relationship Type="Container" ParentDocId="c9a2cbeb2ff4b83487682abbb26149b39e189674" ChildDocId="5a330413b3c999b7dbb769212ac73672de38b2ae"/>
-      <Relationship Type="Container" ParentDocId="5a330413b3c999b7dbb769212ac73672de38b2ae" ChildDocId="e2de4c7e60090cff1103cfb43bda818546a66ee8"/>
+      <Relationship Type="Container" ParentDocId="6099f593c998f7c53f48b7e3e6328d9348a8253d" ChildDocId="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77"/>
+      <Relationship Type="Container" ParentDocId="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77" ChildDocId="e2de4c7e60090cff1103cfb43bda818546a66ee8"/>
     </Relationships>
     <Folders>
-      <Folder FolderName="c9a2cbeb2ff4b83487682abbb26149b39e189674">
-        <Document DocId="5a330413b3c999b7dbb769212ac73672de38b2ae"/>
-        <Folder FolderName="5a330413b3c999b7dbb769212ac73672de38b2ae">
+      <Folder FolderName="6099f593c998f7c53f48b7e3e6328d9348a8253d">
+        <Document DocId="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77"/>
+        <Folder FolderName="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77">
           <Document DocId="e2de4c7e60090cff1103cfb43bda818546a66ee8"/>
         </Folder>
       </Folder>

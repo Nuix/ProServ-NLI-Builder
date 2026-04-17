@@ -36,7 +36,8 @@ def generate_field(field_name: str, field_type: str, default_value: Any) -> Entr
     Name already exists the existing Key will be used.  However, in all cases a new EntryField instance will be created
     as the Field will also hold the value specific to a single Entry.
     :param field_name: The name of the field as you would expect it to appear in the final Case
-    :param field_type: The type of data to store in the Field.  Should be one of the edrm.EntryField.TYPE_* constants
+    :param field_type: The type of data to store in the Field.  Should be a ``FieldType`` enum member (preferred) or
+                       one of the legacy ``edrm.EntryField.TYPE_*`` string constants
     :param default_value: Value to provide a field for a document when it has the Field Key but no value is provided.
     :return: A new instance of EntryField with the provided parameters and a Key uniquely identifying the field (name).
     """

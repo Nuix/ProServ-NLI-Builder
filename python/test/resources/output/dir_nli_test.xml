@@ -30,8 +30,8 @@
         <Locations>
           <Location>
             <Custodian>Unknown</Custodian>
-            <Description>Location on Disk</Description>
-            <LocationURI>file:///workspace/code/worktrees/SLC-295/python/test/resources/certificates</LocationURI>
+            <Description>Location within Nuix case file</Description>
+            <LocationURI>certificates</LocationURI>
           </Location>
         </Locations>
       </Document>

@@ -1,12 +1,8 @@
-from __future__ import annotations
-
 import json
-from typing import Any, Optional, Type, Union, List, Callable
-from datetime import datetime
+from typing import Any, Type, Union, List, Callable
+from datetime import datetime, timezone
 
-from nuix_nli_lib.edrm.FileEntry import FileEntry
-from nuix_nli_lib.edrm.MappingEntry import MappingEntry
-from nuix_nli_lib.edrm.EDRMBuilder import EDRMBuilder
+from nuix_nli_lib.edrm import FileEntry, MappingEntry, EDRMBuilder
 from nuix_nli_lib.data_types import configs
 
 """
@@ -95,7 +91,7 @@ class JSONValueEntry(MappingEntry):
                  key_name: str,
                  value: Union[int, float, str, bool, datetime, None],
                  mimetype: str = 'application/x-json-value',
-                 parent_id: Optional[str] = None):
+                 parent_id: str = None):
         """
         :param mapping_name: The name of the item that will be used to represent the value in the Nuix case.
         :param key_name: The single value will be stored as a property, this is the name of the property.
@@ -123,23 +119,23 @@ def get_datetime_value_generator(formats: list[str]) -> Type[JSONValueEntry]:
                      key_name: str,
                      value: Union[int, float, str],
                      mimetype: str = "application/x-datetime",
-                     parent_id: Optional[str] = None) -> None:
-            dt: Optional[datetime] = None
+                     parent_id: str = None):
+            dt = None
             v_str = str(value)
             if isinstance(value, (int, float)):
-                dt = datetime.fromtimestamp(value)
+                dt = datetime.fromtimestamp(value, tz=timezone.utc)
             else:
                 try:
                     dt = datetime.fromisoformat(v_str)
                 except ValueError:
-                    for fmt in local_formats:
+                    for format in local_formats:
                         try:
-                            dt = datetime.strptime(v_str, fmt)
+                            dt = datetime.strptime(v_str, format)
                             break
                         except ValueError:
                             pass
-            resolved: Union[datetime, str] = dt if dt is not None else v_str
-            super().__init__(mapping_name, key_name, resolved, mimetype, parent_id)
+            dt = dt or v_str
+            super().__init__(mapping_name, key_name, dt, mimetype, parent_id)
     return JSONDateTimeEntry
 
 
@@ -160,7 +156,7 @@ class JSONArrayEntry(MappingEntry):
                  child_value_generator: type["JSONValueEntry"] | None = None,
                  child_array_generator: type["JSONArrayEntry"] | None = None,
                  child_object_generator: type["JSONObjectEntry"] | None = None,
-                 parent_id: Optional[str] = None):
+                 parent_id: str = None):
         """
         :param mapping_name: The name of the item that will be used to represent the value in the Nuix case.
         :param array: The list of values stored in the array.  Can be a mix of simple values, nested lists, and dicts.
@@ -406,7 +402,7 @@ class JSONObjectEntry(MappingEntry):
                  child_value_generator: type["JSONValueEntry"] | None = None,
                  child_array_generator: type["JSONArrayEntry"] | None = None,
                  child_object_generator: type["JSONObjectEntry"] | None = None,
-                 parent_id: Optional[str] = None):
+                 parent_id: str = None):
         """
         :param mapping_name: The name of the item that will be used to represent the value in the Nuix case.
         :param obj: The dictionary containing the key:value pairs.  The values can be simple values, lists, or dictionaries
@@ -607,7 +603,7 @@ class JSONFileEntry(FileEntry):
     def __init__(self,
                  json_file_path: str,
                  mimetype: str = 'application/json',
-                 parent_id: Optional[str] = None,
+                 parent_id: str = None,
                  simple_value_generator: Type[JSONValueEntry]|None = JSONValueEntry,
                  array_value_generator: Type[JSONArrayEntry]|None = JSONArrayEntry,
                  object_value_generator: Type[Any]|None = JSONObjectEntry,
@@ -643,7 +639,7 @@ class JSONFileEntry(FileEntry):
                 )
         self.__type_map: dict[str, type] = dict(type_map) if type_map else {}
 
-        with self.file_path.open(mode="r", encoding=str(configs['encoding'])) as json_file:
+        with self.file_path.open(mode="r", encoding=configs['encoding']) as json_file:
             self.__json = json.load(json_file)
 
     @property

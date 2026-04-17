@@ -1,15 +1,11 @@
-from __future__ import annotations
-
 import hashlib
 import urllib.parse
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional, cast
 from xml.dom.minidom import Document, Element
 
-from nuix_nli_lib.edrm import FieldFactory, EDRMUtilities as eutes
-from nuix_nli_lib.edrm.EntryField import EntryField
-from nuix_nli_lib.edrm.EntryInterface import EntryInterface
+from nuix_nli_lib.edrm import FieldFactory, EntryField, EntryInterface, EDRMUtilities as eutes
+from nuix_nli_lib.edrm.EntryField import FieldType
 
 
 class FileEntry(EntryInterface):
@@ -42,7 +38,7 @@ class FileEntry(EntryInterface):
     </code>
     """
 
-    def __init__(self, file_path: str, mime_type: str, parent_id: Optional[str] = None) -> None:
+    def __init__(self, file_path: str, mime_type: str, parent_id: str = None):
         """
         :param file_path: Path, usually the full absolute path, to the file being added to the load file.
         :param mime_type: The mime-type to assign to the file.
@@ -51,48 +47,49 @@ class FileEntry(EntryInterface):
         """
         super().__init__()
 
-        self.__file_path: Path = Path(file_path).absolute().resolve()
-        self.__parent_id: Optional[str] = parent_id
-        self.__item_date: Optional[datetime] = None
+        self.__file_path = Path(file_path).absolute().resolve()
+        self.__parent_id = parent_id
+        self.__item_date = None
 
         self.fill_basic_fields(mime_type)
 
-    def fill_basic_fields(self, mime_type: str) -> None:
+    def fill_basic_fields(self, mime_type: str):
         self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mime_type)
-        self.__item_date = datetime.fromtimestamp(self.file_path.stat().st_ctime)
+        self.__item_date = datetime.fromtimestamp(self.file_path.stat().st_ctime, tz=timezone.utc)
         self['Item Date'] = FieldFactory.generate_field('Item Date',
-                                                        EntryField.TYPE_DATETIME,
+                                                        FieldType.DATETIME,
                                                         eutes.convert_datetime_to_string(self.__item_date))
         self['Path Name'] = FieldFactory.generate_field('Path Name',
-                                                        EntryField.TYPE_TEXT,
+                                                        FieldType.TEXT,
                                                         str(self.file_path.resolve().absolute()))
         self['File Accessed'] = FieldFactory.generate_field('File Accessed',
-                                                            EntryField.TYPE_DATETIME,
+                                                            FieldType.DATETIME,
                                                             eutes.convert_timestamp_to_string(
                                                                 self.file_path.stat().st_atime))
         self['File Created'] = FieldFactory.generate_field('File Created',
-                                                           EntryField.TYPE_DATETIME,
+                                                           FieldType.DATETIME,
                                                            eutes.convert_timestamp_to_string(
                                                                getattr(self.file_path.stat(),
                                                                        'st_birthtime',
                                                                        self.file_path.stat().st_ctime)))
         self['File Modified'] = FieldFactory.generate_field('File Modified',
-                                                            EntryField.TYPE_DATETIME,
+                                                            FieldType.DATETIME,
                                                             eutes.convert_timestamp_to_string(
                                                                 self.file_path.stat().st_mtime))
         self['File Owner'] = FieldFactory.generate_field('File Owner',
-                                                         EntryField.TYPE_TEXT,
+                                                         FieldType.TEXT,
                                                          getattr(self.file_path.stat(), 'st_creator', 'Undefined'))
-        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, str(self.file_path.name))
+        self['Name'] = FieldFactory.generate_field('Name', FieldType.TEXT, str(self.file_path.name))
 
         self.fill_hash_fields()
 
-        self['File Size'] = FieldFactory.generate_field('File Size', EntryField.TYPE_INTEGER,
+        self['File Size'] = FieldFactory.generate_field('File Size', FieldType.INTEGER,
                                                         str(self.file_path.stat().st_size))
 
-    def fill_hash_fields(self) -> None:
-        sha1_hash = cast(str, eutes.hash_file(self.file_path, hashlib.sha1()))
-        self['SHA-1'] = FieldFactory.generate_field('SHA-1', EntryField.TYPE_TEXT, sha1_hash)
+    def fill_hash_fields(self):
+        self['SHA-1'] = FieldFactory.generate_field('SHA-1',
+                                                    FieldType.TEXT,
+                                                    eutes.hash_file(self.file_path, hashlib.sha1()))
 
     @property
     def file_path(self) -> Path:
@@ -119,11 +116,11 @@ class FileEntry(EntryInterface):
         return self.__item_date
 
     @property
-    def parent(self) -> Optional[str]:
+    def parent(self) -> str:
         return self.__parent_id
 
     def calculate_md5(self) -> str:
-        return cast(str, eutes.hash_file(self.file_path, hashlib.md5()))
+        return eutes.hash_file(self.file_path, hashlib.md5())
 
     def add_location_uri(self,
                          document: Document,

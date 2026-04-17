@@ -1,15 +1,9 @@
-from __future__ import annotations
-
 import hashlib
 from pathlib import Path
-from typing import Optional
-from xml.dom.minidom import Document, Element
 
 from nuix_nli_lib.edrm import EDRMUtilities as eutes
-from nuix_nli_lib.edrm import FieldFactory
-from nuix_nli_lib.edrm.EntryField import EntryField
-from nuix_nli_lib.edrm.EntryInterface import EntryInterface
-from nuix_nli_lib.edrm.FileEntry import FileEntry
+from nuix_nli_lib.edrm import FieldFactory, EntryField, FileEntry
+from nuix_nli_lib.edrm.EntryField import FieldType
 
 
 class DirectoryEntry(FileEntry):
@@ -43,7 +37,7 @@ class DirectoryEntry(FileEntry):
 
     """
 
-    def __init__(self, directory_path: str, parent_id: Optional[str] = None) -> None:
+    def __init__(self, directory_path: str, parent_id: str = None):
         """
         :param directory_path: The name of the directory to create the entry for.  Note, this SHOULD be a relative path.
                                and usually should be a single layer.  If nested directories are needed, each should be
@@ -55,22 +49,20 @@ class DirectoryEntry(FileEntry):
         super().__init__(directory_path, 'filesystem/directory', parent_id)
 
     def fill_hash_fields(self) -> None:
-        sha1_hash = eutes.hash_directory(self.directory, hashlib.sha1())
-        assert isinstance(sha1_hash, str)
-        self['SHA-1'] = FieldFactory.generate_field('SHA-1', EntryField.TYPE_TEXT, sha1_hash)
+        self['SHA-1'] = FieldFactory.generate_field('SHA-1',
+                                                    FieldType.TEXT,
+                                                    eutes.hash_directory(self.directory, hashlib.sha1()))
 
     @property
     def directory(self) -> Path:
         return self.__directory
 
-    def add_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool) -> None:
+    def add_file(self, document, container, entry_map: dict[str, object], for_nli: bool) -> None:
         # No Native for a directory
         return
 
-    def add_as_parent_path(self, existing_path: str) -> str:
+    def add_as_parent_path(self, existing_path: str):
         return f'{self.name}/{existing_path}'
 
     def calculate_md5(self) -> str:
-        result = eutes.hash_directory(self.file_path, hashlib.md5())
-        assert isinstance(result, str)
-        return result
+        return eutes.hash_directory(self.file_path, hashlib.md5())

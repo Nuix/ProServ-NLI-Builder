@@ -30,8 +30,8 @@
         <Locations>
           <Location>
             <Custodian>Unknown</Custodian>
-            <Description>Location on Disk</Description>
-            <LocationURI>file:///workspace/code/worktrees/SLC-295/python/test/resources/certificates</LocationURI>
+            <Description>Location within Nuix case file</Description>
+            <LocationURI>certificates</LocationURI>
           </Location>
         </Locations>
       </Document>
@@ -50,14 +50,14 @@
         </FieldValues>
         <Files>
           <File FileType="Native">
-            <ExternalFile FilePath="/workspace/code/worktrees/SLC-295/python/test/resources/top-level-MD5-digests.txt" FileName="top-level-MD5-digests.txt" Hash="5a1e1bd3dca76006b419ffd448285ce9" HashType="MD5"/>
+            <ExternalFile FilePath="natives" FileName="top-level-MD5-digests.txt" Hash="5a1e1bd3dca76006b419ffd448285ce9" HashType="MD5"/>
           </File>
         </Files>
         <Locations>
           <Location>
             <Custodian>Unknown</Custodian>
-            <Description>Location on Disk</Description>
-            <LocationURI>file:///workspace/code/worktrees/SLC-295/python/test/resources/top-level-MD5-digests.txt</LocationURI>
+            <Description>Location within Nuix case file</Description>
+            <LocationURI>certificates/top-level-MD5-digests.txt</LocationURI>
           </Location>
         </Locations>
       </Document>

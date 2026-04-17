@@ -11,6 +11,8 @@
     <Field Name="Name" DataType="Text" Key="field_7"/>
     <Field Name="SHA-1" DataType="Text" Key="field_8"/>
     <Field Name="File Size" DataType="LongInteger" Key="field_9"/>
+    <Field Name="a" DataType="LongInteger" Key="field_10"/>
+    <Field Name="b" DataType="LongInteger" Key="field_11"/>
   </Fields>
   <Batch>
     <Documents>
@@ -61,13 +63,38 @@
           </Location>
         </Locations>
       </Document>
+      <Document DocID="e2de4c7e60090cff1103cfb43bda818546a66ee8" DocType="File" MimeType="application/x-database-table-row">
+        <FieldValues>
+          <field_10>1</field_10>
+          <field_11>2</field_11>
+          <field_0>application/x-database-table-row</field_0>
+          <field_7>1</field_7>
+          <field_8>e2de4c7e60090cff1103cfb43bda818546a66ee8</field_8>
+          <field_1>2026-04-17T00:52:24.660+00:00</field_1>
+        </FieldValues>
+        <Files>
+          <File FileType="Text">
+            <InlineContent>{'a': 1, 'b': 2}</InlineContent>
+          </File>
+        </Files>
+        <Locations>
+          <Location>
+            <Custodian>Unknown</Custodian>
+            <Description>Location on Disk</Description>
+          </Location>
+        </Locations>
+      </Document>
     </Documents>
     <Relationships>
       <Relationship Type="Container" ParentDocId="6099f593c998f7c53f48b7e3e6328d9348a8253d" ChildDocId="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77"/>
+      <Relationship Type="Container" ParentDocId="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77" ChildDocId="e2de4c7e60090cff1103cfb43bda818546a66ee8"/>
     </Relationships>
     <Folders>
       <Folder FolderName="6099f593c998f7c53f48b7e3e6328d9348a8253d">
         <Document DocId="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77"/>
+        <Folder FolderName="d4126acba9dd6dec2f5d19e8b58c7c1a4f47ef77">
+          <Document DocId="e2de4c7e60090cff1103cfb43bda818546a66ee8"/>
+        </Folder>
       </Folder>
     </Folders>
   </Batch>
