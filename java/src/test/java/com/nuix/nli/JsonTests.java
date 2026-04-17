@@ -3,6 +3,7 @@ package com.nuix.nli;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.nuix.edrm.EntryField;
 import com.nuix.edrm.datatypes.JSONFileEntry;
+import com.nuix.edrm.datatypes.JSONObjectEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -397,5 +399,57 @@ public class JsonTests {
         } finally {
             Files.deleteIfExists(tmp);
         }
+    }
+
+    // -----------------------------------------------------------------------
+    // SLC-241: Custom root factory — TaggedObjectEntry subclass
+    // -----------------------------------------------------------------------
+
+    /**
+     * Minimal {@link JSONObjectEntry} subclass used by {@link #testCustomRootFactory} to verify
+     * that {@code JsonEntryFactory.createObject()} can reflectively instantiate a custom subclass.
+     *
+     * <p>The constructor must be {@code public} because {@code JsonEntryFactory.createObject()}
+     * uses {@link Class#getConstructor(Class[])} which only finds public constructors.
+     */
+    public static class TaggedObjectEntry extends JSONObjectEntry {
+        public TaggedObjectEntry(String mappingName, Map<String, Object> object,
+                                 String mimeType, String parentId) {
+            super(mappingName, object, mimeType, parentId);
+        }
+    }
+
+    /**
+     * SLC-241: Verify that {@code JsonEntryFactory.createObject()} can reflectively instantiate
+     * {@link TaggedObjectEntry} when it is passed as the {@code objectClass} to
+     * {@link JSONFileEntry}'s constructor. If the constructor were package-private the factory
+     * would throw a {@link NoSuchMethodException} wrapped in a {@link RuntimeException}.
+     */
+    @Test
+    public void testCustomRootFactory() throws Exception {
+        Path json = writeTempJson("custom_root_factory.json", "{\"label\":\"hello\",\"count\":7}");
+        JSONFileEntry entry = new JSONFileEntry(
+                json.toString(),
+                "application/json",
+                null,
+                null,
+                null,
+                TaggedObjectEntry.class
+        );
+
+        NLIGenerator nli = new NLIGenerator();
+        // The factory must not throw; if the constructor is package-private this line fails.
+        assertDoesNotThrow(() -> nli.addEntry(entry),
+                "JsonEntryFactory.createObject() must reflectively instantiate TaggedObjectEntry without throwing");
+
+        Path out = outputDir().resolve("custom_root_factory.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out), "NLI output file should exist: " + out);
+
+        // Verify the custom entry contributed at least a root + the two scalar children
+        Document doc = getEdrmXmlFromNli(out);
+        int docCount = xpathCount(doc, "//Document");
+        assertTrue(docCount >= 2,
+                "Expected at least 2 Documents (file entry + custom root object), got " + docCount);
     }
 }
