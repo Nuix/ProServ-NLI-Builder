@@ -70,10 +70,53 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
     // --- Field-type override API ---
 
     /**
+     * Validate a JSONPath pattern before registering it as a field-type override.
+     *
+     * <p>Supported forms:
+     * <ul>
+     *   <li>{@code $..key} — recursive descent to a single key name (no dots allowed in key)</li>
+     *   <li>{@code $.key} — root-level key</li>
+     *   <li>{@code $.parent.key} — exact nested path</li>
+     *   <li>{@code $.arr[*].key} — key inside any array element</li>
+     * </ul>
+     *
+     * <p>Patterns of the form {@code $..foo.bar} are rejected. The key extracted after {@code $..}
+     * would be {@code "foo.bar"}, which can never match a real JSON field name, making the override
+     * a silent no-op.  Callers should use {@code $.foo.bar} for exact paths or {@code $..bar} for
+     * single-level recursive descent.
+     *
+     * @param pattern the JSONPath pattern to validate
+     * @throws IllegalArgumentException if the pattern is null, does not start with {@code $}, or
+     *                                  uses {@code $..} with a dotted (nested) key
+     */
+    static void validateJsonPathPattern(String pattern) {
+        if (pattern == null || !pattern.startsWith("$")) {
+            throw new IllegalArgumentException(
+                    "Malformed JSONPath pattern: must start with '$': \"" + pattern + "\"");
+        }
+        if (pattern.startsWith("$..")) {
+            String key = pattern.substring(3);
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Malformed JSONPath pattern: '$..key' requires a non-empty key name: \"" + pattern + "\"");
+            }
+            if (key.contains(".")) {
+                throw new IllegalArgumentException(
+                        "Malformed JSONPath pattern: '$..key' does not support nested paths. "
+                        + "Use '$.parent.key' for exact paths or '$..key' for a single-level key: \""
+                        + pattern + "\"");
+            }
+        }
+    }
+
+    /**
      * Register a JSONPath → DataType override. Applied at traversal time when the path of a
      * scalar node matches the pattern.
+     *
+     * @throws IllegalArgumentException if the pattern is malformed (see {@link #validateJsonPathPattern})
      */
     public void addFieldTypeOverride(String jsonPathPattern, EntryField.Type type) {
+        validateJsonPathPattern(jsonPathPattern);
         fieldTypeOverrides.put(jsonPathPattern, type);
     }
 

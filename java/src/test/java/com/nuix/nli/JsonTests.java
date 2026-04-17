@@ -298,6 +298,25 @@ public class JsonTests {
                 "Expected a LongInteger-typed field after nested fieldTypeOverride coercion");
     }
 
+    // --- malformed JSONPath pattern validation (SLC-256) ---
+
+    /**
+     * SLC-256: A pattern of the form {@code $..foo.bar} (recursive-descent with a dotted key)
+     * must be rejected by {@link JSONFileEntry#addFieldTypeOverride} with an
+     * {@link IllegalArgumentException}.
+     *
+     * <p>Without the guard, the key extracted by {@code pattern.substring(3)} is {@code "foo.bar"},
+     * which can never match any real JSON field name; the override silently does nothing.
+     */
+    @Test
+    public void testMalformedJsonPathRecursiveDescentNestedKeyThrows() {
+        JSONFileEntry entry = new JSONFileEntry("/dev/null");
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.addFieldTypeOverride("$..foo.bar", EntryField.Type.LongInteger),
+                "addFieldTypeOverride must reject '$..foo.bar' — dotted keys after '$..'" +
+                " can never match a real field name and would register a silent no-op");
+    }
+
     // --- null root JSON (SLC-175) ---
 
     /**
