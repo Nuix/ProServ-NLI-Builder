@@ -171,12 +171,21 @@ public class EdrmTests {
         EDRMBuilder builder = newBuilder();
         builder.addEntry(entry);
         Document doc = builder.build();
-        String xml = docToString(doc);
 
-        assertTrue(xml.contains("DataType=\"Boolean\""),
-                "Expected DataType=\"Boolean\" in EDRM XML Fields section, but got:\n" + xml);
-        assertTrue(xml.contains("true"),
-                "Expected value 'true' in EDRM XML field values, but got:\n" + xml);
+        // Assert the Fields section declares DataType="Boolean" for IsActive specifically.
+        // Using XPath avoids a false positive from any other "Boolean" substring in the XML.
+        String dataType = xpathStr(doc, "//Fields/Field[@Name='IsActive']/@DataType");
+        assertEquals("Boolean", dataType,
+                "Expected DataType=\"Boolean\" on the IsActive field definition in <Fields>");
+
+        // Retrieve the generated Key attribute for IsActive (e.g. "field_2") so we can
+        // target the exact element in <FieldValues> rather than matching "true" anywhere in the XML.
+        String isActiveKey = xpathStr(doc, "//Fields/Field[@Name='IsActive']/@Key");
+        assertFalse(isActiveKey.isEmpty(),
+                "Expected a non-empty Key attribute on the IsActive field definition");
+        String fieldValue = xpathStr(doc, "//FieldValues/" + isActiveKey);
+        assertEquals("true", fieldValue,
+                "Expected the IsActive field value to be serialized as 'true' in <FieldValues>");
     }
 
     @Test

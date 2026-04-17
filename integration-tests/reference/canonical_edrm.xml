@@ -1,0 +1,959 @@
+<?xml version="1.0" ?>
+<Root MajorVersion="1" MinorVersion="2" Description="EDRM XML Load File" Locale="US" DataInterchangeType="Update">
+  
+  
+  <Fields>
+    
+    
+    <Field Name="MIME Type" DataType="Text" Key="field_0"/>
+    
+    
+    <Field Name="Item Date" DataType="DateTime" Key="field_1"/>
+    
+    
+    <Field Name="Path Name" DataType="Text" Key="field_2"/>
+    
+    
+    <Field Name="File Accessed" DataType="DateTime" Key="field_3"/>
+    
+    
+    <Field Name="File Created" DataType="DateTime" Key="field_4"/>
+    
+    
+    <Field Name="File Modified" DataType="DateTime" Key="field_5"/>
+    
+    
+    <Field Name="File Owner" DataType="Text" Key="field_6"/>
+    
+    
+    <Field Name="Name" DataType="Text" Key="field_7"/>
+    
+    
+    <Field Name="SHA-1" DataType="Text" Key="field_8"/>
+    
+    
+    <Field Name="File Size" DataType="LongInteger" Key="field_9"/>
+    
+    
+    <Field Name="source" DataType="Text" Key="field_10"/>
+    
+    
+    <Field Name="type" DataType="Text" Key="field_11"/>
+    
+    
+    <Field Name="count" DataType="LongInteger" Key="field_12"/>
+    
+    
+    <Field Name="ID" DataType="Text" Key="field_13"/>
+    
+    
+    <Field Name="Category" DataType="Text" Key="field_14"/>
+    
+    
+    <Field Name="Value" DataType="Text" Key="field_15"/>
+    
+    
+    <Field Name="Description" DataType="Text" Key="field_16"/>
+    
+    
+    <Field Name="author" DataType="Text" Key="field_21"/>
+    
+    
+    <Field Name="created" DataType="Text" Key="field_22"/>
+    
+    
+    <Field Name="0" DataType="Text" Key="field_23"/>
+    
+    
+    <Field Name="1" DataType="Text" Key="field_24"/>
+    
+    
+    <Field Name="2" DataType="Text" Key="field_25"/>
+    
+    
+    <Field Name="project" DataType="Text" Key="field_17"/>
+    
+    
+    <Field Name="version" DataType="Text" Key="field_18"/>
+    
+    
+    <Field Name="active" DataType="Boolean" Key="field_19"/>
+    
+    
+    <Field Name="priority" DataType="LongInteger" Key="field_20"/>
+    
+  
+  </Fields>
+  
+  
+  <Batch>
+    
+    
+    <Documents>
+      
+      
+      <Document DocID="b92f8836c67cb504fc9345936d7ddbf594dc1131" DocType="File" MimeType="text/plain">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>text/plain</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_2>sample_document.txt</field_2>
+          <field_3>TIMESTAMP</field_3>
+          <field_4>TIMESTAMP</field_4>
+          <field_5>TIMESTAMP</field_5>
+          <field_6>Undefined</field_6>
+          <field_7>sample_document.txt</field_7>
+          <field_8>b92f8836c67cb504fc9345936d7ddbf594dc1131</field_8>
+          <field_9>390</field_9>
+        </FieldValues>
+        
+        
+        <Files>
+          
+          
+          <File FileType="Native">
+            
+            
+            <ExternalFile FilePath="sample_document.txt" FileName="sample_document.txt" Hash="3dd7deb219f1aadf96d7ea464988d479" HashType="MD5"/>
+            
+          
+          </File>
+          
+        
+        </Files>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+            
+            <LocationURI>sample_document.txt</LocationURI>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+      
+      <Document DocID="e903637d10269f0c8c35883820484326ec71d531" DocType="File" MimeType="filesystem/directory">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>filesystem/directory</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_2>source_directory</field_2>
+          <field_3>TIMESTAMP</field_3>
+          <field_4>TIMESTAMP</field_4>
+          <field_5>TIMESTAMP</field_5>
+          <field_6>Undefined</field_6>
+          <field_7>source_directory</field_7>
+          <field_8>e903637d10269f0c8c35883820484326ec71d531</field_8>
+          <field_9>4096</field_9>
+        </FieldValues>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+            
+            <LocationURI>source_directory</LocationURI>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+      
+      <Document DocID="f89b5d20387a67dc80d0b64c69354fa0425742df" DocType="File" MimeType="application/x-database-table-row">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>application/x-database-table-row</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_10>integration-test</field_10>
+          <field_11>canonical-mapping</field_11>
+          <field_12>42</field_12>
+          <field_7>integration-test</field_7>
+          <field_8>f89b5d20387a67dc80d0b64c69354fa0425742df</field_8>
+        </FieldValues>
+        
+        
+        <Files>
+          
+          
+          <File FileType="Text">
+            
+            
+            <InlineContent>{'source': 'integration-test', 'type': 'canonical-mapping', 'count': 42}</InlineContent>
+            
+          
+          </File>
+          
+        
+        </Files>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+      
+      <Document DocID="4f184422d549e0eed7a17f2a0bc963822ced1930" DocType="File" MimeType="text/csv">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>text/csv</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_2>canonical_sample.csv</field_2>
+          <field_3>TIMESTAMP</field_3>
+          <field_4>TIMESTAMP</field_4>
+          <field_5>TIMESTAMP</field_5>
+          <field_6>Undefined</field_6>
+          <field_7>canonical_sample.csv</field_7>
+          <field_8>4f184422d549e0eed7a17f2a0bc963822ced1930</field_8>
+          <field_9>255</field_9>
+        </FieldValues>
+        
+        
+        <Files>
+          
+          
+          <File FileType="Native">
+            
+            
+            <ExternalFile FilePath="canonical_sample.csv" FileName="canonical_sample.csv" Hash="62c441c2667a1f9a5a3093fd9132c511" HashType="MD5"/>
+            
+          
+          </File>
+          
+        
+        </Files>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+            
+            <LocationURI>canonical_sample.csv</LocationURI>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+      
+      <Document DocID="1" DocType="File" MimeType="application/x-database-table-row">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>application/x-database-table-row</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_13>1</field_13>
+          <field_14>TypeA</field_14>
+          <field_15>100</field_15>
+          <field_16>First canonical record for integration testing</field_16>
+          <field_7>(1) Alpha Record</field_7>
+          <field_8>61d2387dcaf2e63e7a4ca6ae8a3b2c19db1c8325</field_8>
+        </FieldValues>
+        
+        
+        <Files>
+          
+          
+          <File FileType="Text">
+            
+            
+            <InlineContent>{'ID': '1', 'Name': 'Alpha Record', 'Category': 'TypeA', 'Value': '100', 'Description': 'First canonical record for integration testing'}</InlineContent>
+            
+          
+          </File>
+          
+        
+        </Files>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+      
+      <Document DocID="2" DocType="File" MimeType="application/x-database-table-row">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>application/x-database-table-row</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_13>2</field_13>
+          <field_14>TypeB</field_14>
+          <field_15>200</field_15>
+          <field_16>Second canonical record for integration testing</field_16>
+          <field_7>(2) Beta Record</field_7>
+          <field_8>da732de427d0760d4e696ed8773a0e494480c3f4</field_8>
+        </FieldValues>
+        
+        
+        <Files>
+          
+          
+          <File FileType="Text">
+            
+            
+            <InlineContent>{'ID': '2', 'Name': 'Beta Record', 'Category': 'TypeB', 'Value': '200', 'Description': 'Second canonical record for integration testing'}</InlineContent>
+            
+          
+          </File>
+          
+        
+        </Files>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+      
+      <Document DocID="3" DocType="File" MimeType="application/x-database-table-row">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>application/x-database-table-row</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_13>3</field_13>
+          <field_14>TypeA</field_14>
+          <field_15>150</field_15>
+          <field_16>Third canonical record with same category as first</field_16>
+          <field_7>(3) Gamma Record</field_7>
+          <field_8>a0b3f55115a7beeb6c6882c3d1d2646dbba3bb80</field_8>
+        </FieldValues>
+        
+        
+        <Files>
+          
+          
+          <File FileType="Text">
+            
+            
+            <InlineContent>{'ID': '3', 'Name': 'Gamma Record', 'Category': 'TypeA', 'Value': '150', 'Description': 'Third canonical record with same category as first'}</InlineContent>
+            
+          
+          </File>
+          
+        
+        </Files>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+      
+      <Document DocID="23ec3d4af2a57fe92ffd35c110e87cf5efdb909d" DocType="File" MimeType="application/json">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>application/json</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_2>canonical_object.json</field_2>
+          <field_3>TIMESTAMP</field_3>
+          <field_4>TIMESTAMP</field_4>
+          <field_5>TIMESTAMP</field_5>
+          <field_6>Undefined</field_6>
+          <field_7>canonical_object.json</field_7>
+          <field_8>23ec3d4af2a57fe92ffd35c110e87cf5efdb909d</field_8>
+          <field_9>225</field_9>
+        </FieldValues>
+        
+        
+        <Files>
+          
+          
+          <File FileType="Native">
+            
+            
+            <ExternalFile FilePath="canonical_object.json" FileName="canonical_object.json" Hash="322be5e4db9a3c7db2584e6b18b061d1" HashType="MD5"/>
+            
+          
+          </File>
+          
+        
+        </Files>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+            
+            <LocationURI>canonical_object.json</LocationURI>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+      
+      <Document DocID="dee7933d06fbce423ae3a01053b202b15ab4a892" DocType="File" MimeType="application/x-json-object">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>application/x-json-object</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_21>Nuix Test Suite</field_21>
+          <field_22>2026-01-01</field_22>
+          <field_7>metadata</field_7>
+          <field_8>dee7933d06fbce423ae3a01053b202b15ab4a892</field_8>
+        </FieldValues>
+        
+        
+        <Files>
+          
+          
+          <File FileType="Text">
+            
+            
+            <InlineContent>{'author': 'Nuix Test Suite', 'created': '2026-01-01'}</InlineContent>
+            
+          
+          </File>
+          
+        
+        </Files>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+      
+      <Document DocID="d72ce910ef89b24803f11c591b4ff6fcdcc5353c" DocType="File" MimeType="application/x-json-array">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>application/x-json-array</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_23>integration</field_23>
+          <field_24>canonical</field_24>
+          <field_25>test</field_25>
+          <field_7>tags</field_7>
+          <field_8>d72ce910ef89b24803f11c591b4ff6fcdcc5353c</field_8>
+        </FieldValues>
+        
+        
+        <Files>
+          
+          
+          <File FileType="Text">
+            
+            
+            <InlineContent>{'0': 'integration', '1': 'canonical', '2': 'test'}</InlineContent>
+            
+          
+          </File>
+          
+        
+        </Files>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+      
+      <Document DocID="b303e78e21a515012bf8c40e1e668eb7e37b7d4c" DocType="File" MimeType="application/x-json-object">
+        
+        
+        <FieldValues>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        
+          <field_0>application/x-json-object</field_0>
+          <field_1>TIMESTAMP</field_1>
+          <field_17>NLI Integration Test</field_17>
+          <field_18>1.0</field_18>
+          <field_19>True</field_19>
+          <field_20>1</field_20>
+          <field_7>JSON Object</field_7>
+          <field_8>b303e78e21a515012bf8c40e1e668eb7e37b7d4c</field_8>
+        </FieldValues>
+        
+        
+        <Files>
+          
+          
+          <File FileType="Text">
+            
+            
+            <InlineContent>{'project': 'NLI Integration Test', 'version': '1.0', 'active': True, 'priority': 1}</InlineContent>
+            
+          
+          </File>
+          
+        
+        </Files>
+        
+        
+        <Locations>
+          
+          
+          <Location>
+            
+            
+            <Custodian>Unknown</Custodian>
+            
+            
+            <Description>Location on Disk</Description>
+            
+          
+          </Location>
+          
+        
+        </Locations>
+        
+      
+      </Document>
+      
+    
+    </Documents>
+    
+    
+    <Relationships>
+      
+      
+      <Relationship Type="Container" ParentDocId="b92f8836c67cb504fc9345936d7ddbf594dc1131" ChildDocId="f89b5d20387a67dc80d0b64c69354fa0425742df"/>
+      
+      
+      <Relationship Type="Container" ParentDocId="e903637d10269f0c8c35883820484326ec71d531" ChildDocId="4f184422d549e0eed7a17f2a0bc963822ced1930"/>
+      
+      
+      <Relationship Type="Container" ParentDocId="4f184422d549e0eed7a17f2a0bc963822ced1930" ChildDocId="1"/>
+      
+      
+      <Relationship Type="Container" ParentDocId="4f184422d549e0eed7a17f2a0bc963822ced1930" ChildDocId="2"/>
+      
+      
+      <Relationship Type="Container" ParentDocId="4f184422d549e0eed7a17f2a0bc963822ced1930" ChildDocId="3"/>
+      
+      
+      <Relationship Type="Container" ParentDocId="23ec3d4af2a57fe92ffd35c110e87cf5efdb909d" ChildDocId="b303e78e21a515012bf8c40e1e668eb7e37b7d4c"/>
+      
+      
+      <Relationship Type="Container" ParentDocId="b303e78e21a515012bf8c40e1e668eb7e37b7d4c" ChildDocId="dee7933d06fbce423ae3a01053b202b15ab4a892"/>
+      
+      
+      <Relationship Type="Container" ParentDocId="b303e78e21a515012bf8c40e1e668eb7e37b7d4c" ChildDocId="d72ce910ef89b24803f11c591b4ff6fcdcc5353c"/>
+      
+    
+    </Relationships>
+    
+    
+    <Folders>
+      
+      
+      <Folder FolderName="b92f8836c67cb504fc9345936d7ddbf594dc1131">
+        
+        
+        <Document DocId="f89b5d20387a67dc80d0b64c69354fa0425742df"/>
+        
+      
+      </Folder>
+      
+      
+      <Folder FolderName="e903637d10269f0c8c35883820484326ec71d531">
+        
+        
+        <Document DocId="4f184422d549e0eed7a17f2a0bc963822ced1930"/>
+        
+        
+        <Folder FolderName="4f184422d549e0eed7a17f2a0bc963822ced1930">
+          
+          
+          <Document DocId="1"/>
+          
+          
+          <Document DocId="2"/>
+          
+          
+          <Document DocId="3"/>
+          
+        
+        </Folder>
+        
+      
+      </Folder>
+      
+      
+      <Folder FolderName="23ec3d4af2a57fe92ffd35c110e87cf5efdb909d">
+        
+        
+        <Document DocId="b303e78e21a515012bf8c40e1e668eb7e37b7d4c"/>
+        
+        
+        <Folder FolderName="b303e78e21a515012bf8c40e1e668eb7e37b7d4c">
+          
+          
+          <Document DocId="dee7933d06fbce423ae3a01053b202b15ab4a892"/>
+          
+          
+          <Document DocId="d72ce910ef89b24803f11c591b4ff6fcdcc5353c"/>
+          
+        
+        </Folder>
+        
+      
+      </Folder>
+      
+    
+    </Folders>
+    
+  
+  </Batch>
+  
+
+</Root>
