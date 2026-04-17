@@ -68,12 +68,21 @@ public class EdrmTests {
         }
     }
 
-    /** Build a minimal EDRMBuilder (non-NLI) with no output path required for build(). */
+    /** Build a minimal EDRMBuilder (non-NLI) with a per-call temp file as the output path.
+     *  Using a unique temp file per invocation makes the suite safe for parallel execution —
+     *  a shared "scratch.xml" path would cause test collisions when tests run concurrently.
+     */
     private EDRMBuilder newBuilder() {
-        EDRMBuilder b = new EDRMBuilder();
-        b.setAsNli(false);
-        b.setOutputPath(outputDir().resolve("scratch.xml"));
-        return b;
+        try {
+            Path tempOut = Files.createTempFile(outputDir(), "edrm_scratch_", ".xml");
+            tempOut.toFile().deleteOnExit();
+            EDRMBuilder b = new EDRMBuilder();
+            b.setAsNli(false);
+            b.setOutputPath(tempOut);
+            return b;
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Failed to create temp output file for EDRMBuilder", e);
+        }
     }
 
     // ---- keep original tests passing ----

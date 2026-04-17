@@ -120,7 +120,8 @@ public class NliCsvTests {
     @Test
     public void testFieldValues() {
         // Spot-check the first data row: TreeDepth=0, PID=784, Process=smss.exe,
-        // Block=0x22c28202ce0, Variable=Path, Value=C:\Windows\System32
+        // Block=0x22c28202ce0, Variable=Path, Value=C:\\Windows\\System32
+        // (double backslash: the literal string stored in envars.csv, not a Java escape)
         Path envars = resources().resolve("envars.csv");
         CSVEntry entry = new CSVEntry(envars.toString());
         java.util.Map<String, String> firstRow = entry.getData().get(0);
