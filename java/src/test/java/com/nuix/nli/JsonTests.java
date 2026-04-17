@@ -229,6 +229,15 @@ public class JsonTests {
         nli.save(out);
         assertTrue(Files.exists(out), "NLI output file should exist");
         assertTrue(Files.size(out) > 0, "NLI output file should be non-zero");
+
+        // Assert that nested objects were traversed: the complex JSON has multiple levels of
+        // nesting (root object, mail sub-object, nuix sub-object with userDataDirs array).
+        // Requiring at least 10 documents confirms that traversal descended into nested structures,
+        // not just the root object.
+        Document doc = getEdrmXmlFromNli(out);
+        int docCount = xpathCount(doc, "//Document");
+        assertTrue(docCount >= 10,
+                "Expected at least 10 documents for complex nested JSON (root + nested objects + scalars), got " + docCount);
     }
 
     /**
