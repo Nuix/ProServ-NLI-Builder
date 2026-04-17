@@ -140,8 +140,8 @@ class MappingEntry(EntryInterface):
     @property
     def name(self) -> str:
         """
-        Looks up the name field to use, then provides its value.  As the name field may be arbitrary data, and
-        the name may be used as a file name stand-in, the name will be mutated to be safe to use in such a context.
+        Returns the sanitized name for this entry. Delegates to get_name(), which applies
+        XML and filename sanitization. Sanitization happens inside get_name(), not here.
         """
         return self.get_name()
 
