@@ -1,6 +1,6 @@
 import json
 from typing import Any, Type, Union, List, Callable
-from datetime import datetime
+from datetime import datetime, timezone
 
 from nuix_nli_lib.edrm import FileEntry, MappingEntry, EDRMBuilder
 from nuix_nli_lib.data_types import configs
@@ -123,7 +123,7 @@ def get_datetime_value_generator(formats: list[str]) -> Type[JSONValueEntry]:
             dt = None
             v_str = str(value)
             if isinstance(value, (int, float)):
-                dt = datetime.fromtimestamp(value)
+                dt = datetime.fromtimestamp(value, tz=timezone.utc)
             else:
                 try:
                     dt = datetime.fromisoformat(v_str)
@@ -134,6 +134,9 @@ def get_datetime_value_generator(formats: list[str]) -> Type[JSONValueEntry]:
                             break
                         except ValueError:
                             pass
+            # Normalize naive datetimes to UTC so that serialization is unambiguous.
+            if isinstance(dt, datetime) and dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
             dt = dt or v_str
             super().__init__(mapping_name, key_name, dt, mimetype, parent_id)
     return JSONDateTimeEntry
