@@ -1,15 +1,35 @@
 package com.nuix.edrm.datatypes;
 
-import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Package-private factory that instantiates JSON entry types, respecting subclass overrides.
- * When a custom generator class is provided it is reflectively instantiated; otherwise the
- * default class is used directly.
+ * <p>
+ * Each {@code create*} method accepts a nullable {@link FunctionalInterface} generator. When a
+ * generator is supplied it is invoked directly — no reflection, full compile-time safety. When
+ * the generator is {@code null} the default class is constructed directly.
  */
 class JsonEntryFactory {
+
+    /** Factory for {@link JSONValueEntry} subclasses. */
+    @FunctionalInterface
+    interface ValueGenerator {
+        JSONValueEntry create(String mappingName, String keyName, Object value,
+                              String mimeType, String parentId);
+    }
+
+    /** Factory for {@link JSONArrayEntry} subclasses. */
+    @FunctionalInterface
+    interface ArrayGenerator {
+        JSONArrayEntry create(String name, List<Object> array, String mimeType, String parentId);
+    }
+
+    /** Factory for {@link JSONObjectEntry} subclasses. */
+    @FunctionalInterface
+    interface ObjectGenerator {
+        JSONObjectEntry create(String name, Map<String, Object> object, String mimeType, String parentId);
+    }
 
     static JSONValueEntry createValue(
             String mappingName,
@@ -17,17 +37,10 @@ class JsonEntryFactory {
             Object value,
             String mimeType,
             String parentId,
-            Class<? extends JSONValueEntry> generatorClass) {
+            ValueGenerator generator) {
 
-        if (generatorClass != null) {
-            try {
-                @SuppressWarnings("unchecked") // getConstructor returns raw Constructor; cast to typed form is safe here
-                Constructor<? extends JSONValueEntry> ctor =
-                        (Constructor<? extends JSONValueEntry>) generatorClass.getConstructor(String.class, String.class, Object.class, String.class, String.class);
-                return ctor.newInstance(mappingName, keyName, value, mimeType, parentId);
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("Failed to instantiate custom JSONValueEntry subclass: " + generatorClass.getName(), e);
-            }
+        if (generator != null) {
+            return generator.create(mappingName, keyName, value, mimeType, parentId);
         }
         return new JSONValueEntry(mappingName, keyName, value, mimeType, parentId);
     }
@@ -37,17 +50,10 @@ class JsonEntryFactory {
             List<Object> array,
             String mimeType,
             String parentId,
-            Class<? extends JSONArrayEntry> generatorClass) {
+            ArrayGenerator generator) {
 
-        if (generatorClass != null) {
-            try {
-                @SuppressWarnings("unchecked") // getConstructor returns raw Constructor; cast to typed form is safe here
-                Constructor<? extends JSONArrayEntry> ctor =
-                        (Constructor<? extends JSONArrayEntry>) generatorClass.getConstructor(String.class, List.class, String.class, String.class);
-                return ctor.newInstance(name, array, mimeType, parentId);
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("Failed to instantiate custom JSONArrayEntry subclass: " + generatorClass.getName(), e);
-            }
+        if (generator != null) {
+            return generator.create(name, array, mimeType, parentId);
         }
         return new JSONArrayEntry(name, array, mimeType, parentId);
     }
@@ -57,17 +63,10 @@ class JsonEntryFactory {
             Map<String, Object> object,
             String mimeType,
             String parentId,
-            Class<? extends JSONObjectEntry> generatorClass) {
+            ObjectGenerator generator) {
 
-        if (generatorClass != null) {
-            try {
-                @SuppressWarnings("unchecked") // getConstructor returns raw Constructor; cast to typed form is safe here
-                Constructor<? extends JSONObjectEntry> ctor =
-                        (Constructor<? extends JSONObjectEntry>) generatorClass.getConstructor(String.class, Map.class, String.class, String.class);
-                return ctor.newInstance(name, object, mimeType, parentId);
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("Failed to instantiate custom JSONObjectEntry subclass: " + generatorClass.getName(), e);
-            }
+        if (generator != null) {
+            return generator.create(name, object, mimeType, parentId);
         }
         return new JSONObjectEntry(name, object, mimeType, parentId);
     }

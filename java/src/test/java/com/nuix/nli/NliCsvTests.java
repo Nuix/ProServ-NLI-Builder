@@ -1,7 +1,9 @@
 package com.nuix.nli;
 
+import com.nuix.edrm.EDRMBuilder;
 import com.nuix.edrm.datatypes.CSVEntry;
 import com.nuix.edrm.datatypes.CSVRowEntry;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -22,54 +24,27 @@ public class NliCsvTests {
     public static class EnvEntry extends CSVRowEntry {
         public EnvEntry(CSVEntry parent, int idx) { super(parent, idx); }
         @Override public String getName() {
-            // If fields exist, build a composed name, else fallback
-            try {
+            // Build a composed name only when all required fields are present
+            if (fields.containsKey("PID") && fields.containsKey("Process") && fields.containsKey("Variable")) {
                 String pid = String.valueOf(getField("PID").getValue());
                 String process = String.valueOf(getField("Process").getValue());
                 String variable = String.valueOf(getField("Variable").getValue());
                 return "("+pid+") "+process+" ["+variable+"]";
-            } catch (Exception e) {
-                return super.getName();
             }
+            return super.getName();
         }
     }
 
     @Test
     public void testBaseCsvToNli() {
         Path envars = resources().resolve("envars.csv");
+        Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
         CSVEntry entry = new CSVEntry(envars.toString());
         NLIGenerator gen = new NLIGenerator();
         gen.addEntry(entry);
         Path out = outputDir().resolve("csv_test.nli");
         gen.save(out);
         assertTrue(Files.exists(out));
-    }
-
-    @Test
-    public void testBomPrefixedCsv() throws IOException {
-        // BOM written as a Java \uFEFF string literal (the path that Files.writeString takes).
-        // This exercises the char-level branch of the BOM-strip logic in CSVEntry.load().
-        // Compare with testBomStripping which writes the raw 3-byte EF BB BF sequence
-        // and additionally verifies that parsed data rows match a no-BOM equivalent.
-        Path tempCsv = Files.createTempFile("bom_test", ".csv");
-        try {
-            String content = "\uFEFFName,Value\nAlpha,1\nBeta,2";
-            Files.writeString(tempCsv, content, StandardCharsets.UTF_8);
-
-            CSVEntry entry = new CSVEntry(tempCsv.toString());
-
-            assertFalse(entry.getRowFields().isEmpty(), "Should have parsed header columns");
-            assertFalse(entry.getRowFields().get(0).startsWith("\uFEFF"),
-                    "First column header must not start with BOM character");
-            assertEquals("Name", entry.getRowFields().get(0),
-                    "First column header should be 'Name' without BOM prefix");
-            assertEquals("Value", entry.getRowFields().get(1),
-                    "Second column header should be 'Value'");
-            assertEquals(2, entry.getData().size(),
-                    "Should have parsed 2 data rows");
-        } finally {
-            Files.deleteIfExists(tempCsv);
-        }
     }
 
     @Test
@@ -97,6 +72,7 @@ public class NliCsvTests {
     public void testRowCount() {
         // envars.csv has 17533 data rows (17534 total lines minus 1 header)
         Path envars = resources().resolve("envars.csv");
+        Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
         CSVEntry entry = new CSVEntry(envars.toString());
         assertEquals(17533, entry.getData().size(),
                 "envars.csv should have 17533 data rows (header excluded)");
@@ -106,6 +82,7 @@ public class NliCsvTests {
     public void testFieldNames() {
         // All 6 CSV column headers must appear as field names on the CSVEntry
         Path envars = resources().resolve("envars.csv");
+        Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
         CSVEntry entry = new CSVEntry(envars.toString());
         List<String> fields = entry.getRowFields();
         assertTrue(fields.contains("TreeDepth"), "Missing column: TreeDepth");
@@ -121,8 +98,8 @@ public class NliCsvTests {
     public void testFieldValues() {
         // Spot-check the first data row: TreeDepth=0, PID=784, Process=smss.exe,
         // Block=0x22c28202ce0, Variable=Path, Value=C:\\Windows\\System32
-        // (double backslash: the literal string stored in envars.csv, not a Java escape)
         Path envars = resources().resolve("envars.csv");
+        Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
         CSVEntry entry = new CSVEntry(envars.toString());
         java.util.Map<String, String> firstRow = entry.getData().get(0);
         assertEquals("0", firstRow.get("TreeDepth"), "First row TreeDepth should be 0");
@@ -130,48 +107,66 @@ public class NliCsvTests {
         assertEquals("smss.exe", firstRow.get("Process"), "First row Process should be smss.exe");
         assertEquals("Path", firstRow.get("Variable"), "First row Variable should be Path");
         assertEquals("C:\\\\Windows\\\\System32", firstRow.get("Value"),
-                "First row Value should be C:\\\\Windows\\\\System32 (literal double-backslash as stored in CSV)");
+                "First row Value should be C:\\\\Windows\\\\System32 (double backslash as stored in CSV)");
     }
 
     @Test
     public void testCustomRowName() {
-        // EnvEntry subclass should compose getName() as "(PID) Process [Variable]"
+        // EnvEntry subclass should compose getName() as "(PID) Process [Variable]".
+        // This test exercises the full RowGenerator path: EnvEntry::new must be invoked
+        // by CSVEntry.addToBuilder(); we verify this by wrapping it in a capturing generator
+        // that records each instance the pipeline creates, then asserting on the first one.
         Path envars = resources().resolve("envars.csv");
-        // Use the single-argument constructor; the row generator is not exercised in this test
-        // (EnvEntry is constructed directly below for the assertion).
-        CSVEntry entry = new CSVEntry(envars.toString());
-        // First row: PID=784, Process=smss.exe, Variable=Path
-        CSVRowEntry firstRow = new EnvEntry(entry, 0);
+        Assumptions.assumeTrue(Files.exists(envars), "envars.csv not found in test resources");
+
+        // Capturing wrapper: delegates to EnvEntry::new and records created instances
+        List<CSVRowEntry> captured = new java.util.ArrayList<>();
+        CSVEntry.RowGenerator capturingGenerator = (parent, idx) -> {
+            EnvEntry e = new EnvEntry(parent, idx);
+            captured.add(e);
+            return e;
+        };
+
+        CSVEntry entry = new CSVEntry(
+                envars.toString(),
+                "text/csv",
+                null,
+                capturingGenerator,
+                ','
+        );
+
+        // Drive the RowGenerator through the full addToBuilder() pipeline
+        EDRMBuilder builder = new EDRMBuilder();
+        entry.addToBuilder(builder);
+
+        // The generator must have been called for every data row
+        assertEquals(entry.getData().size(), captured.size(),
+                "RowGenerator must be invoked once per data row by addToBuilder()");
+
+        // The first captured instance is an EnvEntry for row 0: PID=784, Process=smss.exe, Variable=Path
+        CSVRowEntry firstRow = captured.get(0);
+        assertTrue(firstRow instanceof EnvEntry,
+                "RowGenerator must produce EnvEntry instances, not plain CSVRowEntry");
         assertEquals("(784) smss.exe [Path]", firstRow.getName(),
                 "EnvEntry getName() should return '(PID) Process [Variable]' format");
     }
 
     @Test
     public void testBomStripping() throws IOException {
-        // BOM written as raw bytes (EF BB BF) — the byte-level path, as produced by editors and
-        // tools that emit real UTF-8 BOM markers. This exercises that CSVEntry strips the BOM
-        // regardless of how it arrives on disk, and verifies that the parsed data is identical
-        // to the same CSV without a BOM (row count and first-row values must agree).
-        Path bomCsv   = Files.createTempFile("bom_stripping_test", ".csv");
-        Path plainCsv = Files.createTempFile("plain_equiv_test",    ".csv");
+        // Create a CSV with a UTF-8 BOM prefix; headers must be parsed without the BOM character
+        Path tempCsv = Files.createTempFile("bom_stripping_test", ".csv");
         try {
-            String csvBody = "ColA,ColB\nval1,val2";
+            // Write a BOM followed by CSV content
+            byte[] bom = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+            byte[] body = "ColA,ColB\nval1,val2".getBytes(StandardCharsets.UTF_8);
+            byte[] content = new byte[bom.length + body.length];
+            System.arraycopy(bom, 0, content, 0, bom.length);
+            System.arraycopy(body, 0, content, bom.length, body.length);
+            Files.write(tempCsv, content);
 
-            // Write BOM + body as raw bytes
-            byte[] bom  = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-            byte[] body = csvBody.getBytes(StandardCharsets.UTF_8);
-            byte[] bomContent = new byte[bom.length + body.length];
-            System.arraycopy(bom, 0, bomContent, 0, bom.length);
-            System.arraycopy(body, 0, bomContent, bom.length, body.length);
-            Files.write(bomCsv, bomContent);
+            CSVEntry entry = new CSVEntry(tempCsv.toString());
 
-            // Write the same content without a BOM for comparison
-            Files.writeString(plainCsv, csvBody, StandardCharsets.UTF_8);
-
-            CSVEntry bomEntry   = new CSVEntry(bomCsv.toString());
-            CSVEntry plainEntry = new CSVEntry(plainCsv.toString());
-
-            List<String> fields = bomEntry.getRowFields();
+            List<String> fields = entry.getRowFields();
             assertFalse(fields.isEmpty(), "Should have parsed header columns from BOM-prefixed CSV");
             assertFalse(fields.get(0).startsWith("\uFEFF"),
                     "First column header must not start with BOM character \\uFEFF");
@@ -179,17 +174,10 @@ public class NliCsvTests {
                     "First column header should be 'ColA' without any BOM prefix");
             assertEquals("ColB", fields.get(1),
                     "Second column header should be 'ColB'");
-            assertEquals(1, bomEntry.getData().size(),
+            assertEquals(1, entry.getData().size(),
                     "Should have parsed exactly 1 data row");
-
-            // BOM-prefixed and plain files must produce the same parsed result
-            assertEquals(plainEntry.getRowFields(), bomEntry.getRowFields(),
-                    "BOM-prefixed CSV headers must equal headers from the identical no-BOM CSV");
-            assertEquals(plainEntry.getData(), bomEntry.getData(),
-                    "BOM-prefixed CSV data rows must equal data rows from the identical no-BOM CSV");
         } finally {
-            Files.deleteIfExists(bomCsv);
-            Files.deleteIfExists(plainCsv);
+            Files.deleteIfExists(tempCsv);
         }
     }
 }

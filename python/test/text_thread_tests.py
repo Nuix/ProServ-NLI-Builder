@@ -4,7 +4,7 @@ import unittest
 from datetime import datetime
 
 from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry
-from nuix_nli_lib.edrm import FieldFactory, EntryField
+from nuix_nli_lib.edrm import FieldFactory, EntryField, FieldType
 from nuix_nli_lib.nli.nli_generator import NLIGenerator
 
 
@@ -16,7 +16,7 @@ class TextEntry(CSVRowEntry):
     def __init__(self, parent_csv: CSVEntry, row_index: int):
         super().__init__(parent_csv, row_index)
 
-        self["MIME Type"] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, TextEntry.ROW_MIME_TYPE)
+        self["MIME Type"] = FieldFactory.generate_field('MIME Type', FieldType.TEXT, TextEntry.ROW_MIME_TYPE)
 
     def get_base_name(self) -> str:
         return f'({self["Date Sent"].value}) {self["From"].value}'

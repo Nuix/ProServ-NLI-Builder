@@ -3,6 +3,7 @@ from typing import Iterable, Any, Optional, Tuple, Iterator
 from xml.dom.minidom import Element, Document
 
 from nuix_nli_lib.edrm import EntryField
+from nuix_nli_lib.edrm.EntryField import FieldType
 from nuix_nli_lib import edrm
 
 
@@ -78,7 +79,7 @@ class EntryInterface(object):
         if 'custodian' in self.fields:
             self.set_field_value('custodian', value)
         else:
-            self['custodian'] = EntryField('custodian', 'custodian', EntryField.TYPE_TEXT, value)
+            self['custodian'] = EntryField('custodian', 'custodian', FieldType.TEXT, value)
 
 
     def set_field_value(self, field_name: str, field_value: Any):

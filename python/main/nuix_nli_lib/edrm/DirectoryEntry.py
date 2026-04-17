@@ -3,6 +3,7 @@ from pathlib import Path
 
 from nuix_nli_lib.edrm import EDRMUtilities as eutes
 from nuix_nli_lib.edrm import FieldFactory, EntryField, FileEntry
+from nuix_nli_lib.edrm.EntryField import FieldType
 
 
 class DirectoryEntry(FileEntry):
@@ -49,7 +50,7 @@ class DirectoryEntry(FileEntry):
 
     def fill_hash_fields(self) -> None:
         self['SHA-1'] = FieldFactory.generate_field('SHA-1',
-                                                    EntryField.TYPE_TEXT,
+                                                    FieldType.TEXT,
                                                     eutes.hash_directory(self.directory, hashlib.sha1()))
 
     @property
