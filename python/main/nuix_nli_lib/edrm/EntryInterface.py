@@ -40,7 +40,7 @@ class EntryInterface(object):
         raise NotImplementedError
 
     @property
-    def time_field(self) -> str:
+    def time_field(self) -> Optional[str]:
         """
         :return: A field name that contains the date-time for this entry's timepoint in the timeline
         """
