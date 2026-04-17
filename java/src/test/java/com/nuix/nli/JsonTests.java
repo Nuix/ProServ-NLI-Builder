@@ -1,5 +1,6 @@
 package com.nuix.nli;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.nuix.edrm.EntryField;
 import com.nuix.edrm.datatypes.JSONFileEntry;
 import org.junit.jupiter.api.BeforeEach;
@@ -277,5 +278,78 @@ public class JsonTests {
         String dataType = xpathText(doc, "//Field[@DataType='LongInteger']/@DataType");
         assertEquals("LongInteger", dataType,
                 "Expected a LongInteger-typed field after nested fieldTypeOverride coercion");
+    }
+
+    // --- malformed JSON detection (SLC-153) ---
+
+    /**
+     * A file containing a bare, unquoted identifier (e.g. {@code foo}) is not
+     * valid JSON.  {@code JSONFileEntry} must throw a {@link RuntimeException}
+     * with a message that includes the file path, with the original parse
+     * exception preserved as the cause.
+     */
+    @Test
+    public void testBareIdentifierThrowsWithFileContext() throws Exception {
+        Path tmp = Files.createTempFile(outputDir(), "slc153-test-bare-", ".json");
+        try {
+            Files.writeString(tmp, "foo");
+            JSONFileEntry entry = new JSONFileEntry(tmp.toString());
+            NLIGenerator nli = new NLIGenerator();
+            RuntimeException ex = assertThrows(RuntimeException.class, () -> nli.addEntry(entry));
+            assertTrue(ex.getMessage().contains(tmp.toString()),
+                    "Error message should contain the file path; got: " + ex.getMessage());
+            assertNotNull(ex.getCause(), "cause should be preserved");
+            assertInstanceOf(JsonParseException.class, ex.getCause(),
+                    "cause should be a JsonParseException; got: " + ex.getCause().getClass().getName());
+            assertTrue(ex.getMessage().contains("foo") || ex.getCause().getMessage().contains("foo"),
+                    "Error message or cause should contain the content preview 'foo'; got: " + ex.getMessage());
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
+    }
+
+    /**
+     * A file containing truncated JSON (a partial object) is not valid JSON.
+     * {@code JSONFileEntry} must throw a {@link RuntimeException} with a message
+     * that includes the file path, with the original parse exception preserved
+     * as the cause.
+     */
+    @Test
+    public void testTruncatedObjectThrowsWithFileContext() throws Exception {
+        Path tmp = Files.createTempFile(outputDir(), "slc153-test-truncated-", ".json");
+        try {
+            Files.writeString(tmp, "{\"a\":1");
+            JSONFileEntry entry = new JSONFileEntry(tmp.toString());
+            NLIGenerator nli = new NLIGenerator();
+            RuntimeException ex = assertThrows(RuntimeException.class, () -> nli.addEntry(entry));
+            assertTrue(ex.getMessage().contains(tmp.toString()),
+                    "Error message should contain the file path; got: " + ex.getMessage());
+            assertNotNull(ex.getCause(), "cause should be preserved");
+            assertInstanceOf(JsonParseException.class, ex.getCause(),
+                    "cause should be a JsonParseException; got: " + ex.getCause().getClass().getName());
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
+    }
+
+    /**
+     * An empty file produces a null/missing root node in Jackson — the Jackson-based
+     * implementation handles this gracefully without throwing.  This test verifies that
+     * an empty JSON file does not propagate an unchecked exception and that the NLI
+     * output file is still produced (as an entry with no children).
+     */
+    @Test
+    public void testEmptyFileHandledGracefully() throws Exception {
+        Path tmp = Files.createTempFile(outputDir(), "slc153-test-empty-", ".json");
+        try {
+            Files.writeString(tmp, "");
+            JSONFileEntry entry = new JSONFileEntry(tmp.toString());
+            NLIGenerator nli = new NLIGenerator();
+            Path out = outputDir().resolve("empty_file_graceful.nli");
+            assertDoesNotThrow(() -> nli.addEntry(entry),
+                    "An empty JSON file should be handled gracefully, not throw");
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
     }
 }
