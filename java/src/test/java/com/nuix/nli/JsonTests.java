@@ -9,6 +9,8 @@ import com.nuix.edrm.datatypes.JSONObjectEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.w3c.dom.Document;
@@ -31,6 +33,11 @@ import java.util.zip.ZipInputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// The @BeforeEach deletes all .nli files from outputDir() before each test. This is safe
+// for serial execution but would cause intermittent failures under JUnit 5 parallel
+// execution (concurrent tests would delete each other's in-flight output). This annotation
+// ensures the class always runs single-threaded regardless of project-level parallelism config.
+@Execution(ExecutionMode.SAME_THREAD)
 public class JsonTests {
     private Path resources() { return Paths.get(".", "src", "test", "resources").toAbsolutePath().normalize(); }
     private Path outputDir() { return Paths.get("build", "test-output", "json").toAbsolutePath().normalize(); }
