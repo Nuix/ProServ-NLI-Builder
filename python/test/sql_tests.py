@@ -6,6 +6,7 @@ effects.
 """
 
 import sqlite3
+import tempfile
 import unittest
 from pathlib import Path
 from typing import Any
@@ -265,13 +266,15 @@ class TestSQLAddToBuilder(unittest.TestCase):
     """Test that add_to_builder produces correct entries in the EDRM builder."""
 
     def setUp(self):
+        self._tmpdir = tempfile.TemporaryDirectory()
+        self.output_dir = Path(self._tmpdir.name)
         self.conn = _simple_conn()
         self.entry = SQLTypeEntry(self.conn, "SELECT * FROM employees")
 
     def test_add_to_builder_adds_parent_and_rows(self):
         builder = EDRMBuilder()
         builder.as_nli = False
-        builder.output_path = Path("/tmp/sql_test.xml")
+        builder.output_path = self.output_dir / "sql_test.xml"
         self.entry.add_to_builder(builder)
         # 3 rows + 1 parent = 4 entries
         self.assertEqual(len(builder.entry_map), 4)
@@ -279,7 +282,7 @@ class TestSQLAddToBuilder(unittest.TestCase):
     def test_add_to_builder_returns_sha1_identifier(self):
         builder = EDRMBuilder()
         builder.as_nli = False
-        builder.output_path = Path("/tmp/sql_test2.xml")
+        builder.output_path = self.output_dir / "sql_test2.xml"
         result = self.entry.add_to_builder(builder)
         self.assertEqual(result, self.entry["SHA-1"].value)
 
@@ -294,7 +297,7 @@ class TestSQLAddToBuilder(unittest.TestCase):
         entry = SQLTypeEntry(conn, "SELECT * FROM employees", row_generator=NamedRow)
         builder = EDRMBuilder()
         builder.as_nli = False
-        builder.output_path = Path("/tmp/sql_test3.xml")
+        builder.output_path = self.output_dir / "sql_test3.xml"
         entry.add_to_builder(builder)
         all_entries = list(builder.entry_map.values())
         # 1 parent + 3 named rows
@@ -305,6 +308,7 @@ class TestSQLAddToBuilder(unittest.TestCase):
 
     def tearDown(self):
         self.conn.close()
+        self._tmpdir.cleanup()
 
 
 class TestSQLImportFromDataTypes(unittest.TestCase):
