@@ -186,7 +186,12 @@ class CSVRowEntry(MappingEntry):
                          parent_id=parent_id or parent_csv[parent_csv.identifier_field].value)
 
     @property
-    def fields(self) -> list[str]:
+    def column_names(self) -> list[str]:
+        """
+        :return: The ordered list of column names for this row, sourced from the parent :class:`CSVEntry`.
+            This is distinct from :attr:`~nuix_nli_lib.edrm.EntryInterface.fields`, which returns the
+            EDRM EntryField key names (e.g. ``'MIME Type'``, ``'SHA-1'``, ``'Name'``, etc.).
+        """
         return [f for f in self.__parent_csv.row_fields if len(f.strip()) > 0]
 
     @property
