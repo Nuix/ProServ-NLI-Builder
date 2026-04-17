@@ -179,6 +179,19 @@ class TestCSVRowEntryFields(unittest.TestCase):
         self.row.custodian = "Bob"
         self.assertEqual(self.row.custodian, "Bob")
 
+    def test_custodian_update_does_not_duplicate_field_on_csv_row_entry(self):
+        """Setting custodian twice must update in place — no duplicate custodian fields (SLC-264).
+
+        The original bug caused a new EntryField to be appended on every setter call
+        instead of updating the existing one.  This test exercises the update path in
+        EntryInterface.custodian.setter (the ``if 'custodian' in self.fields`` branch).
+        """
+        self.row.custodian = "Bob"
+        self.row.custodian = "Carol"
+        self.assertEqual(self.row.custodian, "Carol", "Second custodian value must be returned by getter")
+        custodian_count = sum(1 for f in self.row.fields if f == "custodian")
+        self.assertEqual(custodian_count, 1, "There must be exactly one custodian field after two setter calls")
+
     def test_set_field_value_on_csv_row_entry(self):
         """set_field_value must not raise KeyError for valid EDRM field names on CSVRowEntry."""
         self.row.set_field_value("MIME Type", "application/octet-stream")

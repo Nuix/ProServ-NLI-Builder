@@ -208,6 +208,20 @@ class TestSQLRowEntry(unittest.TestCase):
         row.custodian = "Alice"
         self.assertEqual(row.custodian, "Alice")
 
+    def test_custodian_update_does_not_duplicate_field_on_row_entry(self):
+        """Setting custodian twice must update in place — no duplicate custodian fields (SLC-264).
+
+        The original bug caused a new EntryField to be appended on every setter call
+        instead of updating the existing one.  This test exercises the update path in
+        EntryInterface.custodian.setter (the ``if 'custodian' in self.fields`` branch).
+        """
+        row = SQLRowEntry(self.parent, 0)
+        row.custodian = "Alice"
+        row.custodian = "Bob"
+        self.assertEqual(row.custodian, "Bob", "Second custodian value must be returned by getter")
+        custodian_count = sum(1 for f in row.fields if f == "custodian")
+        self.assertEqual(custodian_count, 1, "There must be exactly one custodian field after two setter calls")
+
     def test_set_field_value_on_row_entry(self):
         """set_field_value must not raise KeyError for valid EDRM field names on SQLRowEntry."""
         row = SQLRowEntry(self.parent, 0)
