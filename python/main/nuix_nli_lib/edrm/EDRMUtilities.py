@@ -2,7 +2,7 @@ import os
 import re
 import sys
 import hashlib
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Union, Any
 
@@ -15,31 +15,35 @@ Collection of utility functions for working with EDRM data.
 
 def convert_datetime_to_string(date_time: datetime) -> str:
     """
-    Converts a Python datetime object to a string in the format preferred by Nuix.  Note, this does not handle
-    timezones correctly (always assumes +00:00).  The formats used for storing the data-time are specified in the
-    `edrm.configs` object.
+    Converts a Python datetime object to a string in the format preferred by Nuix.  If the datetime is
+    timezone-aware, it is first converted to UTC.  If it is timezone-naive, UTC is assumed (preserving
+    existing behaviour for callers that already operate in UTC).  The formats used for storing the datetime
+    are specified in the `edrm.configs` object.
 
     NOTE: Python can only represent a fraction of a second to six decimal digits, while Nuix prefers three.  As a result
     this method truncates the date-time string by three characters.  This means the format string should provide those
     excess three characters (such as by using the %f token or padding the end of the string).
 
-    :param date_time: The datetime to convert
+    :param date_time: The datetime to convert.  May be timezone-aware or timezone-naive.
     :return: A string with the formatted date-time
     """
+    if date_time.tzinfo is not None:
+        # Convert aware datetime to UTC before formatting
+        date_time = date_time.astimezone(timezone.utc).replace(tzinfo=None)
     str_rep = date_time.strftime(edrm.configs['date_time_format'])[:-3]
-    tz_rep = date_time.strftime(edrm.configs['time_zone_format'])
+    tz_rep = edrm.configs['time_zone_format']
     return str_rep + tz_rep
 
 
 def convert_timestamp_to_string(timestamp: float) -> str:
     """
     Convert a timestamp similar to those provided by Path stat blocks to a string.  A timestamp is a floating point
-    offset from the epoch.
+    offset from the epoch.  The timestamp is interpreted as UTC.
 
     :param timestamp: Timestamp as a floating point number
     :return: A string with the timestamp converted to the format preferred by Nuix.  See `convert_datetime_to_string`.
     """
-    dt = datetime.fromtimestamp(timestamp)
+    dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
     return convert_datetime_to_string(dt)
 
 
