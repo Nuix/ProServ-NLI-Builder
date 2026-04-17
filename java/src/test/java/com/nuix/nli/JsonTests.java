@@ -586,4 +586,94 @@ public class JsonTests {
             super(mappingName, object, mimeType, parentId);
         }
     }
+
+    // SLC-82: Malformed JSONPath handling in parseJsonPathSegments
+    // -----------------------------------------------------------------------
+
+    /**
+     * Test 11: A pattern ending with a trailing dot must throw IllegalArgumentException.
+     * Previously, rest.split("\\.") would silently drop the trailing empty segment,
+     * producing wrong match results instead of a clear error.
+     */
+    @Test
+    public void testMalformedJsonPathTrailingDotThrows() throws Exception {
+        Path json = writeTempJson("malformed_trailing_dot.json", "{\"foo\":1}");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.addFieldTypeOverride("$.foo.", EntryField.Type.LongInteger),
+                "A trailing dot in a JSONPath pattern must throw IllegalArgumentException");
+    }
+
+    /**
+     * Test 12: A pattern with consecutive dots (e.g. $.foo..bar used as a direct path,
+     * not as a recursive-descent $.. prefix) must throw IllegalArgumentException.
+     */
+    @Test
+    public void testMalformedJsonPathConsecutiveDotsThrows() throws Exception {
+        Path json = writeTempJson("malformed_consecutive_dots.json", "{\"foo\":{\"bar\":1}}");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        // $.foo..bar is not the same as $..bar — it is a malformed direct path
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.addFieldTypeOverride("$.foo..bar", EntryField.Type.LongInteger),
+                "Consecutive dots in a direct JSONPath pattern must throw IllegalArgumentException");
+    }
+
+    /**
+     * Test 13: A pattern with no '$' prefix must throw IllegalArgumentException.
+     */
+    @Test
+    public void testMalformedJsonPathNoPrefixThrows() throws Exception {
+        Path json = writeTempJson("malformed_no_prefix.json", "{\"foo\":1}");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.addFieldTypeOverride("foo.bar", EntryField.Type.LongInteger),
+                "A JSONPath pattern without a '$' prefix must throw IllegalArgumentException");
+    }
+
+    /**
+     * Test 14: A recursive-descent pattern with no key after '$..'' must throw
+     * IllegalArgumentException to prevent matching every leaf node.
+     */
+    @Test
+    public void testMalformedJsonPathRecursiveDescentNoKeyThrows() throws Exception {
+        Path json = writeTempJson("malformed_recursive_nokey.json", "{\"foo\":1}");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.addFieldTypeOverride("$..", EntryField.Type.LongInteger),
+                "'$..' with no key must throw IllegalArgumentException");
+    }
+
+    /**
+     * Test 15: A null pattern must throw IllegalArgumentException.
+     */
+    @Test
+    public void testMalformedJsonPathNullThrows() throws Exception {
+        Path json = writeTempJson("malformed_null.json", "{\"foo\":1}");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.addFieldTypeOverride(null, EntryField.Type.LongInteger),
+                "A null JSONPath pattern must throw IllegalArgumentException");
+    }
+
+    /**
+     * Test 16: Valid patterns must still register without error after the validation
+     * fix (regression guard).
+     */
+    @Test
+    public void testValidJsonPathPatternsDoNotThrow() throws Exception {
+        Path json = writeTempJson("valid_patterns.json", "{\"a\":{\"b\":1}}");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        assertDoesNotThrow(() -> {
+            entry.addFieldTypeOverride("$..b",         EntryField.Type.LongInteger);
+            entry.addFieldTypeOverride("$.a",           EntryField.Type.Text);
+            entry.addFieldTypeOverride("$.a.b",         EntryField.Type.LongInteger);
+            entry.addFieldTypeOverride("$.arr[*].key",  EntryField.Type.Text);
+        }, "Valid JSONPath patterns must not throw during registration");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(entry);
+        Path out = outputDir().resolve("valid_patterns.nli");
+        assertDoesNotThrow(() -> nli.save(out),
+                "Saving with valid JSONPath patterns must not throw");
+        assertTrue(Files.exists(out));
+    }
 }
