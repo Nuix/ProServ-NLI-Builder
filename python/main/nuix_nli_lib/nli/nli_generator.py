@@ -120,18 +120,33 @@ class NLIGenerator(object):
         with metadata_file_path.open(mode='w', encoding=edrm.configs['encoding']) as metadata_xml:
             metadata_file.writexml(metadata_xml, encoding=edrm.configs['encoding'], addindent='    ', newl='\n')
 
-    def save(self, file_path: Path):
+    def save(self, file_path: Path) -> None:
         """
         Build and save the NLI container to the provided file_path.
 
         This method will trigger the build process, which will build the underlying EDRM XML load file, copy contents
         to the NLI container, package the container, and store it to the file_path provided.
+
+        **Debug mode:** When ``nli_configs['debug']`` is set to ``True``, the temporary build directory is *not*
+        deleted after the NLI file is written.  This allows inspection of the intermediate files after the call
+        returns.  The caller is responsible for cleaning up the temporary directory in this case.  The location of
+        the temporary directory is printed via :func:`~nuix_nli_lib.debug_log` during the build.
+
+        .. note::
+            The debug-mode path uses ``tempfile.TemporaryDirectory(delete=False)``, which requires **Python 3.12+**.
+            This minimum version is enforced in ``pyproject.toml`` via ``requires-python = ">=3.12"``.
+
         :param file_path: Path to the location the NLI file should be saved, including the file name and extension
         :return: None
         """
 
+        # TemporaryDirectory(delete=False) requires Python 3.12+; this is intentional and
+        # documented above.  The constraint is enforced in pyproject.toml (requires-python = ">=3.12").
+        # Using delete=False for the debug path means the context manager exits without removing the
+        # directory, allowing post-build inspection.  The normal (non-debug) path uses the default
+        # TemporaryDirectory() which cleans up automatically on exit.
         do_delete = not nli_configs['debug'] if 'debug' in nli_configs else True
-        with tempfile.TemporaryDirectory() if do_delete else tempfile.mkdtemp() as temp_loc:
+        with tempfile.TemporaryDirectory() if do_delete else tempfile.TemporaryDirectory(delete=False) as temp_loc:
             temp_path = Path(temp_loc)
             build_path = temp_path / 'NLI_Gen'
             metadata_path = build_path / '._metadata'
