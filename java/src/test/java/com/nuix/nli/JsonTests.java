@@ -676,4 +676,55 @@ public class JsonTests {
                 "Saving with valid JSONPath patterns must not throw");
         assertTrue(Files.exists(out));
     }
+
+    // SLC-153: Malformed JSON file content detection
+    // -----------------------------------------------------------------------
+
+    /**
+     * Test 17: A JSON file containing garbage (non-JSON text) must throw a RuntimeException
+     * when addToBuilder is called. The exception is caused by Jackson being unable to parse
+     * the content as valid JSON.
+     */
+    @Test
+    public void testMalformedJsonFileGarbageThrows() throws Exception {
+        Path json = writeTempJson("garbage_content.json", "this is not json at all");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        assertThrows(RuntimeException.class,
+                () -> nli.addEntry(entry),
+                "A file containing non-JSON garbage content must throw RuntimeException during addToBuilder");
+    }
+
+    /**
+     * Test 18: A JSON file with truncated/incomplete content must throw a RuntimeException
+     * when addToBuilder is called. The exception is caused by Jackson detecting the unexpected
+     * end of input while parsing.
+     */
+    @Test
+    public void testMalformedJsonFileTruncatedThrows() throws Exception {
+        Path json = writeTempJson("truncated_content.json", "{\"a\":1");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        assertThrows(RuntimeException.class,
+                () -> nli.addEntry(entry),
+                "A truncated JSON file must throw RuntimeException during addToBuilder");
+    }
+
+    /**
+     * Test 19: The RuntimeException thrown for a malformed JSON file must include the file path
+     * in its message, enabling fast diagnosis of which file caused the parse failure.
+     * This is the key diagnostic contract introduced by SLC-153.
+     */
+    @Test
+    public void testMalformedJsonFileErrorMessageContainsFilePath() throws Exception {
+        Path json = writeTempJson("malformed_for_path_check.json", "not valid json");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> nli.addEntry(entry),
+                "Parsing a malformed JSON file must throw RuntimeException");
+        String msg = ex.getMessage() == null ? "" : ex.getMessage();
+        assertTrue(msg.contains(json.toString()) || msg.contains(json.getFileName().toString()),
+                "The RuntimeException message must contain the file path for diagnostics, but was: " + msg);
+    }
 }
