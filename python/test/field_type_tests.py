@@ -16,22 +16,22 @@ class TestFieldTypeMembership(unittest.TestCase):
         self.FieldType = FieldType
 
     def test_text_member_exists(self):
-        _ = self.FieldType.TEXT
+        self.assertIsInstance(self.FieldType.TEXT, self.FieldType)
 
     def test_datetime_member_exists(self):
-        _ = self.FieldType.DATETIME
+        self.assertIsInstance(self.FieldType.DATETIME, self.FieldType)
 
     def test_integer_member_exists(self):
-        _ = self.FieldType.INTEGER
+        self.assertIsInstance(self.FieldType.INTEGER, self.FieldType)
 
     def test_long_text_member_exists(self):
-        _ = self.FieldType.LONG_TEXT
+        self.assertIsInstance(self.FieldType.LONG_TEXT, self.FieldType)
 
     def test_decimal_member_exists(self):
-        _ = self.FieldType.DECIMAL
+        self.assertIsInstance(self.FieldType.DECIMAL, self.FieldType)
 
     def test_boolean_member_exists(self):
-        _ = self.FieldType.BOOLEAN
+        self.assertIsInstance(self.FieldType.BOOLEAN, self.FieldType)
 
     def test_exactly_six_members(self):
         self.assertEqual(len(self.FieldType), 6)
@@ -185,6 +185,47 @@ class TestFieldTypeDeprecatedAliasWarnings(unittest.TestCase):
     def test_unknown_attribute_raises_attribute_error(self):
         with self.assertRaises(AttributeError):
             _ = self.EntryField.TYPE_NONEXISTENT
+
+
+class TestFieldTypeIsStr(unittest.TestCase):
+    """Every FieldType member is an instance of str (StrEnum contract for backward-compatible XML serialisation)."""
+
+    def setUp(self):
+        from nuix_nli_lib.edrm import FieldType
+        self.FieldType = FieldType
+
+    def test_all_members_are_str_instances(self):
+        for member in self.FieldType:
+            with self.subTest(member=member):
+                self.assertIsInstance(member, str)
+
+
+class TestEntryFieldPlainStrDeprecation(unittest.TestCase):
+    """Constructing EntryField with a plain str field_type emits a DeprecationWarning."""
+
+    def setUp(self):
+        from nuix_nli_lib.edrm import EntryField
+        self.EntryField = EntryField
+
+    def test_plain_str_field_type_emits_deprecation_warning(self):
+        with self.assertWarns(DeprecationWarning) as ctx:
+            self.EntryField('key', 'Name', 'Text')
+        self.assertIn("'Text'", str(ctx.warning))
+        self.assertIn('deprecated', str(ctx.warning))
+
+    def test_fieldtype_member_does_not_emit_warning(self):
+        from nuix_nli_lib.edrm import FieldType
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter('error', DeprecationWarning)
+            # Should not raise — FieldType member is the non-deprecated path
+            self.EntryField('key', 'Name', FieldType.TEXT)
+
+    def test_data_type_returns_fieldtype_when_constructed_correctly(self):
+        from nuix_nli_lib.edrm import FieldType
+        field = self.EntryField('key', 'Name', FieldType.TEXT)
+        self.assertIsInstance(field.data_type, FieldType)
+        self.assertEqual(field.data_type, FieldType.TEXT)
 
 
 if __name__ == '__main__':

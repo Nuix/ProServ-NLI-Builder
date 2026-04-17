@@ -73,8 +73,17 @@ class EntryField(metaclass=_EntryFieldMeta):
                     field.
         :param name: Name of the field as it should be displayed in the final case the load file will fill.
         :param field_type: A ``FieldType`` enum member (preferred) or one of the legacy ``EntryField.TYPE_*`` strings.
+                           Passing a plain ``str`` instead of a ``FieldType`` member is deprecated; pass a
+                           ``FieldType`` member directly.
         :param default_value: The value to store in the field if no value is provided.
         """
+        if not isinstance(field_type, FieldType):
+            warnings.warn(
+                f"Passing a plain str ({field_type!r}) as field_type is deprecated; "
+                f"use a FieldType member directly (e.g. FieldType('{field_type}'))",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         self.__key = key
         self.__name = name
         self.__type = field_type
@@ -97,11 +106,17 @@ class EntryField(metaclass=_EntryFieldMeta):
         return self.__name
 
     @property
-    def data_type(self) -> Union[FieldType, str]:
+    def data_type(self) -> FieldType:
         """
-        :return: Type of data this field will store.  It will be a ``FieldType`` member or a compatible string.
+        :return: Type of data this field will store as a ``FieldType`` member.
+
+        .. note::
+            In rare cases where ``EntryField`` was constructed directly with a plain ``str`` argument (a deprecated
+            usage), this property may return a ``str`` rather than a ``FieldType`` member.  Callers should always
+            construct ``EntryField`` via ``FieldFactory`` and pass a ``FieldType`` member to ensure the return type
+            contract is upheld.
         """
-        return self.__type
+        return self.__type  # type: ignore[return-value]  # plain-str path is deprecated; see __init__
 
     @property
     def value(self) -> Any:
