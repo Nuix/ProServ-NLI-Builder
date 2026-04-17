@@ -1,0 +1,9 @@
+Integration Test Sample Document
+==================================
+
+This is a canonical sample document used by the NLI integration test suite.
+It is a plain-text file entry that exercises the FileEntry code path in both
+the Python and Java implementations.
+
+Content is intentionally simple and fixed so that generated hashes and field
+values remain stable across implementation versions.

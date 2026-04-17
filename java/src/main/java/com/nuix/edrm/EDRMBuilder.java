@@ -33,6 +33,9 @@ public class EDRMBuilder {
 
     public Map<String, EntryInterface> getEntryMap() { return new LinkedHashMap<>(entryMap); }
 
+    /** Returns a snapshot of the parent→children relationship map. */
+    public Map<String, List<String>> getFamilyMap() { return new LinkedHashMap<>(familyMap); }
+
     public String addEntry(EntryInterface entry) {
         String id = entry.getField(entry.getIdentifierField()).getValue().toString();
         entryMap.put(id, entry);

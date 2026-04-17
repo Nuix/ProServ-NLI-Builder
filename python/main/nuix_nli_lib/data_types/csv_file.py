@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import csv
-from typing import Any, Optional, Type
+from typing import Any, Generator, Optional, Type
 
 from nuix_nli_lib.edrm.EDRMBuilder import EDRMBuilder
 from nuix_nli_lib.edrm.FileEntry import FileEntry
@@ -46,10 +46,18 @@ class CSVEntry(FileEntry):
     """
     Represents a CSV file and manages storing and retrieving rows of data for the target EDRM XML file.
 
-    Implementation Note: This implementation fully reads the CSV file into memory.  Although this is a reference
-    implementation for other similar constructs, such as mapping databases or JSON files, this may not work the best
-    for large files.  If memory is an issue, then consider subclassing this class and reading the content in line
-    by line upon need.
+    Implementation Note: This implementation uses lazy, generator-based streaming to read the CSV file.  Rows are not
+    loaded into memory at construction time.  Instead, the file is re-opened and iterated lazily each time
+    `add_to_builder` is called.  This bounds peak memory usage to the working set of the current traversal rather than
+    the full file size.
+
+    The `data` property (which returns a list of all rows) is available for backward compatibility and for subclasses
+    that require random access to row data (e.g. to look up parent–child relationships across rows).  Accessing `data`
+    will load and cache all rows in memory on first use, so subclasses that call `parent_csv.data` will not benefit from
+    streaming.
+
+    Note: because the CSV file is re-opened by `add_to_builder`, the file path must remain accessible for the duration
+    of the build phase.
     """
     def __init__(self, file_path: str,
                  mimetype: str = "text/csv",
@@ -57,8 +65,8 @@ class CSVEntry(FileEntry):
                  row_generator: Optional[Type[Any]] = None,
                  delimiter: str = ',') -> None:
         """
-        :param file_path: Full path to the CSV file.  This will read the file into memory.  Errors will occur if the
-                          file is not accessible or not in the expected CSV format
+        :param file_path: Full path to the CSV file.  The file header is read immediately to obtain field names.
+                          Rows are NOT loaded into memory at this point.
         :param mimetype: Optional MIME type used to represent the file in the case.  Defaults to "text/csv".
         :param parent_id: Optional: Unique identifier for this file's container, if it has one.  None (the default) will
                           make this a top-level file.
@@ -72,9 +80,16 @@ class CSVEntry(FileEntry):
         """
         super().__init__(file_path, mimetype, parent_id)
 
-        self.__data: list[dict[str, Any]] = []
-        self.__row_fields: list[str] = []
+        self.__delimiter = delimiter
         self.__row_generator = row_generator
+
+        # Lazily populated on first access to the `data` property.
+        self.__data: list[dict[str, Any]] | None = None
+
+        # Current streaming row context, set by add_to_builder during iteration so that CSVRowEntry
+        # instances created during streaming can capture the row data directly without triggering a
+        # full load of the `data` list.
+        self._current_streaming_row: dict[str, Any] | None = None
 
         if not self.file_path.is_file():
             raise IOError(f'File does not exist or is not a file: {self.file_path}')
@@ -88,9 +103,18 @@ class CSVEntry(FileEntry):
     @property
     def data(self) -> list[dict[str, Any]]:
         """
-        :return: A list of the row data in the CSV file.  Note: This returns the actual list and actual data.  Modifying
-                 it can cause unexpected behavior and should be avoided.
+        Return all rows in the CSV file as a list of dicts.  The list is loaded from disk on the first call and
+        cached for subsequent calls.
+
+        Note: Accessing this property loads the entire file into memory.  Subclasses that need random-access to
+        row data (e.g. to traverse parent–child relationships across rows) should use this property.  Code that only
+        needs to iterate rows linearly should prefer the `_iter_rows()` generator to keep memory usage bounded.
+
+        :return: A list of the row data in the CSV file.  Note: This returns the actual list and actual data.
+                 Modifying it can cause unexpected behavior and should be avoided.
         """
+        if self.__data is None:
+            self.__data = list(self._iter_rows())
         return self.__data
 
     @property
@@ -99,6 +123,21 @@ class CSVEntry(FileEntry):
         :return: A list of the field names in the CSV file.
         """
         return self.__row_fields
+
+    def _iter_rows(self) -> Generator[dict[str, Any], None, None]:
+        """
+        Yield each data row from the CSV file as a dict without loading all rows into memory at once.
+
+        The file is opened and iterated lazily each time this method is called, allowing the same
+        CSVEntry to be traversed more than once (e.g. during multiple builder passes) without
+        retaining all rows in memory between passes.
+
+        :return: A generator yielding one row dict per CSV data row.
+        """
+        with self.file_path.open(mode='r', encoding=data_types.configs['encoding']) as file:
+            reader: csv.DictReader = csv.DictReader(file, delimiter=self.__delimiter)
+            for row in reader:
+                yield dict(row)
 
     def add_as_parent_path(self, existing_path: str) -> str:
         return f'{self.name}/{existing_path}'
@@ -109,13 +148,25 @@ class CSVEntry(FileEntry):
         file.  This method will use the `row_generator` passed in to the constructor to generate the new entry for the
         row data, defaulting to creating a CSVRowEntry if none is provided.  This method does not specifically assign
         this CSVEntry as the parent to the produced rows, but the default behavior of CSVRowEntry will do so.
+
+        Rows are iterated via a streaming generator so that only one row is held in memory at a time.  If the
+        `row_generator` subclass accesses `parent_csv.data` (e.g. to resolve parent–child relationships across rows),
+        the full row list will be loaded and cached on first access to that property.
+
         :param builder: The EDRMBuilder used to generate the EDRM XML load file
-        :return: None
+        :return: The identifier value for this entry.
         """
         row_gen = self.__row_generator or CSVRowEntry
         builder.add_entry(self)
-        for index in range(len(self.data)):
-            builder.add_entry(row_gen(self, index))
+
+        for index, row in enumerate(self._iter_rows()):
+            # Expose the current row to CSVRowEntry so it can capture data directly
+            # without triggering a full load of the `data` list.
+            self._current_streaming_row = row
+            try:
+                builder.add_entry(row_gen(self, index))
+            finally:
+                self._current_streaming_row = None
 
         return self[self.identifier_field].value
 
@@ -124,6 +175,13 @@ class CSVRowEntry(MappingEntry):
     def __init__(self, parent_csv: CSVEntry, row_index: int, parent_id: Optional[str] = None) -> None:
         self.__parent_csv: CSVEntry = parent_csv
         self.__row_index: int = row_index
+
+        # Capture the streaming row provided by CSVEntry.add_to_builder (if active).
+        # When present this avoids loading the full data list just to fetch one row.
+        # When None (e.g. when a custom subclass is constructed outside of add_to_builder,
+        # or when the custom subclass's own __init__ runs before super().__init__),
+        # fall back to parent_csv.data[row_index] on access.
+        self.__captured_row: dict[str, Any] | None = parent_csv._current_streaming_row
 
         super().__init__({},
                          "application/x-database-table-row",
@@ -140,6 +198,13 @@ class CSVRowEntry(MappingEntry):
 
     @property
     def data(self) -> dict[str, Any]:
+        """
+        Return the data for this row.  When constructed during streaming (via CSVEntry.add_to_builder),
+        the row data is captured directly and returned without accessing the full data list on the parent.
+        Otherwise, falls back to parent_csv.data[row_index] which may trigger a full load.
+        """
+        if self.__captured_row is not None:
+            return self.__captured_row
         return self.__parent_csv.data[self.__row_index]
 
     @property
