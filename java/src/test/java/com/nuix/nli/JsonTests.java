@@ -75,7 +75,7 @@ public class JsonTests {
     // -----------------------------------------------------------------------
 
     @Test
-    public void testSimpleStr() {
+    public void testSimpleStr() throws Exception {
         Path json = resources().resolve("simple_str.json");
         JSONFileEntry entry = new JSONFileEntry(json.toString());
         NLIGenerator nli = new NLIGenerator();
@@ -83,6 +83,12 @@ public class JsonTests {
         Path out = outputDir().resolve("simple_str.nli");
         nli.save(out);
         assertTrue(Files.exists(out));
+
+        // Verify that traversal produced output: JSON file entry + scalar value child = at least 2 documents.
+        // A file-existence-only assertion would pass even on empty or corrupt output.
+        Document doc = getEdrmXmlFromNli(out);
+        int docCount = xpathCount(doc, "//Document");
+        assertTrue(docCount >= 2, "Expected at least 2 documents (file + scalar value), got " + docCount);
     }
 
     // -----------------------------------------------------------------------
