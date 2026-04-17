@@ -19,6 +19,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -57,7 +58,7 @@ public class EdrmTests {
         try {
             XPath xp = XPATH_FACTORY.newXPath();
             return (NodeList) xp.evaluate(expression, doc, XPathConstants.NODESET);
-        } catch (Exception e) {
+        } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
         }
     }
@@ -67,7 +68,7 @@ public class EdrmTests {
         try {
             XPath xp = XPATH_FACTORY.newXPath();
             return xp.evaluate(expression, doc);
-        } catch (Exception e) {
+        } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
         }
     }
