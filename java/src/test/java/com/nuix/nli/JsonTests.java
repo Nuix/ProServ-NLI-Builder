@@ -676,4 +676,79 @@ public class JsonTests {
                 "Saving with valid JSONPath patterns must not throw");
         assertTrue(Files.exists(out));
     }
+
+    // -------------------------------------------------------------------------
+    // SLC-172: Regression tests — string roots that look like other types (SLC-149 fix guard)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Regression test for SLC-149: a JSON string whose value begins with {@code [} must be
+     * classified as a scalar value ({@code application/x-json-value}), not as an array.
+     *
+     * <p>The old {@code startsWith} heuristic in the pre-Jackson implementation would have
+     * misidentified this as an array root, producing a child with the wrong MIME type. This
+     * test parses the generated NLI and asserts the child entry's {@code MimeType} attribute
+     * so that any regression in root-type detection immediately fails here rather than
+     * silently producing a wrong output file.
+     */
+    @Test
+    public void testStringRootLooksLikeArray() throws Exception {
+        // A JSON string value that starts with '[' — must be treated as a scalar, not an array.
+        Path json = writeTempJson("string_looks_like_array.json", "\"[not an array]\"");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("string_looks_like_array.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
+
+        Document doc = getEdrmXmlFromNli(out);
+
+        // The child Document element must have MimeType="application/x-json-value", NOT
+        // "application/x-json-array". A regression in Jackson root-type detection would
+        // produce the wrong MIME type and this assertion would catch it.
+        String mimeType = xpathText(doc,
+                "//Document[@MimeType='application/x-json-value']/@MimeType");
+        assertEquals("application/x-json-value", mimeType,
+                "A string root starting with '[' must produce a JSONValueEntry "
+                + "(application/x-json-value), not a JSONArrayEntry");
+
+        // Also verify that the array MIME type is NOT present — belt-and-suspenders.
+        String arrayMime = xpathText(doc,
+                "//Document[@MimeType='application/x-json-array']/@MimeType");
+        assertTrue(arrayMime.isEmpty(),
+                "No application/x-json-array entry should exist for a string root");
+    }
+
+    /**
+     * Regression test for SLC-149: a JSON string whose value begins with {@code {}} must be
+     * classified as a scalar value ({@code application/x-json-value}), not as an object.
+     *
+     * <p>Mirrors {@link #testStringRootLooksLikeArray} for the object-lookalike case.
+     */
+    @Test
+    public void testStringRootLooksLikeObject() throws Exception {
+        // A JSON string value that starts with '{' — must be treated as a scalar, not an object.
+        Path json = writeTempJson("string_looks_like_object.json", "\"{not an object}\"");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("string_looks_like_object.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
+
+        Document doc = getEdrmXmlFromNli(out);
+
+        // The child Document element must have MimeType="application/x-json-value", NOT
+        // "application/x-json-object".
+        String mimeType = xpathText(doc,
+                "//Document[@MimeType='application/x-json-value']/@MimeType");
+        assertEquals("application/x-json-value", mimeType,
+                "A string root starting with '{' must produce a JSONValueEntry "
+                + "(application/x-json-value), not a JSONObjectEntry");
+
+        // Also verify that the object MIME type is NOT present.
+        String objectMime = xpathText(doc,
+                "//Document[@MimeType='application/x-json-object']/@MimeType");
+        assertTrue(objectMime.isEmpty(),
+                "No application/x-json-object entry should exist for a string root");
+    }
 }
