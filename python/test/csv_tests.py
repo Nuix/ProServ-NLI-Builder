@@ -6,6 +6,8 @@ from typing import Union
 from nuix_nli_lib.edrm import EDRMBuilder
 from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry
 
+_RESOURCES = Path(__file__).parent / "resources"
+
 
 class ProcessEntry(CSVRowEntry):
     """
@@ -141,6 +143,7 @@ class CSVTests(unittest.TestCase):
         builder.save()
 
     def test_minprocess_csv_nli(self):
+
         builder = EDRMBuilder()
         builder.as_nli = True
         builder.output_path = self.output_path / 'minprocess_nli_test.xml'
@@ -148,3 +151,55 @@ class CSVTests(unittest.TestCase):
         entry = CSVEntry(self.pslist, row_generator=ProcessEntry, parent_id=mem_id)
         entry.add_to_builder(builder)
         builder.save()
+
+
+class TestCSVRowEntryFields(unittest.TestCase):
+    """Verify that CSVRowEntry.fields returns EDRM EntryField keys, not raw CSV column names."""
+
+    def setUp(self):
+        self.csv_path = str(_RESOURCES / "text_thread.csv")
+        self.parent_csv = CSVEntry(self.csv_path)
+        self.row = CSVRowEntry(self.parent_csv, 0)
+
+    def test_column_names_returns_csv_headers(self):
+        """column_names must return the raw CSV header names."""
+        cols = self.row.column_names
+        self.assertEqual(cols, ["To", "From", "Date Sent", "Message"])
+
+    def test_fields_includes_edrm_field_names(self):
+        """fields must include the required EDRM EntryField keys (was broken: only returned column names)."""
+        field_names = list(self.row.fields)
+        self.assertIn("MIME Type", field_names)
+        self.assertIn("SHA-1", field_names)
+        self.assertIn("Name", field_names)
+        self.assertIn("Item Date", field_names)
+
+    def test_set_custodian_on_csv_row_entry(self):
+        """custodian setter must work on CSVRowEntry (was broken when fields returned column names)."""
+        self.row.custodian = "Bob"
+        self.assertEqual(self.row.custodian, "Bob")
+
+    def test_custodian_update_does_not_duplicate_field_on_csv_row_entry(self):
+        """Setting custodian twice must update in place — no duplicate custodian fields (SLC-264).
+
+        The original bug caused a new EntryField to be appended on every setter call
+        instead of updating the existing one.  This test exercises the update path in
+        EntryInterface.custodian.setter (the ``if 'custodian' in self.fields`` branch).
+
+        The update-in-place behaviour is verified by capturing the EntryField object after
+        the first set and asserting it is the exact same object (assertIs) after the second
+        set.  If the setter were broken and re-inserted a new EntryField, the reference would
+        differ.  A simple field-count check cannot catch this regression because the backing
+        store is a dict, and dict keys are inherently unique.
+        """
+        self.row.custodian = "Bob"
+        custodian_field_after_first_set = self.row["custodian"]
+        self.row.custodian = "Carol"
+        self.assertEqual(self.row.custodian, "Carol", "Second custodian value must be returned by getter")
+        self.assertIs(self.row["custodian"], custodian_field_after_first_set,
+                      "custodian setter must update the existing EntryField in place, not replace it")
+
+    def test_set_field_value_on_csv_row_entry(self):
+        """set_field_value must not raise KeyError for valid EDRM field names on CSVRowEntry."""
+        self.row.set_field_value("MIME Type", "application/octet-stream")
+        self.assertEqual(self.row["MIME Type"].value, "application/octet-stream")
