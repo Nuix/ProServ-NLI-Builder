@@ -5,6 +5,8 @@ import com.nuix.edrm.EntryField;
 import com.nuix.edrm.datatypes.JSONFileEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -80,24 +82,39 @@ public class JsonTests {
     }
 
     // -----------------------------------------------------------------------
-    // Existing test (preserving original behaviour)
+    // Resource-file roundtrip tests (parameterized, SLC-174)
     // -----------------------------------------------------------------------
 
-    @Test
-    public void testSimpleStr() throws Exception {
-        Path json = resources().resolve("simple_str.json");
+    /**
+     * Parameterized roundtrip: load a JSON resource file, write an NLI, verify the NLI exists and
+     * contains at least {@code minDocCount} EDRM {@code <Document>} elements.
+     *
+     * <p>Row format: {@code resourceName, outputName, minDocCount}
+     * <ul>
+     *   <li>{@code simple_str.json} — scalar string root; file entry + value child = ≥ 2 documents
+     *   <li>{@code object_complex.json} — deeply nested object; traversal must descend into nested
+     *       structures, so ≥ 10 documents confirms recursive traversal is working
+     * </ul>
+     */
+    @ParameterizedTest(name = "{0} -> {1} (minDocs={2})")
+    @CsvSource({
+        "simple_str.json,     simple_str.nli,       2",
+        "object_complex.json, complex_roundtrip.nli, 10"
+    })
+    public void testResourceFileRoundtrip(String resourceName, String outputName, int minDocCount) throws Exception {
+        Path json = resources().resolve(resourceName);
         JSONFileEntry entry = new JSONFileEntry(json.toString());
         NLIGenerator nli = new NLIGenerator();
         nli.addEntry(entry);
-        Path out = outputDir().resolve("simple_str.nli");
+        Path out = outputDir().resolve(outputName);
         nli.save(out);
-        assertTrue(Files.exists(out));
+        assertTrue(Files.exists(out), "NLI output file should exist: " + out);
+        assertTrue(Files.size(out) > 0, "NLI output file should be non-zero: " + out);
 
-        // Verify that traversal produced output: JSON file entry + scalar value child = at least 2 documents.
-        // A file-existence-only assertion would pass even on empty or corrupt output.
         Document doc = getEdrmXmlFromNli(out);
         int docCount = xpathCount(doc, "//Document");
-        assertTrue(docCount >= 2, "Expected at least 2 documents (file + scalar value), got " + docCount);
+        assertTrue(docCount >= minDocCount,
+                "Expected at least " + minDocCount + " documents in NLI for " + resourceName + ", got " + docCount);
     }
 
     // -----------------------------------------------------------------------
@@ -222,31 +239,6 @@ public class JsonTests {
         int relCount = xpathCount(doc, "//Relationship");
         assertTrue(relCount >= 1,
                 "Expected at least one Relationship for the nested object child");
-    }
-
-    /**
-     * Test 7: Full roundtrip via NLIGenerator with a complex nested JSON file —
-     * output NLI file exists and is non-zero in size.
-     */
-    @Test
-    public void testComplexJsonRoundtrip() throws Exception {
-        Path json = resources().resolve("object_complex.json");
-        JSONFileEntry entry = new JSONFileEntry(json.toString());
-        NLIGenerator nli = new NLIGenerator();
-        nli.addEntry(entry);
-        Path out = outputDir().resolve("complex_roundtrip.nli");
-        nli.save(out);
-        assertTrue(Files.exists(out), "NLI output file should exist");
-        assertTrue(Files.size(out) > 0, "NLI output file should be non-zero");
-
-        // Assert that nested objects were traversed: the complex JSON has multiple levels of
-        // nesting (root object, mail sub-object, nuix sub-object with userDataDirs array).
-        // Requiring at least 10 documents confirms that traversal descended into nested structures,
-        // not just the root object.
-        Document doc = getEdrmXmlFromNli(out);
-        int docCount = xpathCount(doc, "//Document");
-        assertTrue(docCount >= 10,
-                "Expected at least 10 documents for complex nested JSON (root + nested objects + scalars), got " + docCount);
     }
 
     /**
