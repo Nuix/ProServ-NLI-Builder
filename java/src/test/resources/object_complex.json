@@ -13,7 +13,7 @@
     "smtpAuth": "auth",
     "smtpSocketFactoryPort": 2,
     "smtpSocketFactoryClass": "clz",
-    "user": "me",
+    "user": "test-user",
     "password": "REDACTED",
     "distroList": ["a@b.c", "b@a.c"]
   },
