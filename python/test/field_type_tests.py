@@ -36,6 +36,17 @@ class TestFieldTypeMembership(unittest.TestCase):
     def test_exactly_six_members(self):
         self.assertEqual(len(self.FieldType), 6)
 
+    def test_member_iteration_order(self):
+        expected = [
+            self.FieldType.TEXT,
+            self.FieldType.DATETIME,
+            self.FieldType.INTEGER,
+            self.FieldType.LONG_TEXT,
+            self.FieldType.DECIMAL,
+            self.FieldType.BOOLEAN,
+        ]
+        self.assertEqual(list(self.FieldType), expected)
+
 
 class TestFieldTypeStringEquality(unittest.TestCase):
     """Each FieldType member compares equal to its canonical string value (StrEnum contract)."""
