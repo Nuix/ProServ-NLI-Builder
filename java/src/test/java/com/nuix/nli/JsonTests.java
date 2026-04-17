@@ -699,8 +699,8 @@ public class JsonTests {
         nli.addEntry(new JSONFileEntry(json.toString()));
         Path out = outputDir().resolve("string_looks_like_array.nli");
         nli.save(out);
-        assertTrue(Files.exists(out));
-
+        // getEdrmXmlFromNli already throws AssertionError if the file is missing or
+        // image_contents.xml is absent — no need for a separate Files.exists check.
         Document doc = getEdrmXmlFromNli(out);
 
         // The child Document element must have MimeType="application/x-json-value", NOT
@@ -733,8 +733,8 @@ public class JsonTests {
         nli.addEntry(new JSONFileEntry(json.toString()));
         Path out = outputDir().resolve("string_looks_like_object.nli");
         nli.save(out);
-        assertTrue(Files.exists(out));
-
+        // getEdrmXmlFromNli already throws AssertionError if the file is missing or
+        // image_contents.xml is absent — no need for a separate Files.exists check.
         Document doc = getEdrmXmlFromNli(out);
 
         // The child Document element must have MimeType="application/x-json-value", NOT
