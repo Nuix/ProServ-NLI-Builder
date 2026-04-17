@@ -28,7 +28,7 @@
       },
       {
         "root": "C:",
-        "path": ["Users","sluke01","AppData","Roaming","Nuix"]
+        "path": ["Users","testuser","AppData","Roaming","Nuix"]
       }
     ],
     "licenseSource": "cloud-server",
