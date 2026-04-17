@@ -419,20 +419,23 @@ public class JsonTests {
      * An empty file produces a null/missing root node in Jackson — the Jackson-based
      * implementation handles this gracefully without throwing.  This test verifies that
      * an empty JSON file does not propagate an unchecked exception and that the NLI
-     * output file is still produced (as an entry with no children).
+     * output file is still produced (as an archive with no JSON child entries).
      */
     @Test
     public void testEmptyFileHandledGracefully() throws Exception {
         Path tmp = Files.createTempFile(outputDir(), "slc153-test-empty-", ".json");
+        Path out = outputDir().resolve("empty_file_graceful.nli");
         try {
             Files.writeString(tmp, "");
             JSONFileEntry entry = new JSONFileEntry(tmp.toString());
             NLIGenerator nli = new NLIGenerator();
-            Path out = outputDir().resolve("empty_file_graceful.nli");
             assertDoesNotThrow(() -> nli.addEntry(entry),
                     "An empty JSON file should be handled gracefully, not throw");
+            nli.save(out);
+            assertTrue(Files.exists(out), "NLI output file should exist even for empty JSON input");
         } finally {
             Files.deleteIfExists(tmp);
+            Files.deleteIfExists(out);
         }
     }
 
