@@ -4,7 +4,7 @@ import hashlib
 import urllib.parse
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, cast
 from xml.dom.minidom import Document, Element
 
 from nuix_nli_lib.edrm import FieldFactory, EDRMUtilities as eutes
@@ -91,8 +91,7 @@ class FileEntry(EntryInterface):
                                                         str(self.file_path.stat().st_size))
 
     def fill_hash_fields(self) -> None:
-        sha1_hash = eutes.hash_file(self.file_path, hashlib.sha1())
-        assert isinstance(sha1_hash, str)
+        sha1_hash = cast(str, eutes.hash_file(self.file_path, hashlib.sha1()))
         self['SHA-1'] = FieldFactory.generate_field('SHA-1', EntryField.TYPE_TEXT, sha1_hash)
 
     @property
@@ -124,9 +123,7 @@ class FileEntry(EntryInterface):
         return self.__parent_id
 
     def calculate_md5(self) -> str:
-        result = eutes.hash_file(self.file_path, hashlib.md5())
-        assert isinstance(result, str)
-        return result
+        return cast(str, eutes.hash_file(self.file_path, hashlib.md5()))
 
     def add_location_uri(self,
                          document: Document,
