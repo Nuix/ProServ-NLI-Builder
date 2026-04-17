@@ -32,6 +32,10 @@ import java.util.*;
  * </ul>
  */
 public class JSONFileEntry extends FileEntry implements CompoundEntry {
+    // ObjectMapper is thread-safe once fully configured and thereafter immutable in use.
+    // Sharing a single static instance avoids per-instance allocation overhead.
+    // Do NOT call configuration methods (e.g. configure(), registerModule()) on this field
+    // after class initialisation — those calls are not thread-safe once the mapper is in use.
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final Path jsonPath;
