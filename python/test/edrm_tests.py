@@ -162,3 +162,48 @@ class TestDatetimeUTCAware(unittest.TestCase):
         dt_result = eutes.convert_datetime_to_string(datetime.fromtimestamp(ts, tz=timezone.utc))
         self.assertEqual(ts_result, dt_result,
                          "convert_timestamp_to_string and convert_datetime_to_string(utc_aware) should agree")
+
+
+class TestMappingEntryItemdateContract(unittest.TestCase):
+    """SLC-293: MappingEntry.itemdate must always return datetime, consistent with EntryInterface contract."""
+
+    def test_itemdate_always_returns_datetime_no_time_field(self):
+        """itemdate returns a datetime when no time field is present."""
+        mapping = MappingEntry({'a': 1}, "application/x-test")
+        result = mapping.itemdate
+        self.assertIsInstance(result, datetime,
+                              f"itemdate should return datetime when no time field, got {type(result)}: {result!r}")
+
+    def test_itemdate_always_returns_datetime_parseable_string(self):
+        """itemdate returns a datetime when the time field holds a parseable string."""
+        date_str = "2024-01-15T10:00:00.000000"
+        mapping = MappingEntry({'Item Date': date_str}, "application/x-test")
+        result = mapping.itemdate
+        self.assertIsInstance(result, datetime,
+                              f"itemdate should return datetime for a parseable string, got {type(result)}: {result!r}")
+
+    def test_itemdate_always_returns_datetime_unparseable_string(self):
+        """itemdate returns a datetime even when the string cannot be parsed.
+
+        The fallback must be datetime.now() — NOT the format string and NOT the raw
+        input string. Returning a str here violates the EntryInterface contract.
+        """
+        before = datetime.now(tz=timezone.utc)
+        mapping = MappingEntry({'Item Date': 'not-a-date'}, "application/x-test")
+        result = mapping.itemdate
+        after = datetime.now(tz=timezone.utc)
+        self.assertIsInstance(result, datetime,
+                              f"itemdate must return datetime on ValueError fallback, not {type(result)}: {result!r}")
+        # The fallback should be approximately now (within the test duration)
+        result_utc = result if result.tzinfo else result.replace(tzinfo=timezone.utc)
+        self.assertGreaterEqual(result_utc, before)
+        self.assertLessEqual(result_utc, after)
+
+    def test_itemdate_always_returns_datetime_datetime_value(self):
+        """itemdate returns the datetime unchanged when the field holds a datetime."""
+        dt = datetime(2024, 6, 15, 12, 0, 0, tzinfo=timezone.utc)
+        mapping = MappingEntry({'Item Date': dt}, "application/x-test")
+        result = mapping.itemdate
+        self.assertIsInstance(result, datetime,
+                              f"itemdate should return datetime when field is already a datetime, got {type(result)}")
+        self.assertEqual(result, dt)

@@ -113,6 +113,11 @@ class FileEntry(EntryInterface):
 
     @property
     def itemdate(self) -> datetime:
+        assert self.__item_date is not None, (
+            "FileEntry.itemdate is None — fill_basic_fields must complete successfully before "
+            "itemdate is accessed.  This should not happen in normal usage; check whether the "
+            "file path is valid and accessible."
+        )
         return self.__item_date
 
     @property
