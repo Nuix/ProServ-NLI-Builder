@@ -102,7 +102,6 @@ class NliPackagingTests {
         // Verify the sha1_hash bytes match the SHA-1 of image_contents.xml.
         // SHA-1 is mandated by the JCA spec for every Java SE implementation, so
         // NoSuchAlgorithmException is declared but can never fire in practice.
-
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
         byte[] expectedHash = sha1.digest(xmlBytes);
 
