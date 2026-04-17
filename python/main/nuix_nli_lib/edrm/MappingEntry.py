@@ -214,7 +214,7 @@ class MappingEntry(EntryInterface):
                 try:
                     time_as_datetime = datetime.strptime(date_time, edrm.configs['date_time_format'])
                 except ValueError:
-                    time_as_datetime = edrm.configs['date_time_format']
+                    time_as_datetime = date_time
                 return time_as_datetime
 
             raise ValueError(f'Invalid item date format: {date_time}')
