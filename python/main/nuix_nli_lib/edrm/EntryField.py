@@ -39,7 +39,7 @@ class EntryField:
         self.__value = default_value
 
     @property
-    def key(self):
+    def key(self) -> str:
         """
         :return: Key used as the name for the XML Node used to store the field's value.  The key must be unique
                  within the load file, and able to be used to map a Field Name to the XML Node used to store the
