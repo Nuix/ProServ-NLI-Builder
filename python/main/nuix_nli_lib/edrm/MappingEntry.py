@@ -6,7 +6,7 @@ from operator import contains
 from typing import Any, Union
 from xml.dom.minidom import Document, Element
 
-from nuix_nli_lib.edrm import FieldFactory, EntryField, FieldType, EntryInterface, EDRMUtilities as eutes
+from nuix_nli_lib.edrm import FieldFactory, FieldType, EntryInterface, EDRMUtilities as eutes
 from nuix_nli_lib import edrm
 
 
@@ -42,8 +42,8 @@ class MappingEntry(EntryInterface):
 
     def __fill_initial_fields(self):
         """
-        Internal function used to generate appropriate EntryField definitions for each field in this mapping's
-        dictionary.
+        Internal function used to generate appropriate field definitions (via FieldFactory) for each field in this
+        mapping's dictionary.
         """
         for key, value in self.data.items():
             if isinstance(value, bool):
