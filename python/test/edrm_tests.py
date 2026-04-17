@@ -14,7 +14,7 @@ class TestEDRM(unittest.TestCase):
         self.output_path: Path = Path(".", "resources", "output").absolute()
 
     def test_simple_file(self):
-        file_entry = FileEntry(self.sample_file, "plain/text")
+        file_entry = FileEntry(self.sample_file, "text/plain")
         builder = EDRMBuilder()
         builder.as_nli = False
         builder.output_path = self.output_path / 'edrm_test.xml'
@@ -110,3 +110,4 @@ class TestEDRM(unittest.TestCase):
         file_id = builder.add_file(self.sample_file, "application/powershell_script", parent_id=folder_id)
         map_id = builder.add_mapping(self.sample_mapping, "application/x-database-table-row", parent_id=file_id)
         builder.save()
+
