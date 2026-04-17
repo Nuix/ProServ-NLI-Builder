@@ -214,13 +214,20 @@ class TestSQLRowEntry(unittest.TestCase):
         The original bug caused a new EntryField to be appended on every setter call
         instead of updating the existing one.  This test exercises the update path in
         EntryInterface.custodian.setter (the ``if 'custodian' in self.fields`` branch).
+
+        The update-in-place behaviour is verified by capturing the EntryField object after
+        the first set and asserting it is the exact same object (assertIs) after the second
+        set.  If the setter were broken and re-inserted a new EntryField, the reference would
+        differ.  A simple field-count check cannot catch this regression because the backing
+        store is a dict, and dict keys are inherently unique.
         """
         row = SQLRowEntry(self.parent, 0)
         row.custodian = "Alice"
+        custodian_field_after_first_set = row["custodian"]
         row.custodian = "Bob"
         self.assertEqual(row.custodian, "Bob", "Second custodian value must be returned by getter")
-        custodian_count = sum(1 for f in row.fields if f == "custodian")
-        self.assertEqual(custodian_count, 1, "There must be exactly one custodian field after two setter calls")
+        self.assertIs(row["custodian"], custodian_field_after_first_set,
+                      "custodian setter must update the existing EntryField in place, not replace it")
 
     def test_set_field_value_on_row_entry(self):
         """set_field_value must not raise KeyError for valid EDRM field names on SQLRowEntry."""
