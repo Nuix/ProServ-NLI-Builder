@@ -29,6 +29,15 @@ public class JsonTests {
     @BeforeEach
     void ensureOutputDir() throws Exception {
         Files.createDirectories(outputDir());
+        // Delete stale .nli output files so that assertTrue(Files.exists(out)) cannot
+        // pass trivially from a previous test run — the file must be freshly produced.
+        try (var stream = Files.list(outputDir())) {
+            stream.filter(p -> p.toString().endsWith(".nli"))
+                  .forEach(p -> {
+                      try { Files.deleteIfExists(p); }
+                      catch (java.io.IOException ignored) { }
+                  });
+        }
     }
 
     // -----------------------------------------------------------------------
