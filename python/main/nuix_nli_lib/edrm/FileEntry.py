@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 import urllib.parse
 from datetime import datetime
-from hashlib import _Hash  # type: ignore[attr-defined]
 from pathlib import Path
 from typing import Optional
 from xml.dom.minidom import Document, Element

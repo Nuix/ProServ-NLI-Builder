@@ -5,15 +5,28 @@ import re
 import sys
 import hashlib
 from datetime import datetime
-from hashlib import _Hash  # type: ignore[attr-defined]
 from pathlib import Path
-from typing import Union, Any
+from typing import Any, Protocol, Union, runtime_checkable
 
 from nuix_nli_lib import edrm
 
 """
 Collection of utility functions for working with EDRM data.
 """
+
+
+@runtime_checkable
+class HashProtocol(Protocol):
+    """Protocol capturing the minimal interface of a hashlib hash object used in this module."""
+
+    def update(self, data: bytes) -> None:
+        ...
+
+    def hexdigest(self) -> str:
+        ...
+
+    def digest(self) -> bytes:
+        ...
 
 
 def convert_datetime_to_string(date_time: datetime) -> str:
@@ -46,7 +59,7 @@ def convert_timestamp_to_string(timestamp: float) -> str:
     return convert_datetime_to_string(dt)
 
 
-def _hash_file(file: Path, hashfunction: _Hash) -> None:
+def _hash_file(file: Path, hashfunction: HashProtocol) -> None:
     """
     Intermediate function to update the hash with the contents of the file.
     """
@@ -59,7 +72,7 @@ def _hash_file(file: Path, hashfunction: _Hash) -> None:
             hashfunction.update(data)
 
 
-def hash_file(file: Path, hashfunction: _Hash, as_string: bool = True) -> Union[str, bytes]:
+def hash_file(file: Path, hashfunction: HashProtocol, as_string: bool = True) -> Union[str, bytes]:
     """
     Generate a hash for the provided file. This will work on large files by breaking it into smaller chunks.  Use the
     `edrm.configs` object to control how large those chunks are.
@@ -76,14 +89,14 @@ def hash_file(file: Path, hashfunction: _Hash, as_string: bool = True) -> Union[
         return hashfunction.digest()
 
 
-def _hash_data(data: Any, hashfunction: _Hash) -> None:
+def _hash_data(data: Any, hashfunction: HashProtocol) -> None:
     """
     Intermediate function to update a hash function with the contents of some data.
     """
     hashfunction.update(str(data).encode(str(edrm.configs['encoding'])))
 
 
-def hash_data(data: Any, hashfunction: _Hash, as_string: bool = True) -> Union[str, bytes]:
+def hash_data(data: Any, hashfunction: HashProtocol, as_string: bool = True) -> Union[str, bytes]:
     """
     Generate a hash for the provided data. This converts data to string prior to hashing it.
     :param data: Data to calculate a hash on
@@ -99,7 +112,7 @@ def hash_data(data: Any, hashfunction: _Hash, as_string: bool = True) -> Union[s
         return hashfunction.digest()
 
 
-def hash_directory(directory: Path, hashfunction: _Hash, as_string: bool = True) -> Union[str, bytes]:
+def hash_directory(directory: Path, hashfunction: HashProtocol, as_string: bool = True) -> Union[str, bytes]:
     """
     Hash the contents of a directory.  The contents of the directory includes all the non-empty files, all the files'
     names, calculated recursively through subdirectories.
