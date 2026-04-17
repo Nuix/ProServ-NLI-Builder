@@ -16,7 +16,7 @@ public class CSVRowEntry extends MappingEntry {
         this.rowIndex = rowIndex;
         // populate fields from CSV headers
         for (String f : parentCsv.getRowFields()) {
-            Object v = getData().getOrDefault(f, parentCsv.getData().get(rowIndex).get(f));
+            Object v = parentCsv.getData().get(rowIndex).get(f);
             putField(FieldFactory.generateField(f, EntryField.Type.Text, v));
         }
         // Provide a default Name using a common field if it exists
