@@ -590,7 +590,7 @@ class TestNLIPackaging(unittest.TestCase):
         with zipfile.ZipFile(self.nli_path, "r") as zf:
             xml_bytes = zf.read("._metadata/image_contents.xml")
             sha1_bytes = zf.read("._metadata/image_contents.sha1_hash")
-        expected_hash = hashlib.sha1(xml_bytes).digest()
+        expected_hash = hashlib.sha1(xml_bytes, usedforsecurity=False).digest()
         self.assertEqual(
             sha1_bytes,
             expected_hash,
