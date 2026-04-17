@@ -296,6 +296,36 @@ public class JsonTests {
                 "Expected a LongInteger-typed field after nested fieldTypeOverride coercion");
     }
 
+    // --- null root JSON (SLC-175) ---
+
+    /**
+     * A JSON file whose entire content is the literal {@code null} is valid JSON.
+     * Jackson parses it as a NullNode whose {@code isNull()} returns {@code true}.
+     * {@code JSONFileEntry.addToBuilder} must handle this by returning early without
+     * adding any child entries — the NLI must be produced with exactly one
+     * {@code <Document>} element (the file entry itself) and must not throw.
+     *
+     * <p>This is the only test that exercises the {@code root.isNull()} early-return
+     * branch in {@code JSONFileEntry.addToBuilder}.
+     */
+    @Test
+    public void testRootNullProducesFileEntryOnly() throws Exception {
+        Path json = writeTempJson("null_root.json", "null");
+        NLIGenerator nli = new NLIGenerator();
+        assertDoesNotThrow(() -> nli.addEntry(new JSONFileEntry(json.toString())),
+                "A root-null JSON document must not throw during addEntry");
+        Path out = outputDir().resolve("null_root.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out), "NLI output file should exist for null-root JSON");
+
+        // The root NullNode triggers an early return; no child entry is added.
+        // Exactly one <Document> (the JSONFileEntry itself) must be present.
+        Document doc = getEdrmXmlFromNli(out);
+        int docCount = xpathCount(doc, "//Document");
+        assertEquals(1, docCount,
+                "A null-root JSON document should produce exactly 1 Document (the file entry, no children), got " + docCount);
+    }
+
     // --- malformed JSON detection (SLC-153) ---
 
     /**
