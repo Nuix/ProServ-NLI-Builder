@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from nuix_nli_lib.edrm.EntryField import EntryField
@@ -6,7 +8,7 @@ next_key_index: int = 0
 """ Counter for the known set of fields, such as to provide unique names for each field node """
 
 
-def next_key():
+def next_key() -> str:
     """
     Keys, in this respect, are used as the names of XML Nodes identifying the field values for each entry in an
     EDRM load file.  Fields are first listed with their definition once, and are provided a key, which then links that
