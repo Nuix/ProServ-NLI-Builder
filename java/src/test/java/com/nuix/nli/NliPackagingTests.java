@@ -23,7 +23,7 @@ import java.util.zip.ZipInputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class NliPackagingTests {
+public class NliPackagingTests {
 
     private Path resources() {
         return Paths.get(".", "src", "test", "resources").toAbsolutePath().normalize();
