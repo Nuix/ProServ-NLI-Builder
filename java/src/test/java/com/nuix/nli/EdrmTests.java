@@ -181,6 +181,9 @@ public class EdrmTests {
 
     @Test
     public void testDecimalFieldRoundtrip() {
+        // 3.14 is a Java double literal; FieldFactory maps Double → EntryField.Type.Decimal,
+        // which is serialised as DataType="Decimal" in the EDRM XML.
+        // If this assertion breaks, check FieldFactory's type-dispatch table.
         MappingEntry entry = new MappingEntry(Map.of("Score", 3.14), "text/plain");
         EDRMBuilder builder = newBuilder();
         builder.addEntry(entry);
