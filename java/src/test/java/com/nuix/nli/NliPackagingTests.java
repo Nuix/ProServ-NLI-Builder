@@ -1,9 +1,14 @@
 package com.nuix.nli;
 
+import com.nuix.edrm.DirectoryEntry;
 import com.nuix.edrm.FileEntry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -18,7 +23,7 @@ import java.util.zip.ZipInputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class NliPackagingTests {
+class NliPackagingTests {
 
     private Path resources() {
         return Paths.get(".", "src", "test", "resources").toAbsolutePath().normalize();
@@ -58,7 +63,7 @@ public class NliPackagingTests {
     }
 
     @Test
-    public void testZipContainsMetadataXml(@TempDir Path tempDir) throws IOException {
+    void testZipContainsMetadataXml(@TempDir Path tempDir) throws IOException, ParserConfigurationException, SAXException {
         Path sampleFile = resources().resolve("top-level-MD5-digests.txt");
         NLIGenerator generator = new NLIGenerator();
         generator.addEntry(new FileEntry(sampleFile.toString(), "text/plain"));
@@ -73,10 +78,14 @@ public class NliPackagingTests {
             entries.contains("._metadata/image_contents.xml"),
             "NLI ZIP should contain '._metadata/image_contents.xml', found: " + entries
         );
+
+        // Verify image_contents.xml is well-formed XML (SLC-165)
+        byte[] xmlBytes = readNliEntry(nliPath, "._metadata/image_contents.xml");
+        DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xmlBytes));
     }
 
     @Test
-    public void testZipContainsSha1Sidecar(@TempDir Path tempDir) throws IOException {
+    void testZipContainsSha1Sidecar(@TempDir Path tempDir) throws IOException, NoSuchAlgorithmException {
         Path sampleFile = resources().resolve("top-level-MD5-digests.txt");
         NLIGenerator generator = new NLIGenerator();
         generator.addEntry(new FileEntry(sampleFile.toString(), "text/plain"));
@@ -90,17 +99,14 @@ public class NliPackagingTests {
             "NLI ZIP should contain '._metadata/image_contents.sha1_hash', found: " + entries
         );
 
-        // Verify the sha1_hash bytes match the SHA-1 of image_contents.xml
+        // Verify the sha1_hash bytes match the SHA-1 of image_contents.xml.
+        // SHA-1 is mandated by the JCA spec for every Java SE implementation, so
+        // NoSuchAlgorithmException is declared but can never fire in practice.
         byte[] xmlBytes = readNliEntry(nliPath, "._metadata/image_contents.xml");
         byte[] storedHash = readNliEntry(nliPath, "._metadata/image_contents.sha1_hash");
 
-        byte[] expectedHash;
-        try {
-            MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-            expectedHash = sha1.digest(xmlBytes);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+        byte[] expectedHash = sha1.digest(xmlBytes);
 
         assertArrayEquals(
             expectedHash,
@@ -110,7 +116,7 @@ public class NliPackagingTests {
     }
 
     @Test
-    public void testZipContainsNativeFile(@TempDir Path tempDir) throws IOException {
+    void testZipContainsNativeFile(@TempDir Path tempDir) throws IOException {
         Path sampleFile = resources().resolve("top-level-MD5-digests.txt");
         NLIGenerator generator = new NLIGenerator();
         generator.addEntry(new FileEntry(sampleFile.toString(), "text/plain"));
@@ -125,6 +131,34 @@ public class NliPackagingTests {
         assertTrue(
             entries.contains(expectedEntryName),
             "NLI ZIP should contain native file '" + expectedEntryName + "', found: " + entries
+        );
+    }
+
+    @Test
+    void testZipContainsNativeFileInSubdirectory(@TempDir Path tempDir) throws IOException {
+        // SLC-164: Cover the FileEntry-with-parent-DirectoryEntry code branch in NLIGenerator.save().
+        // When a FileEntry has a parent DirectoryEntry, the generator computes the ZIP path as
+        // URLEncode(dirName) + "/" + fileName instead of placing the file at the root.
+        Path nativeFile = resources().resolve("top-level-MD5-digests.txt");
+
+        // Use a self-contained subdirectory in tempDir so the DirectoryEntry hash is cheap and deterministic.
+        Path subDir = tempDir.resolve("docs");
+        Files.createDirectories(subDir);
+
+        NLIGenerator generator = new NLIGenerator();
+        String dirId = generator.addEntry(new DirectoryEntry(subDir.toString()));
+        generator.addEntry(new FileEntry(nativeFile.toString(), "text/plain", dirId));
+
+        Path nliPath = tempDir.resolve("output.nli");
+        generator.save(nliPath);
+
+        // The directory name "docs" URL-encodes to "docs"; the expected ZIP path is "docs/top-level-MD5-digests.txt".
+        String expectedEntryName = "docs/" + nativeFile.getFileName().toString();
+
+        Set<String> entries = listNliEntries(nliPath);
+        assertTrue(
+            entries.contains(expectedEntryName),
+            "NLI ZIP should contain native file at subdirectory path '" + expectedEntryName + "', found: " + entries
         );
     }
 }
