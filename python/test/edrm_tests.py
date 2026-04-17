@@ -110,3 +110,15 @@ class TestEDRM(unittest.TestCase):
         file_id = builder.add_file(self.sample_file, "application/powershell_script", parent_id=folder_id)
         map_id = builder.add_mapping(self.sample_mapping, "application/x-database-table-row", parent_id=file_id)
         builder.save()
+
+    def test_calculate_md5_returns_str(self):
+        """Type-contract test: calculate_md5() must return a str, not bytes.
+
+        cast(str, ...) is a zero-cost no-op that does not enforce the type at runtime.
+        If hash_file() ever regresses to returning bytes (e.g. the as_string default
+        changes), this test will catch it before the failure surfaces as a confusing
+        downstream XML attribute error.
+        """
+        file_entry = FileEntry(self.sample_file, "plain/text")
+        result = file_entry.calculate_md5()
+        self.assertIsInstance(result, str)
