@@ -62,14 +62,25 @@ class NliPackagingTests {
         throw new IOException("Entry not found in NLI ZIP: " + entryName);
     }
 
-    @Test
-    void testZipContainsMetadataXml(@TempDir Path tempDir) throws IOException, ParserConfigurationException, SAXException {
+    /**
+     * Builds a single-file NLI archive in {@code tempDir} using the standard test fixture
+     * ({@code top-level-MD5-digests.txt} as a {@code text/plain} {@link FileEntry}).
+     *
+     * @param tempDir the JUnit {@code @TempDir} directory to write {@code output.nli} into
+     * @return path to the written {@code output.nli} file
+     */
+    private Path buildSingleFileNli(Path tempDir) throws IOException {
         Path sampleFile = resources().resolve("top-level-MD5-digests.txt");
         NLIGenerator generator = new NLIGenerator();
         generator.addEntry(new FileEntry(sampleFile.toString(), "text/plain"));
-
         Path nliPath = tempDir.resolve("output.nli");
         generator.save(nliPath);
+        return nliPath;
+    }
+
+    @Test
+    void testZipContainsMetadataXml(@TempDir Path tempDir) throws IOException, ParserConfigurationException, SAXException {
+        Path nliPath = buildSingleFileNli(tempDir);
 
         assertTrue(Files.exists(nliPath), "NLI file should exist after save()");
 
@@ -86,24 +97,17 @@ class NliPackagingTests {
 
     @Test
     void testZipContainsSha1Sidecar(@TempDir Path tempDir) throws IOException, NoSuchAlgorithmException {
-        Path sampleFile = resources().resolve("top-level-MD5-digests.txt");
-        NLIGenerator generator = new NLIGenerator();
-        generator.addEntry(new FileEntry(sampleFile.toString(), "text/plain"));
+        Path nliPath = buildSingleFileNli(tempDir);
 
-        Path nliPath = tempDir.resolve("output.nli");
-        generator.save(nliPath);
-
-        Set<String> entries = listNliEntries(nliPath);
-        assertTrue(
-            entries.contains("._metadata/image_contents.sha1_hash"),
-            "NLI ZIP should contain '._metadata/image_contents.sha1_hash', found: " + entries
-        );
+        // Read both sidecar files directly — readNliEntry throws IOException("Entry not found
+        // in NLI ZIP: ...") if either is absent, giving a clear failure signal without a
+        // separate presence-only assertTrue that duplicates the check.
+        byte[] xmlBytes = readNliEntry(nliPath, "._metadata/image_contents.xml");
+        byte[] storedHash = readNliEntry(nliPath, "._metadata/image_contents.sha1_hash");
 
         // Verify the sha1_hash bytes match the SHA-1 of image_contents.xml.
         // SHA-1 is mandated by the JCA spec for every Java SE implementation, so
         // NoSuchAlgorithmException is declared but can never fire in practice.
-        byte[] xmlBytes = readNliEntry(nliPath, "._metadata/image_contents.xml");
-        byte[] storedHash = readNliEntry(nliPath, "._metadata/image_contents.sha1_hash");
 
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
         byte[] expectedHash = sha1.digest(xmlBytes);
@@ -117,20 +121,24 @@ class NliPackagingTests {
 
     @Test
     void testZipContainsNativeFile(@TempDir Path tempDir) throws IOException {
-        Path sampleFile = resources().resolve("top-level-MD5-digests.txt");
-        NLIGenerator generator = new NLIGenerator();
-        generator.addEntry(new FileEntry(sampleFile.toString(), "text/plain"));
-
-        Path nliPath = tempDir.resolve("output.nli");
-        generator.save(nliPath);
+        Path nliPath = buildSingleFileNli(tempDir);
 
         // A FileEntry with no parent is placed at the root of NLI_Gen using just the filename.
-        String expectedEntryName = sampleFile.getFileName().toString();
+        String expectedEntryName = resources().resolve("top-level-MD5-digests.txt").getFileName().toString();
 
         Set<String> entries = listNliEntries(nliPath);
         assertTrue(
             entries.contains(expectedEntryName),
             "NLI ZIP should contain native file '" + expectedEntryName + "', found: " + entries
+        );
+
+        // Verify round-trip fidelity: the packager must copy the file data intact, not just name it correctly.
+        byte[] expectedBytes = Files.readAllBytes(sampleFile);
+        byte[] actualBytes = readNliEntry(nliPath, expectedEntryName);
+        assertArrayEquals(
+            expectedBytes,
+            actualBytes,
+            "Native file content in ZIP should match the source file byte-for-byte"
         );
     }
 
