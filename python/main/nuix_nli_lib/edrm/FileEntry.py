@@ -143,7 +143,7 @@ class FileEntry(EntryInterface):
         location_uri_element.appendChild(document.createTextNode(location_uri))
         container.appendChild(location_uri_element)
 
-    def add_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool):
+    def add_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool) -> None:
         """
         See edrm.EntryInterface.add_file for details about this method.
 
