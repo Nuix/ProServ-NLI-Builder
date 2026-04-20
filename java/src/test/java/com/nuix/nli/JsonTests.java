@@ -751,4 +751,112 @@ public class JsonTests {
         assertTrue(objectMime.isEmpty(),
                 "No application/x-json-object entry should exist for a string root");
     }
+
+    // -------------------------------------------------------------------------
+    // SLC-150: JSON string escape sequence decoding (regression guard)
+    // -------------------------------------------------------------------------
+
+    /**
+     * testScalarStringNewlineEscape: A root JSON string containing a {@code \n} escape
+     * sequence must be decoded to an actual newline character, not the two-character literal
+     * {@code \n}.
+     *
+     * <p>A naive {@code content.substring(1, content.length() - 1)} implementation strips
+     * the surrounding quotes but leaves JSON escape sequences unprocessed. The correct
+     * implementation delegates to the JSON parser (Jackson's {@code node.textValue()}) which
+     * always returns the decoded Java string.
+     */
+    @Test
+    public void testScalarStringNewlineEscape(@TempDir Path tempDir) throws Exception {
+        // JSON: "hello\nworld" — the \n is a JSON escape, must become a real newline
+        Path json = tempDir.resolve("escape_newline.json");
+        Files.writeString(json, "\"hello\\nworld\"", StandardCharsets.UTF_8);
+
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        // The scalar child should carry the field value "hello\nworld" (real newline).
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        boolean foundDecodedNewline = entryMap.values().stream()
+                .filter(e -> !(e instanceof JSONFileEntry))
+                .flatMap(e -> {
+                    java.util.stream.Stream.Builder<String> sb = java.util.stream.Stream.builder();
+                    for (String fieldName : e.getFields()) {
+                        Object val = e.getField(fieldName).getValue();
+                        if (val != null) sb.accept(val.toString());
+                    }
+                    return sb.build();
+                })
+                .anyMatch(v -> v.contains("\n"));
+
+        assertTrue(foundDecodedNewline,
+                "JSON \\n escape in a scalar string must be decoded to a real newline character, " +
+                "not the literal two-character sequence '\\\\n'");
+    }
+
+    /**
+     * testScalarStringUnicodeEscape: A root JSON string containing a {@code \u0041} Unicode
+     * escape must be decoded to the character {@code A}, not the literal 6-character sequence
+     * {@code \u0041}.
+     */
+    @Test
+    public void testScalarStringUnicodeEscape(@TempDir Path tempDir) throws Exception {
+        // JSON: "\u0041" — Unicode escape for the letter 'A'
+        Path json = tempDir.resolve("escape_unicode.json");
+        Files.writeString(json, "\"\\u0041\"", StandardCharsets.UTF_8);
+
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        boolean foundDecodedUnicode = entryMap.values().stream()
+                .filter(e -> !(e instanceof JSONFileEntry))
+                .flatMap(e -> {
+                    java.util.stream.Stream.Builder<String> sb = java.util.stream.Stream.builder();
+                    for (String fieldName : e.getFields()) {
+                        Object val = e.getField(fieldName).getValue();
+                        if (val != null) sb.accept(val.toString());
+                    }
+                    return sb.build();
+                })
+                .anyMatch(v -> v.equals("A"));
+
+        assertTrue(foundDecodedUnicode,
+                "JSON \\u0041 escape in a scalar string must be decoded to 'A', " +
+                "not the literal string '\\\\u0041'");
+    }
+
+    /**
+     * testObjectFieldStringEscapeDecoding: String fields inside a JSON object must also
+     * have their escape sequences decoded. A field value {@code "hello\tworld"} must contain
+     * a real tab character.
+     */
+    @Test
+    public void testObjectFieldStringEscapeDecoding(@TempDir Path tempDir) throws Exception {
+        // JSON object with a tab escape in a field value
+        Path json = tempDir.resolve("escape_tab_field.json");
+        Files.writeString(json, "{\"msg\":\"hello\\tworld\"}", StandardCharsets.UTF_8);
+
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        boolean foundDecodedTab = entryMap.values().stream()
+                .filter(e -> !(e instanceof JSONFileEntry))
+                .flatMap(e -> {
+                    java.util.stream.Stream.Builder<String> sb = java.util.stream.Stream.builder();
+                    for (String fieldName : e.getFields()) {
+                        Object val = e.getField(fieldName).getValue();
+                        if (val != null) sb.accept(val.toString());
+                    }
+                    return sb.build();
+                })
+                .anyMatch(v -> v.contains("\t"));
+
+        assertTrue(foundDecodedTab,
+                "JSON \\t escape in an object field value must be decoded to a real tab character");
+    }
 }
