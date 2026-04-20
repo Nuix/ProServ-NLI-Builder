@@ -189,13 +189,15 @@ class MappingEntry(EntryInterface):
         return None
 
     @property
-    def itemdate(self) -> Union[datetime, str]:
+    def itemdate(self) -> datetime:
         """
-        Attempt to lookup an item date or time for this mapping.  If there isn't one present, use "now"  This
-        assumes that the values store for the field are either of the type datetime.datetime, or a string in the
-        Python format provided by the `date_time_format` field in the `edrm.configs` object.  If the value is a string
-        but not in the correct format, it will be returned as a String, which, while making an NLI, may make items
-        misbehave in the Nuix case.
+        Attempt to lookup an item date or time for this mapping.  If there isn't one present, or if the
+        string value cannot be parsed as a datetime, fall back to the current UTC time.
+
+        This assumes that the values stored for the field are either a ``datetime.datetime`` instance or a
+        string in the format provided by the ``date_time_format`` field in the ``edrm.configs`` object.
+        Unparseable strings fall back to ``datetime.now(tz=timezone.utc)`` rather than returning the raw
+        string, keeping the return type consistent with the ``EntryInterface`` contract.
         """
         time_field = self.time_field
 
@@ -212,10 +214,9 @@ class MappingEntry(EntryInterface):
 
             if isinstance(date_time, str):
                 try:
-                    time_as_datetime = datetime.strptime(date_time, edrm.configs['date_time_format'])
+                    return datetime.strptime(date_time, str(edrm.configs['date_time_format']))
                 except ValueError:
-                    time_as_datetime = edrm.configs['date_time_format']
-                return time_as_datetime
+                    return datetime.now(tz=timezone.utc)
 
             raise ValueError(f'Invalid item date format: {date_time}')
 
