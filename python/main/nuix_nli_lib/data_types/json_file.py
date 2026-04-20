@@ -134,6 +134,9 @@ def get_datetime_value_generator(formats: list[str]) -> Type[JSONValueEntry]:
                             break
                         except ValueError:
                             pass
+            # Normalize naive datetimes to UTC so that serialization is unambiguous.
+            if isinstance(dt, datetime) and dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
             dt = dt or v_str
             super().__init__(mapping_name, key_name, dt, mimetype, parent_id)
     return JSONDateTimeEntry

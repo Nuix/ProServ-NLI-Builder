@@ -17,8 +17,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -31,6 +33,10 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EdrmTests {
+    // XPathFactory construction performs service-loader discovery on every call.
+    // Promote to a shared static instance so all helper invocations reuse it.
+    private static final XPathFactory XPATH_FACTORY = XPathFactory.newInstance();
+
     private Path resources() { return Paths.get(".", "src", "test", "resources").toAbsolutePath().normalize(); }
     private Path outputDir() { return Paths.get("build", "test-output").toAbsolutePath().normalize(); }
 
@@ -48,32 +54,79 @@ public class EdrmTests {
         }
     }
 
-    /** Evaluate an XPath expression returning a NodeList against a Document. */
-    private NodeList xpath(Document doc, String expression) {
+    /**
+     * Shared XPath evaluation delegate. Creates a new XPath instance from the cached factory
+     * (XPath instances are not thread-safe, so one per call is correct) and evaluates the
+     * expression against the provided document with the specified return type.
+     *
+     * @param doc        the DOM Document to evaluate against
+     * @param expression the XPath expression string
+     * @param returnType one of {@link XPathConstants#NODESET}, {@link XPathConstants#STRING}, etc.
+     * @return the evaluation result cast to the type implied by {@code returnType}
+     */
+    private Object evaluate(Document doc, String expression, QName returnType) {
         try {
-            XPath xp = XPathFactory.newInstance().newXPath();
-            return (NodeList) xp.evaluate(expression, doc, XPathConstants.NODESET);
-        } catch (Exception e) {
+            XPath xp = XPATH_FACTORY.newXPath();
+            return xp.evaluate(expression, doc, returnType);
+        } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /** Evaluate an XPath expression returning a NodeList against a Document. */
+    private NodeList xpath(Document doc, String expression) {
+        return (NodeList) evaluate(doc, expression, XPathConstants.NODESET);
     }
 
     /** Evaluate an XPath expression against a Document and return the string result. */
     private String xpathStr(Document doc, String expression) {
-        try {
-            XPath xp = XPathFactory.newInstance().newXPath();
-            return xp.evaluate(expression, doc);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return (String) evaluate(doc, expression, XPathConstants.STRING);
     }
 
-    /** Build a minimal EDRMBuilder (non-NLI) with no output path required for build(). */
+    /**
+     * Retrieve the text content of the field value element for the given field name from the
+     * first (and assumed only) {@code <FieldValues>} block in the document. The field key is
+     * resolved by XPath from the {@code <Fields>} definition section and the value element is
+     * located via the DOM API to avoid XPath concatenation.
+     *
+     * <p>Asserts that exactly one {@code <FieldValues>} block exists, that the key attribute is
+     * non-empty, and that exactly one value element for that key exists.
+     *
+     * @param doc       the EDRM XML document under test
+     * @param fieldName the human-readable field name used in the {@code <Fields>} definition
+     * @return the text content of the serialized field value element
+     */
+    private String getFieldValueText(Document doc, String fieldName) {
+        String key = xpathStr(doc, "//Fields/Field[@Name='" + fieldName + "']/@Key");
+        assertFalse(key.isEmpty(),
+                "Expected a non-empty Key attribute on the '" + fieldName + "' field definition, got: '" + key + "'");
+
+        NodeList valueBlocks = xpath(doc, "//FieldValues");
+        assertEquals(1, valueBlocks.getLength(),
+                "Expected exactly one <FieldValues> block for a single-entry document, got " + valueBlocks.getLength());
+
+        org.w3c.dom.Element fieldValuesEl = (org.w3c.dom.Element) valueBlocks.item(0);
+        org.w3c.dom.NodeList keyNodes = fieldValuesEl.getElementsByTagName(key);
+        assertEquals(1, keyNodes.getLength(),
+                "Expected exactly one <" + key + "> element inside <FieldValues> for field '" + fieldName + "'");
+        return keyNodes.item(0).getTextContent();
+    }
+
+    /** Build a minimal EDRMBuilder (non-NLI) with a per-call temp file as the output path.
+     *  Using a unique temp file per invocation makes the suite safe for parallel execution —
+     *  a shared "scratch.xml" path would cause test collisions when tests run concurrently.
+     */
     private EDRMBuilder newBuilder() {
-        EDRMBuilder b = new EDRMBuilder();
-        b.setAsNli(false);
-        b.setOutputPath(outputDir().resolve("scratch.xml"));
-        return b;
+        try {
+            Path tempOut = Files.createTempFile(outputDir(), "edrm_scratch_", ".xml");
+            tempOut.toFile().deleteOnExit();
+            EDRMBuilder b = new EDRMBuilder();
+            b.setAsNli(false);
+            b.setOutputPath(tempOut);
+            return b;
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Failed to create temp output file for EDRMBuilder", e);
+        }
     }
 
     // ---- keep original tests passing ----
@@ -133,6 +186,12 @@ public class EdrmTests {
         String dataType = xpathStr(doc, "//Fields/Field[@Name='Subject']/@DataType");
         assertEquals("Text", dataType,
                 "Expected the 'Subject' field definition to have DataType=\"Text\"");
+
+        // Also verify the serialized field value — a DataType-only assertion cannot catch
+        // bugs in EntryField.serializeValue() that produce wrong or missing values.
+        String value = getFieldValueText(doc, "Subject");
+        assertEquals("Hello World", value,
+                "Expected 'Subject' field value to be serialized as 'Hello World'");
     }
 
     @Test
@@ -142,13 +201,15 @@ public class EdrmTests {
         EDRMBuilder builder = newBuilder();
         builder.addEntry(entry);
         Document doc = builder.build();
-        String xml = docToString(doc);
 
-        assertTrue(xml.contains("DataType=\"DateTime\""),
-                "Expected DataType=\"DateTime\" in EDRM XML Fields section, but got:\n" + xml);
-        // The formatted date should contain the year
-        assertTrue(xml.contains("2024"),
-                "Expected year '2024' in serialized DateTime field value, but got:\n" + xml);
+        String dataType = xpathStr(doc, "//Fields/Field[@Name='EventTime']/@DataType");
+        assertEquals("DateTime", dataType,
+                "Expected DataType=\"DateTime\" on the EventTime field definition");
+
+        // The formatted date should contain the year — use the DOM-safe helper to get the value
+        String fieldValue = getFieldValueText(doc, "EventTime");
+        assertTrue(fieldValue.contains("2024"),
+                "Expected year '2024' in serialized EventTime value, got: '" + fieldValue + "'");
     }
 
     @Test
@@ -157,12 +218,14 @@ public class EdrmTests {
         EDRMBuilder builder = newBuilder();
         builder.addEntry(entry);
         Document doc = builder.build();
-        String xml = docToString(doc);
 
-        assertTrue(xml.contains("DataType=\"LongInteger\""),
-                "Expected DataType=\"LongInteger\" in EDRM XML Fields section, but got:\n" + xml);
-        assertTrue(xml.contains("42"),
-                "Expected value '42' in EDRM XML field values, but got:\n" + xml);
+        String dataType = xpathStr(doc, "//Fields/Field[@Name='RecordCount']/@DataType");
+        assertEquals("LongInteger", dataType,
+                "Expected DataType=\"LongInteger\" on the RecordCount field definition");
+
+        String fieldValue = getFieldValueText(doc, "RecordCount");
+        assertEquals("42", fieldValue,
+                "Expected RecordCount field value to be '42', got: '" + fieldValue + "'");
     }
 
     @Test
@@ -172,34 +235,39 @@ public class EdrmTests {
         builder.addEntry(entry);
         Document doc = builder.build();
 
-        // Assert the Fields section declares DataType="Boolean" for IsActive specifically.
-        // Using XPath avoids a false positive from any other "Boolean" substring in the XML.
         String dataType = xpathStr(doc, "//Fields/Field[@Name='IsActive']/@DataType");
         assertEquals("Boolean", dataType,
-                "Expected DataType=\"Boolean\" on the IsActive field definition in <Fields>");
+                "Expected DataType=\"Boolean\" on the IsActive field definition");
 
-        // Retrieve the generated Key attribute for IsActive (e.g. "field_2") so we can
-        // target the exact element in <FieldValues> rather than matching "true" anywhere in the XML.
+        // SLC-239: include the actual key value in the failure message for diagnostics
         String isActiveKey = xpathStr(doc, "//Fields/Field[@Name='IsActive']/@Key");
         assertFalse(isActiveKey.isEmpty(),
-                "Expected a non-empty Key attribute on the IsActive field definition");
-        String fieldValue = xpathStr(doc, "//FieldValues/" + isActiveKey);
+                "Expected a non-empty Key attribute on the IsActive field definition, got: '" + isActiveKey + "'");
+
+        String fieldValue = getFieldValueText(doc, "IsActive");
         assertEquals("true", fieldValue,
-                "Expected the IsActive field value to be serialized as 'true' in <FieldValues>");
+                "Expected IsActive field value to be 'true', got: '" + fieldValue + "'");
     }
 
     @Test
     public void testDecimalFieldRoundtrip() {
+        // 3.14 is a Java double literal; FieldFactory maps Double → EntryField.Type.Decimal,
+        // which is serialised as DataType="Decimal" in the EDRM XML.
+        // If this assertion breaks, check FieldFactory's type-dispatch table.
         MappingEntry entry = new MappingEntry(Map.of("Score", 3.14), "text/plain");
         EDRMBuilder builder = newBuilder();
         builder.addEntry(entry);
         Document doc = builder.build();
-        String xml = docToString(doc);
 
-        assertTrue(xml.contains("DataType=\"Decimal\""),
-                "Expected DataType=\"Decimal\" in EDRM XML Fields section, but got:\n" + xml);
-        assertTrue(xml.contains("3.14"),
-                "Expected value containing '3.14' in EDRM XML field values, but got:\n" + xml);
+        String dataType = xpathStr(doc, "//Fields/Field[@Name='Score']/@DataType");
+        assertEquals("Decimal", dataType,
+                "Expected DataType=\"Decimal\" on the Score field definition");
+
+        // EntryField serializes Double via String.format("%.4f", d), so 3.14 → "3.1400".
+        // Assert via targeted DOM lookup rather than a substring match on the whole XML.
+        String fieldValue = getFieldValueText(doc, "Score");
+        assertTrue(fieldValue.contains("3.14"),
+                "Expected Score field value to contain '3.14', got: '" + fieldValue + "'");
     }
 
     @Test
@@ -210,12 +278,14 @@ public class EdrmTests {
         EDRMBuilder builder = newBuilder();
         builder.addEntry(entry);
         Document doc = builder.build();
-        String xml = docToString(doc);
 
-        assertTrue(xml.contains("DataType=\"LongText\""),
-                "Expected DataType=\"LongText\" in EDRM XML Fields section, but got:\n" + xml);
-        assertTrue(xml.contains("A long text value"),
-                "Expected LongText field value in EDRM XML, but got:\n" + xml);
+        String dataType = xpathStr(doc, "//Fields/Field[@Name='Description']/@DataType");
+        assertEquals("LongText", dataType,
+                "Expected DataType=\"LongText\" on the Description field definition");
+
+        String fieldValue = getFieldValueText(doc, "Description");
+        assertEquals("A long text value", fieldValue,
+                "Expected Description field value to be 'A long text value', got: '" + fieldValue + "'");
     }
 
     // ---- relationship and structure tests ----

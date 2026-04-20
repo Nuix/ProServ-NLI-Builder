@@ -25,6 +25,8 @@ class TelepathyEntry(CSVRowEntry):
 
     @property
     def time_field(self) -> str:
+        # This test stub always returns a valid field name — no None guard needed.
+        # (EntryInterface.time_field is -> str; only MappingEntry uses Union[str, None].)
         return "Timestamp"
 
     @property

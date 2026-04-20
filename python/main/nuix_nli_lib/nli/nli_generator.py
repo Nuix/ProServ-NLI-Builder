@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 import hashlib
 import platform
 import tempfile
 from datetime import datetime
 from pathlib import Path
 import shutil
-from typing import Any
+from typing import Any, Optional, Union
 from xml.dom.minidom import getDOMImplementation, Document, Element
 
 from nuix_nli_lib import edrm, debug_log, configs as nli_configs
-from nuix_nli_lib.edrm import DirectoryEntry, EDRMBuilder, EntryInterface, FileEntry, MappingEntry, EDRMUtilities as eutes
+from nuix_nli_lib.edrm import DirectoryEntry, EDRMBuilder, FileEntry, MappingEntry, EDRMUtilities as eutes
+from nuix_nli_lib.edrm.EntryInterface import EntryInterface
 
 
 class NLIGenerator(object):
@@ -57,19 +60,19 @@ class NLIGenerator(object):
         else:
             return self.__edrm_builder.add_entry(entry)
 
-    def add_file(self, file_path: str, mimetype: str, parent_id: str = None) -> str:
+    def add_file(self, file_path: str, mimetype: str, parent_id: Optional[str] = None) -> str:
         """
         Wrapper for the `edrm.EDRMBuilder.add_file()` method
         """
         return self.__edrm_builder.add_file(file_path, mimetype, parent_id)
 
-    def add_directory(self, directory_path: str, parent_id: str = None) -> str:
+    def add_directory(self, directory_path: str, parent_id: Optional[str] = None) -> str:
         """
         Wrapper for the `edrm.EDRMBuilder.add_directory()` method
         """
         return self.__edrm_builder.add_directory(directory_path, parent_id)
 
-    def add_mapping(self, mapping: dict[str, Any], mimetype: str, parent_id: str = None) -> str:
+    def add_mapping(self, mapping: dict[str, Any], mimetype: str, parent_id: Optional[str] = None) -> str:
         """
         Wrapper for the `edrm.EDRMBuilder.add_mapping()` method
         """
@@ -117,21 +120,35 @@ class NLIGenerator(object):
         metadata_file.documentElement.appendChild(property_list)
 
         metadata_file_path: Path = metadata_path / 'image_metadata.xml'
-        with metadata_file_path.open(mode='w', encoding=edrm.configs['encoding']) as metadata_xml:
-            metadata_file.writexml(metadata_xml, encoding=edrm.configs['encoding'], addindent='    ', newl='\n')
+        encoding = str(edrm.configs['encoding'])
+        with metadata_file_path.open(mode='w', encoding=encoding) as metadata_xml:
+            metadata_file.writexml(metadata_xml, encoding=encoding, addindent='    ', newl='\n')
 
-    def save(self, file_path: Path):
+    def save(self, file_path: Path) -> None:
         """
         Build and save the NLI container to the provided file_path.
 
         This method will trigger the build process, which will build the underlying EDRM XML load file, copy contents
         to the NLI container, package the container, and store it to the file_path provided.
+
+        **Debug mode:** When ``nli_configs['debug']`` is set to ``True``, the temporary build directory is *not*
+        deleted after the NLI file is written.  This allows inspection of the intermediate files after the call
+        returns.  The caller is responsible for cleaning up the temporary directory in this case.  The location of
+        the temporary directory is printed via :func:`~nuix_nli_lib.debug_log` during the build.
+
         :param file_path: Path to the location the NLI file should be saved, including the file name and extension
         :return: None
         """
 
+        # Bug fix: the original code used ``tempfile.mkdtemp()`` in the non-delete branch, but
+        # ``mkdtemp()`` returns a plain ``str`` which is not a context manager.  Using it in a
+        # ``with`` statement raises ``TypeError`` at runtime when debug mode is active.
+        # ``TemporaryDirectory(delete=False)`` (Python 3.12+) is the correct replacement: it
+        # implements the context manager protocol and intentionally skips cleanup on exit, which
+        # is the desired behaviour for the debug path so the temp directory can be inspected
+        # after the build completes.
         do_delete = not nli_configs['debug'] if 'debug' in nli_configs else True
-        with tempfile.TemporaryDirectory() if do_delete else tempfile.mkdtemp() as temp_loc:
+        with tempfile.TemporaryDirectory() if do_delete else tempfile.TemporaryDirectory(delete=False) as temp_loc:
             temp_path = Path(temp_loc)
             build_path = temp_path / 'NLI_Gen'
             metadata_path = build_path / '._metadata'
@@ -152,7 +169,7 @@ class NLIGenerator(object):
                 debug_log(f"Copying {entry.name} to {build_path}", flush=True)
                 if isinstance(entry, FileEntry):
                     if entry.parent is None or isinstance(entry.parent, DirectoryEntry):
-                        relative_path = eutes.generate_relative_path(entry, entry_map)
+                        relative_path: Union[str, Path] = eutes.generate_relative_path(entry, entry_map)
                     else:
                         relative_path = Path("natives") / entry.name
                     debug_log(f"\tTemp Path {build_path / relative_path}", flush=True)
@@ -185,6 +202,7 @@ class NLIGenerator(object):
                                                          hashlib.sha1(),
                                                          as_string=False)
             metadata_hash_path = metadata_path / 'image_contents.sha1_hash'
+            assert isinstance(metadata_hash, bytes)
             with metadata_hash_path.open(mode='wb') as metadata_hash_file:
                 metadata_hash_file.write(metadata_hash)
 
