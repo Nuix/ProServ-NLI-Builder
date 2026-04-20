@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from xml.dom.minidom import Document, Element
 
-from nuix_nli_lib.edrm import FieldFactory, EntryField, EntryInterface, EDRMUtilities as eutes
+from nuix_nli_lib.edrm import FieldFactory, EntryInterface, EDRMUtilities as eutes
 from nuix_nli_lib.edrm.EntryField import FieldType
 
 
@@ -54,7 +54,7 @@ class FileEntry(EntryInterface):
         self.fill_basic_fields(mime_type)
 
     def fill_basic_fields(self, mime_type: str):
-        self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mime_type)
+        self['MIME Type'] = FieldFactory.generate_field('MIME Type', FieldType.TEXT, mime_type)
         self.__item_date = datetime.fromtimestamp(self.file_path.stat().st_ctime, tz=timezone.utc)
         self['Item Date'] = FieldFactory.generate_field('Item Date',
                                                         FieldType.DATETIME,
@@ -113,6 +113,11 @@ class FileEntry(EntryInterface):
 
     @property
     def itemdate(self) -> datetime:
+        assert self.__item_date is not None, (
+            "FileEntry.itemdate is None — fill_basic_fields must complete successfully before "
+            "itemdate is accessed.  This should not happen in normal usage; check whether the "
+            "file path is valid and accessible."
+        )
         return self.__item_date
 
     @property
@@ -143,7 +148,7 @@ class FileEntry(EntryInterface):
         location_uri_element.appendChild(document.createTextNode(location_uri))
         container.appendChild(location_uri_element)
 
-    def add_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool):
+    def add_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool) -> None:
         """
         See edrm.EntryInterface.add_file for details about this method.
 

@@ -6,7 +6,7 @@ from operator import contains
 from typing import Any, Union
 from xml.dom.minidom import Document, Element
 
-from nuix_nli_lib.edrm import FieldFactory, EntryField, EntryInterface, EDRMUtilities as eutes
+from nuix_nli_lib.edrm import FieldFactory, EntryField, FieldType, EntryInterface, EDRMUtilities as eutes
 from nuix_nli_lib import edrm
 
 
@@ -47,19 +47,19 @@ class MappingEntry(EntryInterface):
         """
         for key, value in self.data.items():
             if isinstance(value, bool):
-                data_type = EntryField.TYPE_BOOLEAN
+                data_type = FieldType.BOOLEAN
                 _value = value
             elif isinstance(value, int):
-                data_type = EntryField.TYPE_INTEGER
+                data_type = FieldType.INTEGER
                 _value = value
             elif isinstance(value, float):
-                data_type = EntryField.TYPE_DECIMAL
+                data_type = FieldType.DECIMAL
                 _value = value
             elif isinstance(value, datetime):
-                data_type = EntryField.TYPE_DATETIME
+                data_type = FieldType.DATETIME
                 _value = value
             else:
-                data_type = EntryField.TYPE_TEXT
+                data_type = FieldType.TEXT
                 _value = str(value)
 
             key_name = key.strip()
@@ -77,14 +77,14 @@ class MappingEntry(EntryInterface):
         Internal method to add the Fields that all Items should have in a Nuix case, such as the mimetype, SHA-1 hash,
         Name, and Item Date.
         """
-        self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mimetype)
-        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, self.get_name())
+        self['MIME Type'] = FieldFactory.generate_field('MIME Type', FieldType.TEXT, mimetype)
+        self['Name'] = FieldFactory.generate_field('Name', FieldType.TEXT, self.get_name())
         data_to_hash = copy.deepcopy(self.data)
         data_to_hash['name'] = self.get_name()
         self['SHA-1'] = FieldFactory.generate_field('SHA-1',
-                                                    EntryField.TYPE_TEXT,
+                                                    FieldType.TEXT,
                                                     eutes.hash_data(data_to_hash, hashlib.sha1()))
-        self['Item Date'] = FieldFactory.generate_field('Item Date', EntryField.TYPE_DATETIME, self.itemdate)
+        self['Item Date'] = FieldFactory.generate_field('Item Date', FieldType.DATETIME, self.itemdate)
 
     @property
     def data(self) -> dict[str, Any]:
@@ -147,8 +147,8 @@ class MappingEntry(EntryInterface):
     @property
     def name(self) -> str:
         """
-        Looks up the name field to use, then provides its value.  As the name field may be arbitrary data, and
-        the name may be used as a file name stand-in, the name will be mutated to be safe to use in such a context.
+        Returns the sanitized name for this entry. Delegates to get_name(), which applies
+        XML and filename sanitization. Sanitization happens inside get_name(), not here.
         """
         return self.get_name()
 
@@ -189,13 +189,15 @@ class MappingEntry(EntryInterface):
         return None
 
     @property
-    def itemdate(self) -> Union[datetime, str]:
+    def itemdate(self) -> datetime:
         """
-        Attempt to lookup an item date or time for this mapping.  If there isn't one present, use "now"  This
-        assumes that the values store for the field are either of the type datetime.datetime, or a string in the
-        Python format provided by the `date_time_format` field in the `edrm.configs` object.  If the value is a string
-        but not in the correct format, it will be returned as a String, which, while making an NLI, may make items
-        misbehave in the Nuix case.
+        Attempt to lookup an item date or time for this mapping.  If there isn't one present, or if the
+        string value cannot be parsed as a datetime, fall back to the current UTC time.
+
+        This assumes that the values stored for the field are either a ``datetime.datetime`` instance or a
+        string in the format provided by the ``date_time_format`` field in the ``edrm.configs`` object.
+        Unparseable strings fall back to ``datetime.now(tz=timezone.utc)`` rather than returning the raw
+        string, keeping the return type consistent with the ``EntryInterface`` contract.
         """
         time_field = self.time_field
 
@@ -212,10 +214,9 @@ class MappingEntry(EntryInterface):
 
             if isinstance(date_time, str):
                 try:
-                    time_as_datetime = datetime.strptime(date_time, edrm.configs['date_time_format'])
+                    return datetime.strptime(date_time, edrm.configs['date_time_format'])
                 except ValueError:
-                    time_as_datetime = edrm.configs['date_time_format']
-                return time_as_datetime
+                    return datetime.now(tz=timezone.utc)
 
             raise ValueError(f'Invalid item date format: {date_time}')
 

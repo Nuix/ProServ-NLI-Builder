@@ -17,17 +17,18 @@
           <field_0>application/x-database-table-row</field_0>
           <field_7>1</field_7>
           <field_8>e2de4c7e60090cff1103cfb43bda818546a66ee8</field_8>
-          <field_1>2026-04-17T02:01:09.886+00:00</field_1>
+          <field_1>2026-04-17T02:01:09.882+00:00</field_1>
         </FieldValues>
         <Files>
-          <File FileType="Text">
-            <InlineContent>{'a': 1, 'b': 2}</InlineContent>
+          <File FileType="Native">
+            <ExternalFile FilePath="natives" FileName="e2de4c7e60090cff1103cfb43bda818546a66ee8" Hash="71171b605da0f16a3040c0df0a8be074" HashType="MD5"/>
           </File>
         </Files>
         <Locations>
           <Location>
             <Custodian>Unknown</Custodian>
-            <Description>Location on Disk</Description>
+            <Description>Location within Nuix case file</Description>
+            <LocationURI>1</LocationURI>
           </Location>
         </Locations>
       </Document>

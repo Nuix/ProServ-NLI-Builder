@@ -1,4 +1,4 @@
-configs = {
+configs: dict[str, object] = {
     'encoding': 'UTF-8-SIG'
 }
 
