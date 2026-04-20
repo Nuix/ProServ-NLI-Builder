@@ -6,7 +6,7 @@ from operator import contains
 from typing import Any, Union
 from xml.dom.minidom import Document, Element
 
-from nuix_nli_lib.edrm import FieldFactory, EntryField, EntryInterface, EDRMUtilities as eutes
+from nuix_nli_lib.edrm import FieldFactory, EntryField, FieldType, EntryInterface, EDRMUtilities as eutes
 from nuix_nli_lib import edrm
 
 
@@ -47,19 +47,19 @@ class MappingEntry(EntryInterface):
         """
         for key, value in self.data.items():
             if isinstance(value, bool):
-                data_type = EntryField.TYPE_BOOLEAN
+                data_type = FieldType.BOOLEAN
                 _value = value
             elif isinstance(value, int):
-                data_type = EntryField.TYPE_INTEGER
+                data_type = FieldType.INTEGER
                 _value = value
             elif isinstance(value, float):
-                data_type = EntryField.TYPE_DECIMAL
+                data_type = FieldType.DECIMAL
                 _value = value
             elif isinstance(value, datetime):
-                data_type = EntryField.TYPE_DATETIME
+                data_type = FieldType.DATETIME
                 _value = value
             else:
-                data_type = EntryField.TYPE_TEXT
+                data_type = FieldType.TEXT
                 _value = str(value)
 
             key_name = key.strip()
@@ -77,14 +77,14 @@ class MappingEntry(EntryInterface):
         Internal method to add the Fields that all Items should have in a Nuix case, such as the mimetype, SHA-1 hash,
         Name, and Item Date.
         """
-        self['MIME Type'] = FieldFactory.generate_field('MIME Type', EntryField.TYPE_TEXT, mimetype)
-        self['Name'] = FieldFactory.generate_field('Name', EntryField.TYPE_TEXT, self.get_name())
+        self['MIME Type'] = FieldFactory.generate_field('MIME Type', FieldType.TEXT, mimetype)
+        self['Name'] = FieldFactory.generate_field('Name', FieldType.TEXT, self.get_name())
         data_to_hash = copy.deepcopy(self.data)
         data_to_hash['name'] = self.get_name()
         self['SHA-1'] = FieldFactory.generate_field('SHA-1',
-                                                    EntryField.TYPE_TEXT,
+                                                    FieldType.TEXT,
                                                     eutes.hash_data(data_to_hash, hashlib.sha1()))
-        self['Item Date'] = FieldFactory.generate_field('Item Date', EntryField.TYPE_DATETIME, self.itemdate)
+        self['Item Date'] = FieldFactory.generate_field('Item Date', FieldType.DATETIME, self.itemdate)
 
     @property
     def data(self) -> dict[str, Any]:

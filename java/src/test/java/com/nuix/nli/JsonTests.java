@@ -676,4 +676,238 @@ public class JsonTests {
                 "Saving with valid JSONPath patterns must not throw");
         assertTrue(Files.exists(out));
     }
+
+    // SLC-153: Malformed JSON file content detection
+    // -----------------------------------------------------------------------
+
+    /**
+     * Test 17: A JSON file containing garbage (non-JSON text) must throw a RuntimeException
+     * when addToBuilder is called. The exception is caused by Jackson being unable to parse
+     * the content as valid JSON.
+     */
+    @Test
+    public void testMalformedJsonFileGarbageThrows() throws Exception {
+        Path json = writeTempJson("garbage_content.json", "this is not json at all");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        assertThrows(RuntimeException.class,
+                () -> nli.addEntry(entry),
+                "A file containing non-JSON garbage content must throw RuntimeException during addToBuilder");
+    }
+
+    /**
+     * Test 18: A JSON file with truncated/incomplete content must throw a RuntimeException
+     * when addToBuilder is called. The exception is caused by Jackson detecting the unexpected
+     * end of input while parsing.
+     */
+    @Test
+    public void testMalformedJsonFileTruncatedThrows() throws Exception {
+        Path json = writeTempJson("truncated_content.json", "{\"a\":1");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        assertThrows(RuntimeException.class,
+                () -> nli.addEntry(entry),
+                "A truncated JSON file must throw RuntimeException during addToBuilder");
+    }
+
+    /**
+     * Test 19: The RuntimeException thrown for a malformed JSON file must include the file path
+     * in its message, enabling fast diagnosis of which file caused the parse failure.
+     * This is the key diagnostic contract introduced by SLC-153.
+     */
+    @Test
+    public void testMalformedJsonFileErrorMessageContainsFilePath() throws Exception {
+        Path json = writeTempJson("malformed_for_path_check.json", "not valid json");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> nli.addEntry(entry),
+                "Parsing a malformed JSON file must throw RuntimeException");
+        String msg = ex.getMessage() == null ? "" : ex.getMessage();
+        assertTrue(msg.contains(json.toString()) || msg.contains(json.getFileName().toString()),
+                "The RuntimeException message must contain the file path for diagnostics, but was: " + msg);
+    }
+
+    // -------------------------------------------------------------------------
+    // SLC-172: Regression tests — string roots that look like other types (SLC-149 fix guard)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Regression test for SLC-149: a JSON string whose value begins with {@code [} must be
+     * classified as a scalar value ({@code application/x-json-value}), not as an array.
+     *
+     * <p>The old {@code startsWith} heuristic in the pre-Jackson implementation would have
+     * misidentified this as an array root, producing a child with the wrong MIME type. This
+     * test parses the generated NLI and asserts the child entry's {@code MimeType} attribute
+     * so that any regression in root-type detection immediately fails here rather than
+     * silently producing a wrong output file.
+     */
+    @Test
+    public void testStringRootLooksLikeArray() throws Exception {
+        // A JSON string value that starts with '[' — must be treated as a scalar, not an array.
+        Path json = writeTempJson("string_looks_like_array.json", "\"[not an array]\"");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("string_looks_like_array.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
+
+        Document doc = getEdrmXmlFromNli(out);
+
+        // The child Document element must have MimeType="application/x-json-value", NOT
+        // "application/x-json-array". A regression in Jackson root-type detection would
+        // produce the wrong MIME type and this assertion would catch it.
+        String mimeType = xpathText(doc,
+                "//Document[@MimeType='application/x-json-value']/@MimeType");
+        assertEquals("application/x-json-value", mimeType,
+                "A string root starting with '[' must produce a JSONValueEntry "
+                + "(application/x-json-value), not a JSONArrayEntry");
+
+        // Also verify that the array MIME type is NOT present — belt-and-suspenders.
+        String arrayMime = xpathText(doc,
+                "//Document[@MimeType='application/x-json-array']/@MimeType");
+        assertTrue(arrayMime.isEmpty(),
+                "No application/x-json-array entry should exist for a string root");
+    }
+
+    /**
+     * Regression test for SLC-149: a JSON string whose value begins with {@code {}} must be
+     * classified as a scalar value ({@code application/x-json-value}), not as an object.
+     *
+     * <p>Mirrors {@link #testStringRootLooksLikeArray} for the object-lookalike case.
+     */
+    @Test
+    public void testStringRootLooksLikeObject() throws Exception {
+        // A JSON string value that starts with '{' — must be treated as a scalar, not an object.
+        Path json = writeTempJson("string_looks_like_object.json", "\"{not an object}\"");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("string_looks_like_object.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out));
+
+        Document doc = getEdrmXmlFromNli(out);
+
+        // The child Document element must have MimeType="application/x-json-value", NOT
+        // "application/x-json-object".
+        String mimeType = xpathText(doc,
+                "//Document[@MimeType='application/x-json-value']/@MimeType");
+        assertEquals("application/x-json-value", mimeType,
+                "A string root starting with '{' must produce a JSONValueEntry "
+                + "(application/x-json-value), not a JSONObjectEntry");
+
+        // Also verify that the object MIME type is NOT present.
+        String objectMime = xpathText(doc,
+                "//Document[@MimeType='application/x-json-object']/@MimeType");
+        assertTrue(objectMime.isEmpty(),
+                "No application/x-json-object entry should exist for a string root");
+    }
+
+    // -------------------------------------------------------------------------
+    // SLC-150: JSON string escape sequence decoding (regression guard)
+    // -------------------------------------------------------------------------
+
+    /**
+     * testScalarStringNewlineEscape: A root JSON string containing a {@code \n} escape
+     * sequence must be decoded to an actual newline character, not the two-character literal
+     * {@code \n}.
+     *
+     * <p>A naive {@code content.substring(1, content.length() - 1)} implementation strips
+     * the surrounding quotes but leaves JSON escape sequences unprocessed. The correct
+     * implementation delegates to the JSON parser (Jackson's {@code node.textValue()}) which
+     * always returns the decoded Java string.
+     */
+    @Test
+    public void testScalarStringNewlineEscape(@TempDir Path tempDir) throws Exception {
+        // JSON: "hello\nworld" — the \n is a JSON escape, must become a real newline
+        Path json = tempDir.resolve("escape_newline.json");
+        Files.writeString(json, "\"hello\\nworld\"", StandardCharsets.UTF_8);
+
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        // The scalar child should carry the field value "hello\nworld" (real newline).
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        boolean foundDecodedNewline = entryMap.values().stream()
+                .filter(e -> !(e instanceof JSONFileEntry))
+                .flatMap(e -> {
+                    java.util.stream.Stream.Builder<String> sb = java.util.stream.Stream.builder();
+                    for (String fieldName : e.getFields()) {
+                        Object val = e.getField(fieldName).getValue();
+                        if (val != null) sb.accept(val.toString());
+                    }
+                    return sb.build();
+                })
+                .anyMatch(v -> v.contains("\n"));
+
+        assertTrue(foundDecodedNewline,
+                "JSON \\n escape in a scalar string must be decoded to a real newline character, " +
+                "not the literal two-character sequence '\\\\n'");
+    }
+
+    /**
+     * testScalarStringUnicodeEscape: A root JSON string containing a {@code \u0041} Unicode
+     * escape must be decoded to the character {@code A}, not the literal 6-character sequence
+     * {@code \u0041}.
+     */
+    @Test
+    public void testScalarStringUnicodeEscape(@TempDir Path tempDir) throws Exception {
+        // JSON: "\u0041" — Unicode escape for the letter 'A'
+        Path json = tempDir.resolve("escape_unicode.json");
+        Files.writeString(json, "\"\\u0041\"", StandardCharsets.UTF_8);
+
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        boolean foundDecodedUnicode = entryMap.values().stream()
+                .filter(e -> !(e instanceof JSONFileEntry))
+                .flatMap(e -> {
+                    java.util.stream.Stream.Builder<String> sb = java.util.stream.Stream.builder();
+                    for (String fieldName : e.getFields()) {
+                        Object val = e.getField(fieldName).getValue();
+                        if (val != null) sb.accept(val.toString());
+                    }
+                    return sb.build();
+                })
+                .anyMatch(v -> v.equals("A"));
+
+        assertTrue(foundDecodedUnicode,
+                "JSON \\u0041 escape in a scalar string must be decoded to 'A', " +
+                "not the literal string '\\\\u0041'");
+    }
+
+    /**
+     * testObjectFieldStringEscapeDecoding: String fields inside a JSON object must also
+     * have their escape sequences decoded. A field value {@code "hello\tworld"} must contain
+     * a real tab character.
+     */
+    @Test
+    public void testObjectFieldStringEscapeDecoding(@TempDir Path tempDir) throws Exception {
+        // JSON object with a tab escape in a field value
+        Path json = tempDir.resolve("escape_tab_field.json");
+        Files.writeString(json, "{\"msg\":\"hello\\tworld\"}", StandardCharsets.UTF_8);
+
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        boolean foundDecodedTab = entryMap.values().stream()
+                .filter(e -> !(e instanceof JSONFileEntry))
+                .flatMap(e -> {
+                    java.util.stream.Stream.Builder<String> sb = java.util.stream.Stream.builder();
+                    for (String fieldName : e.getFields()) {
+                        Object val = e.getField(fieldName).getValue();
+                        if (val != null) sb.accept(val.toString());
+                    }
+                    return sb.build();
+                })
+                .anyMatch(v -> v.contains("\t"));
+
+        assertTrue(foundDecodedTab,
+                "JSON \\t escape in an object field value must be decoded to a real tab character");
+    }
 }
