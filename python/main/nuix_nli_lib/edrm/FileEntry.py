@@ -113,6 +113,11 @@ class FileEntry(EntryInterface):
 
     @property
     def itemdate(self) -> datetime:
+        assert self.__item_date is not None, (
+            "FileEntry.itemdate is None — fill_basic_fields must complete successfully before "
+            "itemdate is accessed.  This should not happen in normal usage; check whether the "
+            "file path is valid and accessible."
+        )
         return self.__item_date
 
     @property
@@ -143,7 +148,7 @@ class FileEntry(EntryInterface):
         location_uri_element.appendChild(document.createTextNode(location_uri))
         container.appendChild(location_uri_element)
 
-    def add_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool):
+    def add_file(self, document: Document, container: Element, entry_map: dict[str, EntryInterface], for_nli: bool) -> None:
         """
         See edrm.EntryInterface.add_file for details about this method.
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import re
 import sys
@@ -7,6 +9,7 @@ from pathlib import Path
 from typing import Literal, Union, Any, overload
 
 from nuix_nli_lib import edrm
+from nuix_nli_lib.edrm._types import HashProtocol
 
 """
 Collection of utility functions for working with EDRM data.
@@ -47,7 +50,7 @@ def convert_timestamp_to_string(timestamp: float) -> str:
     return convert_datetime_to_string(dt)
 
 
-def _hash_file(file: Path, hashfunction: hashlib) -> None:
+def _hash_file(file: Path, hashfunction: HashProtocol) -> None:
     """
     Intermediate function to update the hash with the contents of the file.
     """
@@ -83,7 +86,7 @@ def hash_file(file: Path, hashfunction: hashlib, as_string: bool = True) -> Unio
         return hashfunction.digest()
 
 
-def _hash_data(data: Any, hashfunction: hashlib):
+def _hash_data(data: Any, hashfunction: HashProtocol) -> None:
     """
     Intermediate function to update a hash function with the contents of some data.
     """
