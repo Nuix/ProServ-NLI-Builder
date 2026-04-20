@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from typing import Any, Union
+
 
 from nuix_nli_lib.edrm.EntryField import EntryField, FieldType
 
