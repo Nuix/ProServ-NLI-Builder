@@ -1,6 +1,9 @@
-from typing import Any
+from __future__ import annotations
 
-from nuix_nli_lib.edrm.EntryField import EntryField
+from typing import Any, Union
+
+
+from nuix_nli_lib.edrm.EntryField import EntryField, FieldType
 
 next_key_index: int = 0
 """ Counter for the known set of fields, such as to provide unique names for each field node """
@@ -28,7 +31,7 @@ the Key needed for representing the Field's value.
 """
 
 
-def generate_field(field_name: str, field_type: str, default_value: Any) -> EntryField:
+def generate_field(field_name: str, field_type: Union[FieldType, str], default_value: Any) -> EntryField:
     """
     Given the field definition as provided in the parameters, create a new EntryField with a unique Key.  If a Field
     Name already exists the existing Key will be used.  However, in all cases a new EntryField instance will be created
