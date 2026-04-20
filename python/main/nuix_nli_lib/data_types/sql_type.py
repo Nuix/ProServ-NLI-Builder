@@ -53,7 +53,7 @@ the subclass as ``row_generator``::
 import hashlib
 import sqlite3
 from datetime import datetime
-from typing import Any, Iterator, Tuple, Type, Union
+from typing import Any, Iterator, Optional, Tuple, Type, Union
 from xml.dom.minidom import Document, Element
 
 from nuix_nli_lib.edrm import FieldFactory, EntryField, EntryInterface
@@ -93,8 +93,8 @@ class SQLTypeEntry(EntryInterface):
                  connection: Union[str, Any],
                  query: str,
                  name: str = "SQL Query Results",
-                 parent_id: str = None,
-                 row_generator: Type[Any] = None):
+                 parent_id: Optional[str] = None,
+                 row_generator: Optional[Type[Any]] = None) -> None:
         """
         :param connection: Either a file path / connection string for SQLite (a ``str``), or an open
             DB-API 2.0 connection object.  When a string is given, ``sqlite3.connect(connection)`` is
@@ -239,7 +239,7 @@ class SQLRowEntry(MappingEntry):
     class and pass the subclass as the ``row_generator`` argument to :class:`SQLTypeEntry`.
     """
 
-    def __init__(self, parent_sql: SQLTypeEntry, row_index: int, parent_id: str = None):
+    def __init__(self, parent_sql: SQLTypeEntry, row_index: int, parent_id: Optional[str] = None) -> None:
         """
         :param parent_sql: The :class:`SQLTypeEntry` that owns this row.
         :param row_index: Zero-based index of this row within :attr:`SQLTypeEntry.data`.
