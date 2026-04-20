@@ -80,7 +80,8 @@ class EntryField(metaclass=_EntryFieldMeta):
         if not isinstance(field_type, FieldType):
             warnings.warn(
                 f"Passing a plain str ({field_type!r}) as field_type is deprecated; "
-                f"use a FieldType member directly (e.g. FieldType('{field_type}'))",
+                f"use a FieldType member directly (e.g. FieldType.TEXT instead of 'Text'); "
+                f"see FieldType for all valid members",
                 DeprecationWarning,
                 stacklevel=2,
             )
@@ -90,7 +91,7 @@ class EntryField(metaclass=_EntryFieldMeta):
         self.__value = default_value
 
     @property
-    def key(self):
+    def key(self) -> str:
         """
         :return: Key used as the name for the XML Node used to store the field's value.  The key must be unique
                  within the load file, and able to be used to map a Field Name to the XML Node used to store the

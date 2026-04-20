@@ -114,12 +114,27 @@ class TestFieldTypeInvalidValueRejection(unittest.TestCase):
 
 
 class TestFieldTypeDeprecatedAliases(unittest.TestCase):
-    """Deprecated EntryField.TYPE_* aliases refer to the same FieldType members."""
+    """Deprecated EntryField.TYPE_* aliases refer to the same FieldType members.
+
+    Warnings are suppressed here because the emission behaviour is verified
+    separately by TestFieldTypeDeprecatedAliasWarnings.  Suppressing prevents
+    unverified warnings from leaking into the pytest summary and polluting the
+    output with noise that could mask genuinely unexpected warnings.
+    """
 
     def setUp(self):
+        import warnings
         from nuix_nli_lib.edrm import FieldType, EntryField
         self.FieldType = FieldType
         self.EntryField = EntryField
+        # Suppress DeprecationWarning for the duration of each test so that
+        # accessing TYPE_* only tests the return value, not the warning.
+        self._warning_catcher = warnings.catch_warnings()
+        self._warning_catcher.__enter__()
+        warnings.simplefilter('ignore', DeprecationWarning)
+
+    def tearDown(self):
+        self._warning_catcher.__exit__(None, None, None)
 
     def test_type_text_is_fieldtype_text(self):
         self.assertIs(self.EntryField.TYPE_TEXT, self.FieldType.TEXT)
@@ -213,6 +228,38 @@ class TestEntryFieldPlainStrDeprecation(unittest.TestCase):
             self.EntryField('key', 'Name', 'Text')
         self.assertIn("'Text'", str(ctx.warning))
         self.assertIn('deprecated', str(ctx.warning))
+
+    def test_deprecation_warning_uses_member_access_syntax(self):
+        """The warning message must use FieldType.MEMBER syntax, not FieldType('value').
+
+        FieldType('SomeCustomType') raises ValueError, so suggesting it would mislead
+        callers who pass non-canonical strings. The message must direct users to member
+        access (e.g. FieldType.TEXT) which is always safe.
+        """
+        with self.assertWarns(DeprecationWarning) as ctx:
+            self.EntryField('key', 'Name', 'Text')
+        warning_text = str(ctx.warning)
+        # Must NOT suggest FieldType('value') call syntax
+        self.assertNotIn("FieldType('", warning_text,
+                         "Warning must not suggest FieldType('value') syntax — "
+                         "this raises ValueError for non-canonical strings")
+        # Must reference member access syntax (e.g. FieldType.TEXT)
+        self.assertIn("FieldType.", warning_text,
+                      "Warning must reference FieldType member access syntax (e.g. FieldType.TEXT)")
+
+    def test_deprecation_warning_non_canonical_string(self):
+        """A non-canonical string must still produce a warning that doesn't mislead the caller.
+
+        Following FieldType('SomeCustomType') would raise ValueError — the warning
+        should guide users to the enum definition instead.
+        """
+        with self.assertWarns(DeprecationWarning) as ctx:
+            self.EntryField('key', 'Name', 'SomeCustomType')
+        warning_text = str(ctx.warning)
+        self.assertIn('deprecated', warning_text)
+        self.assertNotIn("FieldType('SomeCustomType')", warning_text,
+                         "Warning must not suggest FieldType(non_canonical_string) — "
+                         "this would raise ValueError")
 
     def test_fieldtype_member_does_not_emit_warning(self):
         from nuix_nli_lib.edrm import FieldType

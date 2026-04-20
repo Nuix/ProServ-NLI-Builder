@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 import hashlib
 import platform
 import tempfile
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import shutil
-from typing import Any
+from typing import Any, Optional, Union, cast
 from xml.dom.minidom import getDOMImplementation, Document, Element
 
 from nuix_nli_lib import edrm, debug_log, configs as nli_configs
-from nuix_nli_lib.edrm import DirectoryEntry, EDRMBuilder, EntryInterface, FileEntry, MappingEntry, EDRMUtilities as eutes
+from nuix_nli_lib.edrm import DirectoryEntry, EDRMBuilder, FileEntry, MappingEntry, EDRMUtilities as eutes
+from nuix_nli_lib.edrm.EntryInterface import EntryInterface
 
 
 class NLIGenerator(object):
@@ -57,19 +60,19 @@ class NLIGenerator(object):
         else:
             return self.__edrm_builder.add_entry(entry)
 
-    def add_file(self, file_path: str, mimetype: str, parent_id: str = None) -> str:
+    def add_file(self, file_path: str, mimetype: str, parent_id: Optional[str] = None) -> str:
         """
         Wrapper for the `edrm.EDRMBuilder.add_file()` method
         """
         return self.__edrm_builder.add_file(file_path, mimetype, parent_id)
 
-    def add_directory(self, directory_path: str, parent_id: str = None) -> str:
+    def add_directory(self, directory_path: str, parent_id: Optional[str] = None) -> str:
         """
         Wrapper for the `edrm.EDRMBuilder.add_directory()` method
         """
         return self.__edrm_builder.add_directory(directory_path, parent_id)
 
-    def add_mapping(self, mapping: dict[str, Any], mimetype: str, parent_id: str = None) -> str:
+    def add_mapping(self, mapping: dict[str, Any], mimetype: str, parent_id: Optional[str] = None) -> str:
         """
         Wrapper for the `edrm.EDRMBuilder.add_mapping()` method
         """
@@ -91,7 +94,7 @@ class NLIGenerator(object):
 
         datetime_element: Element = metadata_file.createElement('property')
         datetime_element.setAttribute("key", "creation-datetime")
-        datetime_element.setAttribute("value", datetime.now().strftime('%Y/%m/%d %H:%M:%S.%f')[:-3] + " UTC")
+        datetime_element.setAttribute("value", datetime.now(tz=timezone.utc).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3] + " UTC")
         property_list.appendChild(datetime_element)
 
         sw_element: Element = metadata_file.createElement('property')
@@ -117,8 +120,9 @@ class NLIGenerator(object):
         metadata_file.documentElement.appendChild(property_list)
 
         metadata_file_path: Path = metadata_path / 'image_metadata.xml'
-        with metadata_file_path.open(mode='w', encoding=edrm.configs['encoding']) as metadata_xml:
-            metadata_file.writexml(metadata_xml, encoding=edrm.configs['encoding'], addindent='    ', newl='\n')
+        encoding = str(edrm.configs['encoding'])
+        with metadata_file_path.open(mode='w', encoding=encoding) as metadata_xml:
+            metadata_file.writexml(metadata_xml, encoding=encoding, addindent='    ', newl='\n')
 
     def save(self, file_path: Path) -> None:
         """
@@ -136,6 +140,7 @@ class NLIGenerator(object):
             The debug-mode path uses ``tempfile.TemporaryDirectory(delete=False)``, which requires **Python 3.12+**.
             This minimum version is enforced in ``pyproject.toml`` via ``requires-python = ">=3.12"``.
 
+
         :param file_path: Path to the location the NLI file should be saved, including the file name and extension
         :return: None
         """
@@ -145,6 +150,13 @@ class NLIGenerator(object):
         # Using delete=False for the debug path means the context manager exits without removing the
         # directory, allowing post-build inspection.  The normal (non-debug) path uses the default
         # TemporaryDirectory() which cleans up automatically on exit.
+        # Bug fix: the original code used ``tempfile.mkdtemp()`` in the non-delete branch, but
+        # ``mkdtemp()`` returns a plain ``str`` which is not a context manager.  Using it in a
+        # ``with`` statement raises ``TypeError`` at runtime when debug mode is active.
+        # ``TemporaryDirectory(delete=False)`` (Python 3.12+) is the correct replacement: it
+        # implements the context manager protocol and intentionally skips cleanup on exit, which
+        # is the desired behaviour for the debug path so the temp directory can be inspected
+        # after the build completes.
         do_delete = not nli_configs['debug'] if 'debug' in nli_configs else True
         with tempfile.TemporaryDirectory() if do_delete else tempfile.TemporaryDirectory(delete=False) as temp_loc:
             temp_path = Path(temp_loc)
@@ -167,7 +179,7 @@ class NLIGenerator(object):
                 debug_log(f"Copying {entry.name} to {build_path}", flush=True)
                 if isinstance(entry, FileEntry):
                     if entry.parent is None or isinstance(entry.parent, DirectoryEntry):
-                        relative_path = eutes.generate_relative_path(entry, entry_map)
+                        relative_path: Union[str, Path] = eutes.generate_relative_path(entry, entry_map)
                     else:
                         relative_path = Path("natives") / entry.name
                     debug_log(f"\tTemp Path {build_path / relative_path}", flush=True)
@@ -200,8 +212,11 @@ class NLIGenerator(object):
                                                          hashlib.sha1(),
                                                          as_string=False)
             metadata_hash_path = metadata_path / 'image_contents.sha1_hash'
+            # cast() narrows Union[str, bytes] → bytes for the type checker without using
+            # assert isinstance(), which is stripped by Python's -O optimisation flag.
+            # hash_file() is called with as_string=False, so the return is always bytes.
             with metadata_hash_path.open(mode='wb') as metadata_hash_file:
-                metadata_hash_file.write(metadata_hash)
+                metadata_hash_file.write(cast(bytes, metadata_hash))
 
             # Zip the contents
             temp_nli_path = temp_path / f'{file_path.stem}'
