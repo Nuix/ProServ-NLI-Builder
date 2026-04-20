@@ -79,6 +79,20 @@ for fv in doc.getElementsByTagName("FieldValues"):
     for child in sorted(children, key=lambda n: n.tagName):
         fv.appendChild(child)
 
+# Normalise directory File Size (field_9) to DIR_SIZE so that OS-specific
+# directory block sizes (4096 on Linux ext4, 64/96 on macOS APFS) do not
+# cause spurious comparison failures across platforms.
+for document in doc.getElementsByTagName("Document"):
+    for fv in document.getElementsByTagName("FieldValues"):
+        field_0_nodes = fv.getElementsByTagName("field_0")
+        if field_0_nodes.length > 0:
+            mime_text = field_0_nodes.item(0).firstChild
+            if mime_text and "filesystem/directory" in mime_text.nodeValue:
+                for field_9 in fv.getElementsByTagName("field_9"):
+                    first_child = field_9.firstChild
+                    if first_child and first_child.nodeType == first_child.TEXT_NODE:
+                        first_child.nodeValue = "DIR_SIZE"
+
 print(doc.toprettyxml(indent='  '))
 PYEOF
 }
