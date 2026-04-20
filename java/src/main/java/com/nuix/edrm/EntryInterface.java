@@ -11,12 +11,21 @@ public abstract class EntryInterface {
     protected final Map<String, EntryField> fields = new LinkedHashMap<>();
 
     public Iterable<String> getFields() { return fields.keySet(); }
-    public EntryField getField(String fieldKey) {
-        if (!fields.containsKey(fieldKey)) {
-            throw new IllegalArgumentException("Field '" + fieldKey + "' does not exist on this entry.");
+
+    /**
+     * Returns the field with the given human-readable name (e.g. {@code "SHA-1"},
+     * {@code "MIME Type"}). The {@code fields} map is keyed by field name — not by the
+     * generated XML key ({@code field_0}, {@code field_1}, …) — so this method always
+     * matches on name.
+     *
+     * @throws IllegalArgumentException if no field with {@code fieldName} exists on this entry
+     */
+    public EntryField getField(String fieldName) {
+        if (!fields.containsKey(fieldName)) {
+            throw new IllegalArgumentException("Field '" + fieldName + "' does not exist on this entry.");
         }
 
-        return fields.get(fieldKey);
+        return fields.get(fieldName);
     }
     public void putField(EntryField f) { fields.put(f.getName(), f); }
     public void setFieldValue(String fieldName, Object fieldValue) {
