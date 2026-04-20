@@ -35,6 +35,6 @@
     "licenseServerAddress": "https://licence-api.nuix.com",
     "licenseType": "enterprise-workstation",
     "licenseUser": "test@example.com",
-    "licensePassword": "REDACTED"
+    "licensePassword": "PLACEHOLDER"
   }
 }

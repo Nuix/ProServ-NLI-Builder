@@ -162,3 +162,94 @@ class TestDatetimeUTCAware(unittest.TestCase):
         dt_result = eutes.convert_datetime_to_string(datetime.fromtimestamp(ts, tz=timezone.utc))
         self.assertEqual(ts_result, dt_result,
                          "convert_timestamp_to_string and convert_datetime_to_string(utc_aware) should agree")
+
+
+class TestMappingEntryItemdateContract(unittest.TestCase):
+    """SLC-293: MappingEntry.itemdate must always return datetime, consistent with EntryInterface contract."""
+
+    def test_itemdate_always_returns_datetime_no_time_field(self):
+        """itemdate returns a datetime when no time field is present."""
+        mapping = MappingEntry({'a': 1}, "application/x-test")
+        result = mapping.itemdate
+        self.assertIsInstance(result, datetime,
+                              f"itemdate should return datetime when no time field, got {type(result)}: {result!r}")
+
+    def test_itemdate_always_returns_datetime_parseable_string(self):
+        """itemdate returns a datetime when the time field holds a parseable string."""
+        date_str = "2024-01-15T10:00:00.000000"
+        mapping = MappingEntry({'Item Date': date_str}, "application/x-test")
+        result = mapping.itemdate
+        self.assertIsInstance(result, datetime,
+                              f"itemdate should return datetime for a parseable string, got {type(result)}: {result!r}")
+
+    def test_itemdate_always_returns_datetime_unparseable_string(self):
+        """itemdate returns a datetime even when the string cannot be parsed.
+
+        The fallback must be datetime.now() — NOT the format string and NOT the raw
+        input string. Returning a str here violates the EntryInterface contract.
+        """
+        before = datetime.now(tz=timezone.utc)
+        mapping = MappingEntry({'Item Date': 'not-a-date'}, "application/x-test")
+        result = mapping.itemdate
+        after = datetime.now(tz=timezone.utc)
+        self.assertIsInstance(result, datetime,
+                              f"itemdate must return datetime on ValueError fallback, not {type(result)}: {result!r}")
+        # The fallback should be approximately now (within the test duration)
+        result_utc = result if result.tzinfo else result.replace(tzinfo=timezone.utc)
+        self.assertGreaterEqual(result_utc, before)
+        self.assertLessEqual(result_utc, after)
+
+    def test_itemdate_always_returns_datetime_datetime_value(self):
+        """itemdate returns the datetime unchanged when the field holds a datetime."""
+        dt = datetime(2024, 6, 15, 12, 0, 0, tzinfo=timezone.utc)
+        mapping = MappingEntry({'Item Date': dt}, "application/x-test")
+        result = mapping.itemdate
+        self.assertIsInstance(result, datetime,
+                              f"itemdate should return datetime when field is already a datetime, got {type(result)}")
+        self.assertEqual(result, dt)
+
+
+class TestMappingEntryItemdate(unittest.TestCase):
+    """Regression tests for MappingEntry.itemdate (SLC-292)."""
+
+    def test_itemdate_unparseable_string_returns_original_string(self):
+        """
+        When the time field contains a string that cannot be parsed as a datetime,
+        itemdate must return the original unparseable string — not the format string
+        (e.g. '%Y-%m-%dT%H:%M:%S') which was a silent data-corruption bug.
+        """
+        unparseable = "not-a-date"
+        mapping = MappingEntry({'Item Date': unparseable}, "application/x-test")
+        result = mapping.itemdate
+        self.assertEqual(result, unparseable,
+                         f"itemdate should return the original unparseable string '{unparseable}', "
+                         f"not the format string or any other value, got: {result!r}")
+
+    def test_itemdate_parseable_string_returns_datetime(self):
+        """A time field with a correctly formatted string must return a datetime."""
+        # edrm.configs['date_time_format'] defaults to '%Y-%m-%dT%H:%M:%S.%f'
+        date_str = "2024-01-15T10:00:00.000000"
+        mapping = MappingEntry({'Item Date': date_str}, "application/x-test")
+        result = mapping.itemdate
+        self.assertIsInstance(result, datetime,
+                              f"itemdate should return a datetime for a parseable string, got: {result!r}")
+
+    def test_itemdate_datetime_value_returned_unchanged(self):
+        """A time field already holding a datetime must be returned as-is."""
+        dt = datetime(2024, 6, 15, 12, 0, 0, tzinfo=timezone.utc)
+        mapping = MappingEntry({'Item Date': dt}, "application/x-test")
+        result = mapping.itemdate
+        self.assertEqual(result, dt,
+                         "itemdate should return the datetime value unchanged when the field holds a datetime")
+
+    def test_itemdate_no_time_field_returns_datetime_now(self):
+        """When no time field is present, itemdate returns a datetime (approximate now)."""
+        mapping = MappingEntry({'some_key': 'value'}, "application/x-test")
+        before = datetime.now(tz=timezone.utc)
+        result = mapping.itemdate
+        after = datetime.now(tz=timezone.utc)
+        self.assertIsInstance(result, datetime,
+                              "itemdate with no time field should return a datetime instance")
+        # The returned datetime should be approximately now
+        self.assertGreaterEqual(result.replace(tzinfo=timezone.utc) if result.tzinfo is None else result, before)
+        self.assertLessEqual(result.replace(tzinfo=timezone.utc) if result.tzinfo is None else result, after)
