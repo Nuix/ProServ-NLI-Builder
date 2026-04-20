@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import csv
-from typing import Any, Generator, Type
+from typing import Any, Generator, Optional, Type
 
 from nuix_nli_lib.edrm.EDRMBuilder import EDRMBuilder
 from nuix_nli_lib.edrm.FileEntry import FileEntry
@@ -59,9 +61,9 @@ class CSVEntry(FileEntry):
     """
     def __init__(self, file_path: str,
                  mimetype: str = "text/csv",
-                 parent_id: str = None,
-                 row_generator: Type[Any] = None,
-                 delimiter=','):
+                 parent_id: Optional[str] = None,
+                 row_generator: Optional[Type[Any]] = None,
+                 delimiter: str = ',') -> None:
         """
         :param file_path: Full path to the CSV file.  The file header is read immediately to obtain field names.
                           Rows are NOT loaded into memory at this point.
@@ -137,7 +139,7 @@ class CSVEntry(FileEntry):
             for row in reader:
                 yield dict(row)
 
-    def add_as_parent_path(self, existing_path: str):
+    def add_as_parent_path(self, existing_path: str) -> str:
         return f'{self.name}/{existing_path}'
 
     def add_to_builder(self, builder: EDRMBuilder) -> str:
@@ -170,7 +172,7 @@ class CSVEntry(FileEntry):
 
 
 class CSVRowEntry(MappingEntry):
-    def __init__(self, parent_csv: CSVEntry, row_index: int, parent_id: str = None):
+    def __init__(self, parent_csv: CSVEntry, row_index: int, parent_id: Optional[str] = None) -> None:
         self.__parent_csv: CSVEntry = parent_csv
         self.__row_index: int = row_index
 
