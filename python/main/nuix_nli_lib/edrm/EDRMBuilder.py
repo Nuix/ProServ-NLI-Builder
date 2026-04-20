@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 from copy import deepcopy
 
 from xml.dom.minidom import getDOMImplementation, Element, Document
 
-from nuix_nli_lib.edrm import DirectoryEntry, EntryInterface, FileEntry, MappingEntry
+from nuix_nli_lib.edrm.DirectoryEntry import DirectoryEntry
+from nuix_nli_lib.edrm.FileEntry import FileEntry
+from nuix_nli_lib.edrm.MappingEntry import MappingEntry
+from nuix_nli_lib.edrm.EntryInterface import EntryInterface
 from nuix_nli_lib import edrm, debug_log
 
 
@@ -129,7 +134,7 @@ class EDRMBuilder:
 
         return entry_id
 
-    def add_file(self, file_path: str, mimetype: str, parent_id: str = None) -> str:
+    def add_file(self, file_path: str, mimetype: str, parent_id: Optional[str] = None) -> str:
         """
         Add a generic file as an entry in the EDRM load file.  Use this method as a convenience when you don't need
         a custom implementation of a FileEntry class.
@@ -142,7 +147,7 @@ class EDRMBuilder:
         """
         return self.add_entry(FileEntry(file_path, mimetype, parent_id))
 
-    def add_directory(self, directory: str, parent_id: str = None) -> str:
+    def add_directory(self, directory: str, parent_id: Optional[str] = None) -> str:
         """
         Add a generic directory as an entry in the EDRM load file.  This will generate a folder or directory
         in the final case the load file will populate.  Use this method as a convenience when you don't need
@@ -157,7 +162,7 @@ class EDRMBuilder:
         """
         return self.add_entry(DirectoryEntry(directory, parent_id))
 
-    def add_mapping(self, mapping: dict[str, Any], mimetype: str, parent_id: str = None) -> str:
+    def add_mapping(self, mapping: dict[str, Any], mimetype: str, parent_id: Optional[str] = None) -> str:
         """
         Add a dictionary as a generic mapping entry to the load file.  This will generate an entry containing the
         dictionary's contents as Fields.  Use this method as a convenience when you don't need a custom implementation
@@ -252,7 +257,7 @@ class EDRMBuilder:
 
         return doc
 
-    def save(self, doc: Document = None):
+    def save(self, doc: Optional[Document] = None) -> None:
         """
         Save the EDRM load file document to the disk.  The `doc` argument is the DOM object containing the EDRM load
         file XML content.  It is optional, and if not provided, the `build()` method will be called to create it.
@@ -271,6 +276,7 @@ class EDRMBuilder:
             debug_log(f"Building EDRM file with {len(self.__entries)} entries", flush=True)
             doc = self.build()
 
-        with self.output_path.open(mode='w', encoding=edrm.configs['encoding']) as load_file:
+        encoding = str(edrm.configs['encoding'])
+        with self.output_path.open(mode='w', encoding=encoding) as load_file:
             debug_log(f"Saving EDRM XML to {str(self.output_path)}", flush=True)
-            doc.writexml(load_file, encoding=edrm.configs['encoding'], standalone=True, addindent='  ', newl='\n')
+            doc.writexml(load_file, encoding=encoding, standalone=True, addindent='  ', newl='\n')
