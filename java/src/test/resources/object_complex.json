@@ -13,8 +13,8 @@
     "smtpAuth": "auth",
     "smtpSocketFactoryPort": 2,
     "smtpSocketFactoryClass": "clz",
-    "user": "me",
-    "password": "REDACTED",
+    "user": "test-user",
+    "password": "PLACEHOLDER",
     "distroList": ["a@b.c", "b@a.c"]
   },
   "nuix": {
@@ -35,6 +35,6 @@
     "licenseServerAddress": "https://licence-api.nuix.com",
     "licenseType": "enterprise-workstation",
     "licenseUser": "test@example.com",
-    "licensePassword": "REDACTED"
+    "licensePassword": "PLACEHOLDER"
   }
 }
