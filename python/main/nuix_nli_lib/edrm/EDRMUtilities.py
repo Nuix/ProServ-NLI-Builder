@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import re
 import sys
@@ -7,6 +9,7 @@ from pathlib import Path
 from typing import Union, Any
 
 from nuix_nli_lib import edrm
+from nuix_nli_lib.edrm._types import HashProtocol
 
 """
 Collection of utility functions for working with EDRM data.
@@ -47,7 +50,7 @@ def convert_timestamp_to_string(timestamp: float) -> str:
     return convert_datetime_to_string(dt)
 
 
-def _hash_file(file: Path, hashfunction: hashlib) -> None:
+def _hash_file(file: Path, hashfunction: HashProtocol) -> None:
     """
     Intermediate function to update the hash with the contents of the file.
     """
@@ -60,7 +63,7 @@ def _hash_file(file: Path, hashfunction: hashlib) -> None:
             hashfunction.update(data)
 
 
-def hash_file(file: Path, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:
+def hash_file(file: Path, hashfunction: HashProtocol, as_string: bool = True) -> Union[str, bytes]:
     """
     Generate a hash for the provided file. This will work on large files by breaking it into smaller chunks.  Use the
     `edrm.configs` object to control how large those chunks are.
@@ -77,14 +80,14 @@ def hash_file(file: Path, hashfunction: hashlib, as_string: bool = True) -> Unio
         return hashfunction.digest()
 
 
-def _hash_data(data: Any, hashfunction: hashlib):
+def _hash_data(data: Any, hashfunction: HashProtocol) -> None:
     """
     Intermediate function to update a hash function with the contents of some data.
     """
     hashfunction.update(str(data).encode(edrm.configs['encoding']))
 
 
-def hash_data(data: Any, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:
+def hash_data(data: Any, hashfunction: HashProtocol, as_string: bool = True) -> Union[str, bytes]:
     """
     Generate a hash for the provided data. This converts data to string prior to hashing it.
     :param data: Data to calculate a hash on
@@ -100,7 +103,7 @@ def hash_data(data: Any, hashfunction: hashlib, as_string: bool = True) -> Union
         return hashfunction.digest()
 
 
-def hash_directory(directory: Path, hashfunction: hashlib, as_string: bool = True) -> Union[str, bytes]:
+def hash_directory(directory: Path, hashfunction: HashProtocol, as_string: bool = True) -> Union[str, bytes]:
     """
     Hash the contents of a directory.  The contents of the directory includes all the non-empty files, all the files'
     names, calculated recursively through subdirectories.
