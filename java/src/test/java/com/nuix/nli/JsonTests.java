@@ -1,5 +1,6 @@
 package com.nuix.nli;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.nuix.edrm.EDRMBuilder;
 import com.nuix.edrm.EntryField;
 import com.nuix.edrm.EntryInterface;
@@ -8,6 +9,10 @@ import com.nuix.edrm.datatypes.JSONObjectEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -28,6 +33,11 @@ import java.util.zip.ZipInputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// The @BeforeEach deletes all .nli files from outputDir() before each test. This is safe
+// for serial execution but would cause intermittent failures under JUnit 5 parallel
+// execution (concurrent tests would delete each other's in-flight output). This annotation
+// ensures the class always runs single-threaded regardless of project-level parallelism config.
+@Execution(ExecutionMode.SAME_THREAD)
 public class JsonTests {
     private Path resources() { return Paths.get(".", "src", "test", "resources").toAbsolutePath().normalize(); }
     private Path outputDir() { return Paths.get("build", "test-output", "json").toAbsolutePath().normalize(); }
@@ -35,6 +45,15 @@ public class JsonTests {
     @BeforeEach
     void ensureOutputDir() throws Exception {
         Files.createDirectories(outputDir());
+        // Delete stale .nli output files so that assertTrue(Files.exists(out)) cannot
+        // pass trivially from a previous test run — the file must be freshly produced.
+        try (var stream = Files.list(outputDir())) {
+            stream.filter(p -> p.toString().endsWith(".nli"))
+                  .forEach(p -> {
+                      try { Files.deleteIfExists(p); }
+                      catch (java.io.IOException ignored) { }
+                  });
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -77,18 +96,39 @@ public class JsonTests {
     }
 
     // -----------------------------------------------------------------------
-    // Existing test (preserving original behaviour)
+    // Resource-file roundtrip tests (parameterized, SLC-174)
     // -----------------------------------------------------------------------
 
-    @Test
-    public void testSimpleStr() {
-        Path json = resources().resolve("simple_str.json");
+    /**
+     * Parameterized roundtrip: load a JSON resource file, write an NLI, verify the NLI exists and
+     * contains at least {@code minDocCount} EDRM {@code <Document>} elements.
+     *
+     * <p>Row format: {@code resourceName, outputName, minDocCount}
+     * <ul>
+     *   <li>{@code simple_str.json} — scalar string root; file entry + value child = ≥ 2 documents
+     *   <li>{@code object_complex.json} — deeply nested object; traversal must descend into nested
+     *       structures, so ≥ 10 documents confirms recursive traversal is working
+     * </ul>
+     */
+    @ParameterizedTest(name = "{0} -> {1} (minDocs={2})")
+    @CsvSource({
+        "simple_str.json,     simple_str.nli,       2",
+        "object_complex.json, complex_roundtrip.nli, 10"
+    })
+    public void testResourceFileRoundtrip(String resourceName, String outputName, int minDocCount) throws Exception {
+        Path json = resources().resolve(resourceName);
         JSONFileEntry entry = new JSONFileEntry(json.toString());
         NLIGenerator nli = new NLIGenerator();
         nli.addEntry(entry);
-        Path out = outputDir().resolve("simple_str.nli");
+        Path out = outputDir().resolve(outputName);
         nli.save(out);
-        assertTrue(Files.exists(out));
+        assertTrue(Files.exists(out), "NLI output file should exist: " + out);
+        assertTrue(Files.size(out) > 0, "NLI output file should be non-zero: " + out);
+
+        Document doc = getEdrmXmlFromNli(out);
+        int docCount = xpathCount(doc, "//Document");
+        assertTrue(docCount >= minDocCount,
+                "Expected at least " + minDocCount + " documents in NLI for " + resourceName + ", got " + docCount);
     }
 
     // -----------------------------------------------------------------------
@@ -216,22 +256,6 @@ public class JsonTests {
     }
 
     /**
-     * Test 7: Full roundtrip via NLIGenerator with a complex nested JSON file —
-     * output NLI file exists and is non-zero in size.
-     */
-    @Test
-    public void testComplexJsonRoundtrip() throws Exception {
-        Path json = resources().resolve("object_complex.json");
-        JSONFileEntry entry = new JSONFileEntry(json.toString());
-        NLIGenerator nli = new NLIGenerator();
-        nli.addEntry(entry);
-        Path out = outputDir().resolve("complex_roundtrip.nli");
-        nli.save(out);
-        assertTrue(Files.exists(out), "NLI output file should exist");
-        assertTrue(Files.size(out) > 0, "NLI output file should be non-zero");
-    }
-
-    /**
      * Test 8: JSONPath field-type override ($..count) marks a string field as LongInteger —
      * override does not break serialization.
      */
@@ -286,6 +310,158 @@ public class JsonTests {
                 "Expected a LongInteger-typed field after nested fieldTypeOverride coercion");
     }
 
+    // --- malformed JSONPath pattern validation (SLC-256) and null type guard (SLC-259) ---
+
+    /**
+     * SLC-256: A pattern of the form {@code $..foo.bar} (recursive-descent with a dotted key)
+     * must be rejected by {@link JSONFileEntry#addFieldTypeOverride} with an
+     * {@link IllegalArgumentException}.
+     *
+     * <p>Without the guard, the key extracted by {@code pattern.substring(3)} is {@code "foo.bar"},
+     * which can never match any real JSON field name; the override silently does nothing.
+     */
+    @Test
+    public void testMalformedJsonPathRecursiveDescentNestedKeyThrows() {
+        JSONFileEntry entry = new JSONFileEntry("/dev/null");
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.addFieldTypeOverride("$..foo.bar", EntryField.Type.LongInteger),
+                "addFieldTypeOverride must reject '$..foo.bar' — dotted keys after '$..'" +
+                " can never match a real field name and would register a silent no-op");
+    }
+
+    /**
+     * SLC-259: Passing {@code null} as the {@code type} parameter to
+     * {@link JSONFileEntry#addFieldTypeOverride} must throw {@link IllegalArgumentException}.
+     *
+     * <p>Without the null-check, a null type is silently stored and
+     * {@code resolveTypeOverride} returns null, which is indistinguishable from
+     * "no override registered" — a silent no-op.
+     */
+    @Test
+    public void testNullTypeInAddFieldTypeOverrideThrows() {
+        JSONFileEntry entry = new JSONFileEntry("/dev/null");
+        assertThrows(IllegalArgumentException.class,
+                () -> entry.addFieldTypeOverride("$..key", null),
+                "addFieldTypeOverride must reject a null type parameter");
+    }
+
+    // --- null root JSON (SLC-175) ---
+
+    /**
+     * A JSON file whose entire content is the literal {@code null} is valid JSON.
+     * Jackson parses it as a NullNode whose {@code isNull()} returns {@code true}.
+     * {@code JSONFileEntry.addToBuilder} must handle this by returning early without
+     * adding any child entries — the NLI must be produced with exactly one
+     * {@code <Document>} element (the file entry itself) and must not throw.
+     *
+     * <p>This is the only test that exercises the {@code root.isNull()} early-return
+     * branch in {@code JSONFileEntry.addToBuilder}.
+     */
+    @Test
+    public void testRootNullProducesFileEntryOnly() throws Exception {
+        Path json = writeTempJson("null_root.json", "null");
+        NLIGenerator nli = new NLIGenerator();
+        assertDoesNotThrow(() -> nli.addEntry(new JSONFileEntry(json.toString())),
+                "A root-null JSON document must not throw during addEntry");
+        Path out = outputDir().resolve("null_root.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out), "NLI output file should exist for null-root JSON");
+
+        // The root NullNode triggers an early return; no child entry is added.
+        // Exactly one <Document> (the JSONFileEntry itself) must be present.
+        Document doc = getEdrmXmlFromNli(out);
+        int docCount = xpathCount(doc, "//Document");
+        assertEquals(1, docCount,
+                "A null-root JSON document should produce exactly 1 Document (the file entry, no children), got " + docCount);
+    }
+
+    // --- malformed JSON detection (SLC-153) ---
+
+    /**
+     * A file containing a bare, unquoted identifier (e.g. {@code foo}) is not
+     * valid JSON.  {@code JSONFileEntry} must throw a {@link RuntimeException}
+     * with a message that includes the file path, with the original parse
+     * exception preserved as the cause.
+     */
+    @Test
+    public void testBareIdentifierThrowsWithFileContext() throws Exception {
+        Path tmp = Files.createTempFile(outputDir(), "slc153-test-bare-", ".json");
+        try {
+            Files.writeString(tmp, "foo");
+            JSONFileEntry entry = new JSONFileEntry(tmp.toString());
+            NLIGenerator nli = new NLIGenerator();
+            RuntimeException ex = assertThrows(RuntimeException.class, () -> nli.addEntry(entry));
+            assertTrue(ex.getMessage().contains(tmp.toString()),
+                    "Error message should contain the file path; got: " + ex.getMessage());
+            assertNotNull(ex.getCause(), "cause should be preserved");
+            assertInstanceOf(JsonParseException.class, ex.getCause(),
+                    "cause should be a JsonParseException; got: " + ex.getCause().getClass().getName());
+            assertTrue(ex.getMessage().contains("foo") || ex.getCause().getMessage().contains("foo"),
+                    "Error message or cause should contain the content preview 'foo'; got: " + ex.getMessage());
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
+    }
+
+    /**
+     * A file containing truncated JSON (a partial object) is not valid JSON.
+     * {@code JSONFileEntry} must throw a {@link RuntimeException} with a message
+     * that includes the file path, with the original parse exception preserved
+     * as the cause.
+     */
+    @Test
+    public void testTruncatedObjectThrowsWithFileContext() throws Exception {
+        Path tmp = Files.createTempFile(outputDir(), "slc153-test-truncated-", ".json");
+        try {
+            Files.writeString(tmp, "{\"a\":1");
+            JSONFileEntry entry = new JSONFileEntry(tmp.toString());
+            NLIGenerator nli = new NLIGenerator();
+            RuntimeException ex = assertThrows(RuntimeException.class, () -> nli.addEntry(entry));
+            assertTrue(ex.getMessage().contains(tmp.toString()),
+                    "Error message should contain the file path; got: " + ex.getMessage());
+            assertNotNull(ex.getCause(), "cause should be preserved");
+            assertInstanceOf(JsonParseException.class, ex.getCause(),
+                    "cause should be a JsonParseException; got: " + ex.getCause().getClass().getName());
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
+    }
+
+    /**
+     * An empty file produces a null/missing root node in Jackson — the Jackson-based
+     * implementation handles this gracefully without throwing.  This test verifies that
+     * an empty JSON file does not propagate an unchecked exception and that the NLI
+     * output file is still produced (as an archive with no JSON child entries).
+     */
+    @Test
+    public void testEmptyFileHandledGracefully() throws Exception {
+        Path tmp = Files.createTempFile(outputDir(), "slc153-test-empty-", ".json");
+        Path out = outputDir().resolve("empty_file_graceful.nli");
+        try {
+            Files.writeString(tmp, "");
+            JSONFileEntry entry = new JSONFileEntry(tmp.toString());
+            NLIGenerator nli = new NLIGenerator();
+            assertDoesNotThrow(() -> nli.addEntry(entry),
+                    "An empty JSON file should be handled gracefully, not throw");
+            nli.save(out);
+            assertTrue(Files.exists(out), "NLI output file should exist even for empty JSON input");
+        } finally {
+            Files.deleteIfExists(tmp);
+            Files.deleteIfExists(out);
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // SLC-241: Custom root factory — TaggedObjectEntry subclass
+    // -----------------------------------------------------------------------
+
+    /**
+     * Minimal {@link JSONObjectEntry} subclass used by {@link #testCustomRootFactory} to verify
+     * that {@code JsonEntryFactory.createObject()} can reflectively instantiate a custom subclass.
+     *
+     * <p>The constructor must be {@code public} because {@code JsonEntryFactory.createObject()}
+     * uses {@link Class#getConstructor(Class[])} which only finds public constructors.
+     */
     // -----------------------------------------------------------------------
     // SLC-68: JSON structural content tests using EDRMBuilder directly
     // -----------------------------------------------------------------------
@@ -480,40 +656,6 @@ public class JsonTests {
     }
 
     /**
-     * testCustomRootFactory: Subclass {@link JSONFileEntry} via the generator-class constructor
-     * to inject a custom {@link JSONObjectEntry} subclass ({@link TaggedObjectEntry}) as the root.
-     *
-     * <p>Asserts that the builder's entry map contains an instance of the custom subclass,
-     * confirming that the objectClass parameter is honoured by the factory.
-     */
-    @Test
-    public void testCustomRootFactory() {
-        // Use the generator-class constructor so the factory produces TaggedObjectEntry instances.
-        JSONFileEntry customEntry = new JSONFileEntry(
-                resources().resolve("object_mixed.json").toString(),
-                "application/json",
-                null,
-                null,        // valueClass — use default
-                null,        // arrayClass — use default
-                TaggedObjectEntry.class);
-
-        EDRMBuilder builder = new EDRMBuilder();
-        String fileId = customEntry.addToBuilder(builder);
-
-        // The builder must contain at least one TaggedObjectEntry as a direct child of the file.
-        Map<String, List<String>> familyMap = builder.getFamilyMap();
-        List<String> children = familyMap.getOrDefault(fileId, List.of());
-        assertFalse(children.isEmpty(),
-                "object_mixed.json should produce at least one child entry");
-
-        boolean foundTagged = children.stream()
-                .map(id -> builder.getEntry(id))
-                .anyMatch(e -> e instanceof TaggedObjectEntry);
-        assertTrue(foundTagged,
-                "At least one direct child of the JSONFileEntry should be a TaggedObjectEntry");
-    }
-
-    /**
      * testDeepNesting: A 3-level parent chain is fully expressed in the EDRM
      * {@code <Relationship>} elements.
      *
@@ -574,17 +716,70 @@ public class JsonTests {
     // Static nested helper classes
     // -------------------------------------------------------------------------
 
+    // -----------------------------------------------------------------------
+    // SLC-241: Custom root factory — TaggedObjectEntry subclass
+    // -----------------------------------------------------------------------
+
     /**
-     * Custom JSONObjectEntry subclass used by testCustomRootFactory to verify that the
-     * generator-class constructor of JSONFileEntry is honoured.
+     * Minimal {@link JSONObjectEntry} subclass used by {@link #testCustomRootFactory} to verify
+     * that {@code JsonEntryFactory.createObject()} can reflectively instantiate a custom subclass.
      *
-     * <p>Must be {@code static} and package-accessible so that {@link JsonEntryFactory} can
-     * reflectively instantiate it via the 4-arg constructor.
+     * <p>The constructor must be {@code public} because {@code JsonEntryFactory.createObject()}
+     * uses {@link Class#getConstructor(Class[])} which only finds public constructors.
      */
-    static class TaggedObjectEntry extends JSONObjectEntry {
-        TaggedObjectEntry(String mappingName, Map<String, Object> object, String mimeType, String parentId) {
+    public static class TaggedObjectEntry extends JSONObjectEntry {
+        public TaggedObjectEntry(String mappingName, Map<String, Object> object,
+                                 String mimeType, String parentId) {
             super(mappingName, object, mimeType, parentId);
         }
+    }
+
+    /**
+     * SLC-241 + SLC-243: Verify that {@code JsonEntryFactory.createObject()} can reflectively
+     * instantiate {@link TaggedObjectEntry} and that the resulting entry is correctly initialized
+     * — i.e. that field values from the JSON content are present in the EDRM XML output.
+     *
+     * <p>If the constructor were package-private the factory would throw a
+     * {@link NoSuchMethodException} wrapped in a {@link RuntimeException}.
+     */
+    @Test
+    public void testCustomRootFactory() throws Exception {
+        // JSON has two scalar fields: "label" (Text) and "count" (LongInteger)
+        Path json = writeTempJson("custom_root_factory.json", "{\"label\":\"hello\",\"count\":7}");
+        JSONFileEntry entry = new JSONFileEntry(
+                json.toString(),
+                "application/json",
+                null,
+                null,
+                null,
+                TaggedObjectEntry.class
+        );
+
+        NLIGenerator nli = new NLIGenerator();
+        // The factory must not throw; if the constructor is package-private this line fails.
+        assertDoesNotThrow(() -> nli.addEntry(entry),
+                "JsonEntryFactory.createObject() must reflectively instantiate TaggedObjectEntry without throwing");
+
+        Path out = outputDir().resolve("custom_root_factory.nli");
+        nli.save(out);
+        assertTrue(Files.exists(out), "NLI output file should exist: " + out);
+
+        Document doc = getEdrmXmlFromNli(out);
+
+        // Verify the custom entry contributed at least a root + the two scalar children
+        int docCount = xpathCount(doc, "//Document");
+        assertTrue(docCount >= 2,
+                "Expected at least 2 Documents (file entry + custom root object), got " + docCount);
+
+        // SLC-243: Verify field values from the JSON content appear in the EDRM output,
+        // confirming the custom TaggedObjectEntry is correctly initialized, not just instantiated.
+        String labelValue = xpathText(doc, "//FieldValues/*[parent::FieldValues and contains(text(),'hello')]");
+        assertFalse(labelValue.isEmpty(),
+                "Expected the 'label' field value 'hello' to appear in a FieldValues element");
+
+        String countValue = xpathText(doc, "//FieldValues/*[parent::FieldValues and text()='7']");
+        assertFalse(countValue.isEmpty(),
+                "Expected the 'count' field value '7' to appear in a FieldValues element");
     }
 
     // SLC-82: Malformed JSONPath handling in parseJsonPathSegments
@@ -675,5 +870,239 @@ public class JsonTests {
         assertDoesNotThrow(() -> nli.save(out),
                 "Saving with valid JSONPath patterns must not throw");
         assertTrue(Files.exists(out));
+    }
+
+    // SLC-153: Malformed JSON file content detection
+    // -----------------------------------------------------------------------
+
+    /**
+     * Test 17: A JSON file containing garbage (non-JSON text) must throw a RuntimeException
+     * when addToBuilder is called. The exception is caused by Jackson being unable to parse
+     * the content as valid JSON.
+     */
+    @Test
+    public void testMalformedJsonFileGarbageThrows() throws Exception {
+        Path json = writeTempJson("garbage_content.json", "this is not json at all");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        assertThrows(RuntimeException.class,
+                () -> nli.addEntry(entry),
+                "A file containing non-JSON garbage content must throw RuntimeException during addToBuilder");
+    }
+
+    /**
+     * Test 18: A JSON file with truncated/incomplete content must throw a RuntimeException
+     * when addToBuilder is called. The exception is caused by Jackson detecting the unexpected
+     * end of input while parsing.
+     */
+    @Test
+    public void testMalformedJsonFileTruncatedThrows() throws Exception {
+        Path json = writeTempJson("truncated_content.json", "{\"a\":1");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        assertThrows(RuntimeException.class,
+                () -> nli.addEntry(entry),
+                "A truncated JSON file must throw RuntimeException during addToBuilder");
+    }
+
+    /**
+     * Test 19: The RuntimeException thrown for a malformed JSON file must include the file path
+     * in its message, enabling fast diagnosis of which file caused the parse failure.
+     * This is the key diagnostic contract introduced by SLC-153.
+     */
+    @Test
+    public void testMalformedJsonFileErrorMessageContainsFilePath() throws Exception {
+        Path json = writeTempJson("malformed_for_path_check.json", "not valid json");
+        JSONFileEntry entry = new JSONFileEntry(json.toString());
+        NLIGenerator nli = new NLIGenerator();
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> nli.addEntry(entry),
+                "Parsing a malformed JSON file must throw RuntimeException");
+        String msg = ex.getMessage() == null ? "" : ex.getMessage();
+        assertTrue(msg.contains(json.toString()) || msg.contains(json.getFileName().toString()),
+                "The RuntimeException message must contain the file path for diagnostics, but was: " + msg);
+    }
+
+    // -------------------------------------------------------------------------
+    // SLC-172: Regression tests — string roots that look like other types (SLC-149 fix guard)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Regression test for SLC-149: a JSON string whose value begins with {@code [} must be
+     * classified as a scalar value ({@code application/x-json-value}), not as an array.
+     *
+     * <p>The old {@code startsWith} heuristic in the pre-Jackson implementation would have
+     * misidentified this as an array root, producing a child with the wrong MIME type. This
+     * test parses the generated NLI and asserts the child entry's {@code MimeType} attribute
+     * so that any regression in root-type detection immediately fails here rather than
+     * silently producing a wrong output file.
+     */
+    @Test
+    public void testStringRootLooksLikeArray() throws Exception {
+        // A JSON string value that starts with '[' — must be treated as a scalar, not an array.
+        Path json = writeTempJson("string_looks_like_array.json", "\"[not an array]\"");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("string_looks_like_array.nli");
+        nli.save(out);
+        // getEdrmXmlFromNli already throws AssertionError if the file is missing or
+        // image_contents.xml is absent — no need for a separate Files.exists check.
+        Document doc = getEdrmXmlFromNli(out);
+
+        // The child Document element must have MimeType="application/x-json-value", NOT
+        // "application/x-json-array". A regression in Jackson root-type detection would
+        // produce the wrong MIME type and this assertion would catch it.
+        String mimeType = xpathText(doc,
+                "//Document[@MimeType='application/x-json-value']/@MimeType");
+        assertEquals("application/x-json-value", mimeType,
+                "A string root starting with '[' must produce a JSONValueEntry "
+                + "(application/x-json-value), not a JSONArrayEntry");
+
+        // Also verify that the array MIME type is NOT present — belt-and-suspenders.
+        String arrayMime = xpathText(doc,
+                "//Document[@MimeType='application/x-json-array']/@MimeType");
+        assertTrue(arrayMime.isEmpty(),
+                "No application/x-json-array entry should exist for a string root");
+    }
+
+    /**
+     * Regression test for SLC-149: a JSON string whose value begins with {@code {}} must be
+     * classified as a scalar value ({@code application/x-json-value}), not as an object.
+     *
+     * <p>Mirrors {@link #testStringRootLooksLikeArray} for the object-lookalike case.
+     */
+    @Test
+    public void testStringRootLooksLikeObject() throws Exception {
+        // A JSON string value that starts with '{' — must be treated as a scalar, not an object.
+        Path json = writeTempJson("string_looks_like_object.json", "\"{not an object}\"");
+        NLIGenerator nli = new NLIGenerator();
+        nli.addEntry(new JSONFileEntry(json.toString()));
+        Path out = outputDir().resolve("string_looks_like_object.nli");
+        nli.save(out);
+        // getEdrmXmlFromNli already throws AssertionError if the file is missing or
+        // image_contents.xml is absent — no need for a separate Files.exists check.
+        Document doc = getEdrmXmlFromNli(out);
+
+        // The child Document element must have MimeType="application/x-json-value", NOT
+        // "application/x-json-object".
+        String mimeType = xpathText(doc,
+                "//Document[@MimeType='application/x-json-value']/@MimeType");
+        assertEquals("application/x-json-value", mimeType,
+                "A string root starting with '{' must produce a JSONValueEntry "
+                + "(application/x-json-value), not a JSONObjectEntry");
+
+        // Also verify that the object MIME type is NOT present.
+        String objectMime = xpathText(doc,
+                "//Document[@MimeType='application/x-json-object']/@MimeType");
+        assertTrue(objectMime.isEmpty(),
+                "No application/x-json-object entry should exist for a string root");
+    }
+
+    // -------------------------------------------------------------------------
+    // SLC-150: JSON string escape sequence decoding (regression guard)
+    // -------------------------------------------------------------------------
+
+    /**
+     * testScalarStringNewlineEscape: A root JSON string containing a {@code \n} escape
+     * sequence must be decoded to an actual newline character, not the two-character literal
+     * {@code \n}.
+     *
+     * <p>A naive {@code content.substring(1, content.length() - 1)} implementation strips
+     * the surrounding quotes but leaves JSON escape sequences unprocessed. The correct
+     * implementation delegates to the JSON parser (Jackson's {@code node.textValue()}) which
+     * always returns the decoded Java string.
+     */
+    @Test
+    public void testScalarStringNewlineEscape(@TempDir Path tempDir) throws Exception {
+        // JSON: "hello\nworld" — the \n is a JSON escape, must become a real newline
+        Path json = tempDir.resolve("escape_newline.json");
+        Files.writeString(json, "\"hello\\nworld\"", StandardCharsets.UTF_8);
+
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        // The scalar child should carry the field value "hello\nworld" (real newline).
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        boolean foundDecodedNewline = entryMap.values().stream()
+                .filter(e -> !(e instanceof JSONFileEntry))
+                .flatMap(e -> {
+                    java.util.stream.Stream.Builder<String> sb = java.util.stream.Stream.builder();
+                    for (String fieldName : e.getFields()) {
+                        Object val = e.getField(fieldName).getValue();
+                        if (val != null) sb.accept(val.toString());
+                    }
+                    return sb.build();
+                })
+                .anyMatch(v -> v.contains("\n"));
+
+        assertTrue(foundDecodedNewline,
+                "JSON \\n escape in a scalar string must be decoded to a real newline character, " +
+                "not the literal two-character sequence '\\\\n'");
+    }
+
+    /**
+     * testScalarStringUnicodeEscape: A root JSON string containing a {@code \u0041} Unicode
+     * escape must be decoded to the character {@code A}, not the literal 6-character sequence
+     * {@code \u0041}.
+     */
+    @Test
+    public void testScalarStringUnicodeEscape(@TempDir Path tempDir) throws Exception {
+        // JSON: "\u0041" — Unicode escape for the letter 'A'
+        Path json = tempDir.resolve("escape_unicode.json");
+        Files.writeString(json, "\"\\u0041\"", StandardCharsets.UTF_8);
+
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        boolean foundDecodedUnicode = entryMap.values().stream()
+                .filter(e -> !(e instanceof JSONFileEntry))
+                .flatMap(e -> {
+                    java.util.stream.Stream.Builder<String> sb = java.util.stream.Stream.builder();
+                    for (String fieldName : e.getFields()) {
+                        Object val = e.getField(fieldName).getValue();
+                        if (val != null) sb.accept(val.toString());
+                    }
+                    return sb.build();
+                })
+                .anyMatch(v -> v.equals("A"));
+
+        assertTrue(foundDecodedUnicode,
+                "JSON \\u0041 escape in a scalar string must be decoded to 'A', " +
+                "not the literal string '\\\\u0041'");
+    }
+
+    /**
+     * testObjectFieldStringEscapeDecoding: String fields inside a JSON object must also
+     * have their escape sequences decoded. A field value {@code "hello\tworld"} must contain
+     * a real tab character.
+     */
+    @Test
+    public void testObjectFieldStringEscapeDecoding(@TempDir Path tempDir) throws Exception {
+        // JSON object with a tab escape in a field value
+        Path json = tempDir.resolve("escape_tab_field.json");
+        Files.writeString(json, "{\"msg\":\"hello\\tworld\"}", StandardCharsets.UTF_8);
+
+        EDRMBuilder builder = new EDRMBuilder();
+        JSONFileEntry fileEntry = new JSONFileEntry(json.toString());
+        fileEntry.addToBuilder(builder);
+
+        Map<String, EntryInterface> entryMap = builder.getEntryMap();
+        boolean foundDecodedTab = entryMap.values().stream()
+                .filter(e -> !(e instanceof JSONFileEntry))
+                .flatMap(e -> {
+                    java.util.stream.Stream.Builder<String> sb = java.util.stream.Stream.builder();
+                    for (String fieldName : e.getFields()) {
+                        Object val = e.getField(fieldName).getValue();
+                        if (val != null) sb.accept(val.toString());
+                    }
+                    return sb.build();
+                })
+                .anyMatch(v -> v.contains("\t"));
+
+        assertTrue(foundDecodedTab,
+                "JSON \\t escape in an object field value must be decoded to a real tab character");
     }
 }

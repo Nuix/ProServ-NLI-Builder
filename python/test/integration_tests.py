@@ -87,32 +87,34 @@ def _build_canonical_edrm(as_nli: bool = False) -> tuple[EDRMBuilder, str]:
     builder.as_nli = as_nli
     builder.output_path = output_path
 
-    # 1. FileEntry
-    file_entry = FileEntry(str(_CANONICAL_FILE), "text/plain")
-    file_id = builder.add_entry(file_entry)
+    try:
+        # 1. FileEntry
+        file_entry = FileEntry(str(_CANONICAL_FILE), "text/plain")
+        file_id = builder.add_entry(file_entry)
 
-    # 2. DirectoryEntry
-    dir_entry = DirectoryEntry(str(_CANONICAL_DIR))
-    dir_id = builder.add_entry(dir_entry)
+        # 2. DirectoryEntry
+        dir_entry = DirectoryEntry(str(_CANONICAL_DIR))
+        dir_id = builder.add_entry(dir_entry)
 
-    # 3. MappingEntry (child of file)
-    builder.add_mapping(_CANONICAL_MAPPING, "application/x-database-table-row", file_id)
+        # 3. MappingEntry (child of file)
+        builder.add_mapping(_CANONICAL_MAPPING, "application/x-database-table-row", file_id)
 
-    # 4. CSV-sourced rows (child of directory)
-    csv_entry = CSVEntry(
-        str(_CANONICAL_CSV),
-        row_generator=CanonicalCSVRow,
-        parent_id=dir_id,
-    )
-    csv_entry.add_to_builder(builder)
+        # 4. CSV-sourced rows (child of directory)
+        csv_entry = CSVEntry(
+            str(_CANONICAL_CSV),
+            row_generator=CanonicalCSVRow,
+            parent_id=dir_id,
+        )
+        csv_entry.add_to_builder(builder)
 
-    # 5. JSON-sourced entry (top-level)
-    json_entry = JSONFileEntry(str(_CANONICAL_JSON))
-    json_entry.add_to_builder(builder)
+        # 5. JSON-sourced entry (top-level)
+        json_entry = JSONFileEntry(str(_CANONICAL_JSON))
+        json_entry.add_to_builder(builder)
 
-    builder.save()
-    xml_text = output_path.read_text(encoding="UTF-8")
-    output_path.unlink(missing_ok=True)
+        builder.save()
+        xml_text = output_path.read_text(encoding="UTF-8")
+    finally:
+        output_path.unlink(missing_ok=True)
     return builder, xml_text
 
 
@@ -183,6 +185,11 @@ class TestCanonicalDocumentCount(unittest.TestCase):
         cls.doc = _parse_xml(xml)
         cls.documents = _get_documents(cls.doc)
 
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+
     def test_total_document_count(self):
         """
         Expected breakdown:
@@ -219,6 +226,12 @@ class TestFileEntryStructure(unittest.TestCase):
         cls.documents = _get_documents(cls.doc)
         # The file's DocID is its SHA-1 hash
         cls.file_doc = _doc_by_id(cls.documents, _EXPECTED_FILE_SHA1)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.file_doc = None
 
     def test_file_document_exists(self):
         """The FileEntry must appear in the EDRM output with its SHA-1 as the DocID."""
@@ -270,6 +283,12 @@ class TestDirectoryEntryStructure(unittest.TestCase):
             None,
         )
 
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.dir_doc = None
+
     def test_directory_document_exists(self):
         """A DirectoryEntry must appear with MimeType=filesystem/directory."""
         self.assertIsNotNone(self.dir_doc, "DirectoryEntry not found in EDRM output")
@@ -314,6 +333,12 @@ class TestMappingEntryStructure(unittest.TestCase):
                 if _field_value(d, source_key) == "integration-test":
                     cls.mapping_doc = d
                     break
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.mapping_doc = None
 
     def test_mapping_document_exists(self):
         """The MappingEntry with source='integration-test' must exist."""
@@ -365,6 +390,13 @@ class TestCSVEntryStructure(unittest.TestCase):
             _doc_by_id(cls.documents, "2"),
             _doc_by_id(cls.documents, "3"),
         ]
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.csv_doc = None
+        cls.row_docs = None
 
     def test_csv_document_exists(self):
         """The CSVEntry must appear in the EDRM output."""
@@ -423,6 +455,13 @@ class TestJSONEntryStructure(unittest.TestCase):
         json_object_children = [c for p, c in rels if p == _EXPECTED_JSON_SHA1]
         if json_object_children:
             cls.json_object_doc = _doc_by_id(cls.documents, json_object_children[0])
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.json_file_doc = None
+        cls.json_object_doc = None
 
     def test_json_file_document_exists(self):
         """The JSONFileEntry must appear with its SHA-1 as DocID."""
@@ -496,6 +535,12 @@ class TestRelationshipIntegrity(unittest.TestCase):
         cls.doc = _parse_xml(xml)
         cls.documents = _get_documents(cls.doc)
         cls.rels = _get_relationships(cls.doc)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.doc = None
+        cls.documents = None
+        cls.rels = None
 
     def test_all_child_doc_ids_exist(self):
         """Every ChildDocId in Relationships must correspond to a real Document."""
@@ -588,7 +633,7 @@ class TestNLIPackaging(unittest.TestCase):
         with zipfile.ZipFile(self.nli_path, "r") as zf:
             xml_bytes = zf.read("._metadata/image_contents.xml")
             sha1_bytes = zf.read("._metadata/image_contents.sha1_hash")
-        expected_hash = hashlib.sha1(xml_bytes).digest()
+        expected_hash = hashlib.sha1(xml_bytes, usedforsecurity=False).digest()
         self.assertEqual(
             sha1_bytes,
             expected_hash,

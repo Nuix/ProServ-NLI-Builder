@@ -1,4 +1,26 @@
-from typing import TypedDict
+from __future__ import annotations
+
+from typing import Protocol, TypedDict, runtime_checkable
+
+
+@runtime_checkable
+class HashProtocol(Protocol):
+    """Structural protocol matching the public interface of hashlib hash objects.
+
+    Any object returned by ``hashlib.md5()``, ``hashlib.sha1()``, etc. satisfies this
+    protocol.  Using ``HashProtocol`` as a parameter type instead of the private
+    ``hashlib._Hash`` keeps the annotation portable across CPython, PyPy, and future
+    Python releases.
+    """
+
+    def update(self, data: bytes) -> None:
+        ...
+
+    def hexdigest(self) -> str:
+        ...
+
+    def digest(self) -> bytes:
+        ...
 
 
 class EDRMConfigs(TypedDict):

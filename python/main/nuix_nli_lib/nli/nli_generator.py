@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import platform
 import tempfile
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import shutil
 from typing import Any, Optional, Union, cast
@@ -94,7 +94,7 @@ class NLIGenerator(object):
 
         datetime_element: Element = metadata_file.createElement('property')
         datetime_element.setAttribute("key", "creation-datetime")
-        datetime_element.setAttribute("value", datetime.now().strftime('%Y/%m/%d %H:%M:%S.%f')[:-3] + " UTC")
+        datetime_element.setAttribute("value", datetime.now(tz=timezone.utc).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3] + " UTC")
         property_list.appendChild(datetime_element)
 
         sw_element: Element = metadata_file.createElement('property')
@@ -124,16 +124,29 @@ class NLIGenerator(object):
         with metadata_file_path.open(mode='w', encoding=encoding) as metadata_xml:
             metadata_file.writexml(metadata_xml, encoding=encoding, addindent='    ', newl='\n')
 
-    def save(self, file_path: Path):
+    def save(self, file_path: Path) -> None:
         """
         Build and save the NLI container to the provided file_path.
 
         This method will trigger the build process, which will build the underlying EDRM XML load file, copy contents
         to the NLI container, package the container, and store it to the file_path provided.
+
+        **Debug mode:** When ``nli_configs['debug']`` is set to ``True``, the temporary build directory is *not*
+        deleted after the NLI file is written.  This allows inspection of the intermediate files after the call
+        returns.  The caller is responsible for cleaning up the temporary directory in this case.  The location of
+        the temporary directory is printed via :func:`~nuix_nli_lib.debug_log` during the build.
+
         :param file_path: Path to the location the NLI file should be saved, including the file name and extension
         :return: None
         """
 
+        # Bug fix: the original code used ``tempfile.mkdtemp()`` in the non-delete branch, but
+        # ``mkdtemp()`` returns a plain ``str`` which is not a context manager.  Using it in a
+        # ``with`` statement raises ``TypeError`` at runtime when debug mode is active.
+        # ``TemporaryDirectory(delete=False)`` (Python 3.12+) is the correct replacement: it
+        # implements the context manager protocol and intentionally skips cleanup on exit, which
+        # is the desired behaviour for the debug path so the temp directory can be inspected
+        # after the build completes.
         do_delete = not nli_configs['debug'] if 'debug' in nli_configs else True
         with tempfile.TemporaryDirectory() if do_delete else tempfile.TemporaryDirectory(delete=False) as temp_loc:
             temp_path = Path(temp_loc)

@@ -1,4 +1,4 @@
-from nuix_nli_lib.edrm._types import EDRMConfigs
+from nuix_nli_lib.edrm._types import EDRMConfigs, HashProtocol
 
 from nuix_nli_lib.edrm.EDRMUtilities import *
 from nuix_nli_lib.edrm.EntryField import EntryField, FieldType

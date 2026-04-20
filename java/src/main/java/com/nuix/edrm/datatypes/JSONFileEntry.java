@@ -32,6 +32,10 @@ import java.util.*;
  * </ul>
  */
 public class JSONFileEntry extends FileEntry implements CompoundEntry {
+    // ObjectMapper is thread-safe once fully configured and thereafter immutable in use.
+    // Sharing a single static instance avoids per-instance allocation overhead.
+    // Do NOT call configuration methods (e.g. configure(), registerModule()) on this field
+    // after class initialisation — those calls are not thread-safe once the mapper is in use.
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final Path jsonPath;
@@ -66,21 +70,56 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
     // --- Field-type override API ---
 
     /**
+     * Validate a JSONPath pattern before registering it as a field-type override.
+     *
+     * <p>Supported forms:
+     * <ul>
+     *   <li>{@code $..key} — recursive descent to a single key name (no dots allowed in key)</li>
+     *   <li>{@code $.key} — root-level key</li>
+     *   <li>{@code $.parent.key} — exact nested path</li>
+     *   <li>{@code $.arr[*].key} — key inside any array element</li>
+     * </ul>
+     *
+     * <p>Patterns of the form {@code $..foo.bar} are rejected. The key extracted after {@code $..}
+     * would be {@code "foo.bar"}, which can never match a real JSON field name, making the override
+     * a silent no-op.  Callers should use {@code $.foo.bar} for exact paths or {@code $..bar} for
+     * single-level recursive descent.
+     *
+     * @param pattern the JSONPath pattern to validate
+     * @throws IllegalArgumentException if the pattern is null, does not start with {@code $}, or
+     *                                  uses {@code $..} with a dotted (nested) key
+     */
+    static void validateJsonPathPattern(String pattern) {
+        if (pattern == null || !pattern.startsWith("$")) {
+            throw new IllegalArgumentException(
+                    "Malformed JSONPath pattern: must start with '$': \"" + pattern + "\"");
+        }
+        if (pattern.startsWith("$..")) {
+            String key = pattern.substring(3);
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Malformed JSONPath pattern: '$..key' requires a non-empty key name: \"" + pattern + "\"");
+            }
+            if (key.contains(".")) {
+                throw new IllegalArgumentException(
+                        "Malformed JSONPath pattern: '$..key' does not support nested paths. "
+                        + "Use '$.parent.key' for exact paths or '$..key' for a single-level key: \""
+                        + pattern + "\"");
+            }
+        }
+    }
+
+    /**
      * Register a JSONPath → DataType override. Applied at traversal time when the path of a
      * scalar node matches the pattern.
      *
-     * <p>Supported pattern forms:
-     * <ul>
-     *   <li>{@code $..key} — recursive descent; matches any field named {@code key}</li>
-     *   <li>{@code $.key} — root-level key</li>
-     *   <li>{@code $.parent.key} — exact nested path</li>
-     *   <li>{@code $.arr[*].key} — {@code key} inside any element of array {@code arr}</li>
-     * </ul>
-     *
-     * @throws IllegalArgumentException if {@code jsonPathPattern} is malformed (e.g. ends
-     *         with a dot, contains consecutive dots, or has an empty segment)
+     * @throws IllegalArgumentException if the pattern is malformed (see {@link #validateJsonPathPattern}),
+     *                                  or if {@code type} is null
      */
     public void addFieldTypeOverride(String jsonPathPattern, EntryField.Type type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Field type must not be null.");
+        }
         validateJsonPathPattern(jsonPathPattern);
         fieldTypeOverrides.put(jsonPathPattern, type);
     }
@@ -306,7 +345,13 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
     static boolean matchesPath(String pattern, List<String> path) {
         if (pattern == null || !pattern.startsWith("$")) return false;
 
-        // Recursive descent: $..key matches any path whose last segment == key
+        // Recursive descent: $..key intentionally matches ANY path whose last segment equals key,
+        // regardless of depth. This means "$..name" matches "$.name", "$.person.name",
+        // "$.arr[0].name", etc. — it does NOT require a full recursive walk of the tree;
+        // only the final path segment is compared. This is correct behaviour: the semantics
+        // of $.. in this codebase are "find this key anywhere in the document", which is
+        // fully captured by checking the last segment. Do NOT change this to a full recursive
+        // traversal — that would alter the matching semantics.
         if (pattern.startsWith("$..")) {
             String key = pattern.substring(3);
             return !path.isEmpty() && path.get(path.size() - 1).equals(key);
@@ -327,56 +372,11 @@ public class JSONFileEntry extends FileEntry implements CompoundEntry {
     /**
      * Parse the non-recursive segments of a JSONPath pattern (after {@code $.}).
      * Normalizes {@code [*]} array wildcards to {@code *}.
-     *
-     * <p>This method validates that no segment is empty — an empty segment indicates a
-     * malformed pattern such as a trailing dot ({@code $.foo.}) or consecutive dots
-     * ({@code $.foo..bar}). Such patterns are rejected with a clear error rather than
-     * silently producing incorrect matches.
-     *
-     * @throws IllegalArgumentException if the pattern produces an empty segment (malformed)
      */
     private static List<String> parseJsonPathSegments(String pattern) {
         String rest = pattern.substring(2); // strip '$.'
         rest = rest.replace("[*]", ".*");
-        String[] parts = rest.split("\\.", -1); // -1 preserves trailing empty strings
-        for (String part : parts) {
-            if (part.isEmpty()) {
-                throw new IllegalArgumentException(
-                        "Malformed JSONPath pattern: empty segment in \"" + pattern + "\". " +
-                        "Check for trailing dots, leading dots after '$', or consecutive dots.");
-            }
-        }
-        return Arrays.asList(parts);
-    }
-
-    /**
-     * Validate a JSONPath pattern supplied to {@link #addFieldTypeOverride}.
-     * Throws {@link IllegalArgumentException} for patterns that would produce
-     * silent incorrect matches (e.g. trailing dots, consecutive dots, missing prefix).
-     */
-    private static void validateJsonPathPattern(String pattern) {
-        if (pattern == null || pattern.isEmpty()) {
-            throw new IllegalArgumentException("JSONPath pattern must not be null or empty.");
-        }
-        if (!pattern.startsWith("$")) {
-            throw new IllegalArgumentException(
-                    "JSONPath pattern must start with '$': \"" + pattern + "\"");
-        }
-        if (pattern.startsWith("$..")) {
-            // Recursive-descent pattern: $..key — key must be non-empty
-            String key = pattern.substring(3);
-            if (key.isEmpty()) {
-                throw new IllegalArgumentException(
-                        "Malformed JSONPath pattern: '$..'' must be followed by a non-empty key.");
-            }
-            return;
-        }
-        if (!pattern.startsWith("$.")) {
-            throw new IllegalArgumentException(
-                    "JSONPath pattern must start with '$.' or '$..': \"" + pattern + "\"");
-        }
-        // Delegate to segment parser which validates empty segments
-        parseJsonPathSegments(pattern);
+        return Arrays.asList(rest.split("\\."));
     }
 
     /**
