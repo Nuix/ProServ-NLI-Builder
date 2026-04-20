@@ -1,7 +1,10 @@
+import os
+import tempfile
 from pathlib import Path
 import unittest
 from datetime import datetime
 
+from nuix_nli_lib import configs as nli_configs
 from nuix_nli_lib.data_types import CSVEntry, CSVRowEntry
 from nuix_nli_lib.nli.nli_generator import NLIGenerator
 
@@ -126,3 +129,56 @@ class NLITests(unittest.TestCase):
     #     entry = ProcessCSVEntry(self.minps, mem_id)
     #     entry.add_to_builder(builder)
     #     builder.save()
+
+    def test_debug_mode_temp_directory_not_deleted(self):
+        """
+        Verify that when debug mode is enabled (nli_configs['debug'] = True), the NLI generator's
+        temporary build directory is NOT cleaned up after save() completes.
+
+        This tests the fix for the bug where the original ``tempfile.mkdtemp()`` call was used as
+        a context manager.  Since ``mkdtemp()`` returns a plain ``str`` (not a context manager),
+        this would raise ``TypeError`` at runtime whenever debug mode was active.  The fix uses
+        ``TemporaryDirectory(delete=False)`` which correctly implements the context manager protocol
+        while intentionally skipping cleanup on exit.
+        """
+        entry = CSVEntry(self.envars, row_generator=EnvEntry)
+
+        original_debug = nli_configs.get('debug', None)
+        temp_output_dir = tempfile.mkdtemp()
+        output_nli = Path(temp_output_dir) / 'debug_mode_test.nli'
+
+        captured_temp_dirs = []
+        original_tempdir = tempfile.TemporaryDirectory
+
+        class CapturingTempDir:
+            """Wrapper that records the temp directory path before delegating to the real class."""
+            def __init__(self, delete=True):
+                self._inner = original_tempdir(delete=delete)
+                captured_temp_dirs.append((self._inner.name, delete))
+
+            def __enter__(self):
+                return self._inner.__enter__()
+
+            def __exit__(self, *args):
+                return self._inner.__exit__(*args)
+
+        try:
+            nli_configs['debug'] = True
+            tempfile.TemporaryDirectory = CapturingTempDir
+
+            generator = NLIGenerator()
+            generator.add_entry(entry)
+            generator.save(output_nli)
+
+            self.assertTrue(output_nli.exists(), "NLI file must be created in debug mode")
+            self.assertEqual(len(captured_temp_dirs), 1, "Exactly one TemporaryDirectory should have been created")
+            temp_path, delete_flag = captured_temp_dirs[0]
+            self.assertFalse(delete_flag, "TemporaryDirectory must be created with delete=False in debug mode")
+        finally:
+            tempfile.TemporaryDirectory = original_tempdir
+            if original_debug is None:
+                nli_configs.pop('debug', None)
+            else:
+                nli_configs['debug'] = original_debug
+            import shutil
+            shutil.rmtree(temp_output_dir, ignore_errors=True)

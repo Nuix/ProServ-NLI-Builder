@@ -368,4 +368,74 @@ public class EdrmTests {
         assertEquals(1, mimeTypeDefs.getLength(),
                 "Expected 'MIME Type' field definition to appear exactly once in <Fields>, but found " + mimeTypeDefs.getLength());
     }
+
+    // ---- edge case tests (SLC-70) ----
+
+    /**
+     * Builds an EDRM document with no entries and verifies the output contains an empty
+     * {@code <Documents>} section and an empty {@code <Fields>} section (no child elements).
+     */
+    @Test
+    public void testEmptyBuilder() {
+        EDRMBuilder builder = newBuilder();
+        Document doc = builder.build();
+
+        // <Documents> must exist but have no <Document> children
+        NodeList documents = xpath(doc, "//Documents/Document");
+        assertEquals(0, documents.getLength(),
+                "Expected zero <Document> elements in an empty builder, found " + documents.getLength());
+
+        // <Fields> must exist but have no <Field> children
+        NodeList fields = xpath(doc, "//Fields/Field");
+        assertEquals(0, fields.getLength(),
+                "Expected zero <Field> elements in an empty builder, found " + fields.getLength());
+    }
+
+    /**
+     * Verifies that XML special characters ({@code <}, {@code >}, {@code &}, {@code "}, {@code '})
+     * in a field value are properly XML-escaped in the serialized output. The DOM
+     * {@code createTextNode} path (used by {@link com.nuix.edrm.EntryField#serializeValue}) escapes
+     * these automatically, so the raw string representation should never appear in the XML bytes.
+     */
+    @Test
+    public void testXmlSpecialCharsInFieldValue() {
+        String rawValue = "<script>alert('hello & \"world\"')</script>";
+        MappingEntry entry = new MappingEntry(Map.of("Payload", rawValue), "text/plain");
+        EDRMBuilder builder = newBuilder();
+        builder.addEntry(entry);
+        Document doc = builder.build();
+        String xml = docToString(doc);
+
+        // The raw angle brackets and ampersand must not appear in the serialized XML
+        assertFalse(xml.contains("<script>"),
+                "Unescaped '<script>' tag must not appear in serialized XML output");
+        assertFalse(xml.contains("alert("),
+                "Unescaped '<script>' content must not appear in serialized XML output");
+
+        // The XML-escaped forms must be present
+        assertTrue(xml.contains("&lt;script&gt;"),
+                "Expected '&lt;script&gt;' (escaped '<script>') in XML output, got:\n" + xml);
+        assertTrue(xml.contains("&amp;"),
+                "Expected '&amp;' (escaped '&') in XML output, got:\n" + xml);
+    }
+
+    /**
+     * Verifies that when two different entries both carry a field with the same name but different
+     * values, the {@code <Fields>} definitions section still lists that field name exactly once.
+     * This exercises the deduplication logic in
+     * {@link com.nuix.edrm.EntryField#serializeDefinition}.
+     */
+    @Test
+    public void testDuplicateFieldName() {
+        EDRMBuilder builder = newBuilder();
+        builder.addEntry(new MappingEntry(Map.of("Status", "active"), "text/plain"));
+        builder.addEntry(new MappingEntry(Map.of("Status", "inactive"), "text/plain"));
+        Document doc = builder.build();
+
+        // "Status" must appear exactly once in the <Fields> definitions section
+        NodeList statusFields = xpath(doc, "//Fields/Field[@Name='Status']");
+        assertEquals(1, statusFields.getLength(),
+                "Expected 'Status' field definition to appear exactly once in <Fields> even when "
+                + "two entries carry the same field name, but found " + statusFields.getLength());
+    }
 }
